@@ -1,0 +1,15 @@
+.vs/
+build/
+out/
+Debug/
+Release/
+*.log
+*.tmp
+*.obj
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.vcxproj.user
+*.opensdf
+*.sdf
