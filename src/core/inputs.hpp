@@ -15,9 +15,13 @@ public:
     void ClearEvents();
     std::vector<std::shared_ptr<Event>>& GetEventQueue();
 
+    void Update(float deltaTime);
+
+    bool IsCursorEnabled();
 private:
     GLFWwindow* window;
     std::unordered_map<int, bool> m_keyStates;
     std::vector<std::shared_ptr<Event>> eventQueue;
+    bool cursorEnabled;
 };
 

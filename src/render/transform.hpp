@@ -8,6 +8,8 @@ struct Transform
 
     //Default constructor
     Transform() : position(0.0f), rotation(0.0f), scale(1.0f) {}
+    Transform(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale)
+        :position(pos), rotation(rot), scale(scale){}
 
     glm::mat4 ModelMatrix() const
     {

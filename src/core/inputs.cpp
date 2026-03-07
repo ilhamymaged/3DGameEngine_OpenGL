@@ -1,7 +1,7 @@
 #include <core/inputs.hpp>
 #include <iostream>
 
-Input::Input(GLFWwindow *window) : window(window)
+Input::Input(GLFWwindow *window) : window(window), cursorEnabled(false)
 {
     glfwSetWindowUserPointer(window, this);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -32,7 +32,6 @@ Input::Input(GLFWwindow *window) : window(window)
         if (!input) return;
 
         input->eventQueue.push_back(std::make_shared<MouseScrolledEvent>(xOffset, yOffset));
-
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xPos, double yPos) 
@@ -43,6 +42,13 @@ Input::Input(GLFWwindow *window) : window(window)
         input->eventQueue.push_back(std::make_shared<MouseMovedEvent>(xPos, yPos));
     });
 
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int width, int height)
+    {
+        Input* input = static_cast<Input*>(glfwGetWindowUserPointer(win));
+        if (!input) return;
+
+        input->eventQueue.push_back(std::make_shared<WindowResized>(width, height));
+    });
 }
 
 std::vector<std::shared_ptr<Event>> &Input::GetEventQueue()
@@ -61,3 +67,31 @@ bool Input::IsKeyPressed(int key)
     bool pressed = it != m_keyStates.end() && it->second;
     return pressed;
 }
+
+void Input::Update(float deltaTime)
+{
+    bool ctrlPressed = IsKeyPressed(GLFW_KEY_LEFT_CONTROL);
+    if (ctrlPressed && !cursorEnabled)
+    {
+        cursorEnabled = true;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else if (!ctrlPressed && cursorEnabled)
+    {
+        cursorEnabled = false;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+
+        eventQueue.push_back(
+            std::make_shared<MouseMovedEvent>(x, y)
+        );
+    }
+}
+
+bool Input::IsCursorEnabled()
+{
+    return cursorEnabled;
+}
+

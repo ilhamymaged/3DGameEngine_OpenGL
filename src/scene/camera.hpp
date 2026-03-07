@@ -6,10 +6,9 @@
 class Camera
 {
 public:
-    Camera(int width, int height, Input& i) :
-        screenWidth{ width }, screenHeight{ height }, input{ i },
+    Camera(int width, int height, Input& i) :input{ i },
         yaw{ -90.0f }, pitch{ 0.0f }, lastX{ 0.0f }, lastY{ 0.0f },
-        firstMouse{ true }, sensitivity{ 0.1f }, FOV{45.0f}
+        firstMouse{ true }, sensitivity{ 0.1f }, FOV{ 45.0f }, aspectRatio{(float)width/height}
     {
         position = glm::vec3(0.0f, 2.0f, 0.0f);
         front = glm::vec3(0.0f, 0.0f, -1.0f);   
@@ -23,7 +22,7 @@ public:
 
     glm::mat4 GetProjectionMatrix()
     {
-        return glm::perspective(glm::radians(FOV), (float)screenWidth/screenHeight, 0.1f, 100.0f);
+        return glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
     }
 
     void FollowPlayer(const glm::vec3& playerPos, const glm::vec3& offset) 
@@ -92,9 +91,34 @@ public:
         front = glm::normalize(direction);
     }
 
+    void updateAspectRatio(int width, int height)
+    {
+        aspectRatio = (float)width / height;
+        lastX = (float)width / 2;
+        lastY = (float)height / 2;
+        //firstMouse = true;  
+    }
+
+    void onEvent(std::shared_ptr<Event> e)
+    {
+        if (input.IsCursorEnabled())
+            return;
+
+        if (e->getType() == EventType::MouseMoved)
+        {
+            auto m = std::static_pointer_cast<MouseMovedEvent>(e);
+            ProcessMouse(m->getX(), m->getY());
+        }
+
+        if (e->getType() == EventType::MouseScrolled)
+        {
+            auto m = std::static_pointer_cast<MouseScrolledEvent>(e);
+            processScrolling(m->getXoffset(), m->getYoffset());
+        }
+    }
+
 private:
-    int screenWidth;
-    int screenHeight;
+    float aspectRatio;
     Input& input;
 
     glm::vec3 position;
@@ -110,5 +134,4 @@ private:
 
     bool firstMouse;
     float sensitivity;
-
 };

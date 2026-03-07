@@ -19,6 +19,7 @@ void Application::Run()
 
         Time::Update(); 
         m_renderer.Update(Time::GetDeltaTime());
+        m_input.Update(Time::GetDeltaTime());
 
         m_renderer.Render();
         m_window.SwapBuffers();

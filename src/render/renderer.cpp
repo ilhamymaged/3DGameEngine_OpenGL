@@ -20,6 +20,14 @@ Renderer::Renderer(GLFWwindow* Window, int width, int height, Input& i)
 void Renderer::onEvent(std::shared_ptr<Event> e)
 {
     sceneManager->onEvent(e);
+   
+    Camera& camera = sceneManager->GetCamera();
+    if (e->getType() == EventType::WindowResized)
+    {
+        auto w = std::static_pointer_cast<WindowResized>(e);
+        camera.updateAspectRatio(w->GetNewWidth(), w->GetNewHeight());
+        glViewport(0, 0, w->GetNewWidth(), w->GetNewHeight());
+    }
 }
 
 void Renderer::Update(float dt)

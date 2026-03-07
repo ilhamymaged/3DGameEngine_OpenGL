@@ -19,7 +19,12 @@ public:
     GLFWwindow *GetGLFWwindow() const;
 
     void onEvent(std::shared_ptr<Event> e) override;
+    void ToggleFullScreen();
 
 private:
     GLFWwindow *window;
+    int width;
+    int height;
+    int x;
+    int y;
 };

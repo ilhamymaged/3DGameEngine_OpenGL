@@ -6,7 +6,9 @@ enum class EventType
     KeyPressed,
     KeyReleased,
     MouseMoved,
-    MouseScrolled
+    MouseScrolled,
+
+    WindowResized
 };
 
 class Event
@@ -14,6 +16,19 @@ class Event
 public:
     virtual ~Event() = default;
     virtual EventType getType() const = 0;
+};
+
+class WindowResized : public Event
+{
+public:
+    WindowResized(int width, int height) : width(width), height(height){}
+    EventType getType() const override { return EventType::WindowResized; }
+
+    int GetNewWidth() { return width; }
+    int GetNewHeight() { return height; }
+
+private:
+    int width, height;
 };
 
 class MouseMovedEvent : public Event
