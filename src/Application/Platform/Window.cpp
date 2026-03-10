@@ -64,6 +64,6 @@ void Window::OnEvent(Event& e)
     EventDispatcher eventDispatcher(e);
     eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& e)
     {
-        if (e.getKey() == GLFW_KEY_ESCAPE) Close();
+            if (e.getKey() == GLFW_KEY_ESCAPE) Close();
     });
 }

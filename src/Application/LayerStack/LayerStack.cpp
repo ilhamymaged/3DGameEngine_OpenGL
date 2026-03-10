@@ -24,10 +24,10 @@ void LayerStack::OnUpdate(float dt)
 		layer->OnUpdate(dt);
 }
 
-void LayerStack::OnRender(Renderer& r)
+void LayerStack::OnRender()
 {
 	for (auto layer : m_Layers)
-		layer->OnRender(r);
+		layer->OnRender();
 }
 
 LayerStack::~LayerStack()

@@ -1,14 +1,14 @@
 #include <Layers/GameLayer/Scene/SceneManager.hpp>
 
-SceneManager::SceneManager(const std::vector<Scene>& scenes) : m_Scenes{scenes},
+SceneManager::SceneManager(std::vector<std::unique_ptr<Scene>> scenes) : m_Scenes{std::move(scenes)},
 m_CurrentScene{0} {}
 
 void SceneManager::OnUpdate(float dt)
 {
-	for (auto& scene : m_Scenes) scene.OnUpdate(dt);
+	for (auto& scene : m_Scenes) scene->OnUpdate(dt);
 }
 
 void SceneManager::OnEvent(Event& e)
 {
-	for (auto& scene : m_Scenes) scene.OnEvent(e);
+	for (auto& scene : m_Scenes) scene->OnEvent(e);
 }

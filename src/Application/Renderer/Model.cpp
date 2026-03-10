@@ -8,6 +8,11 @@ Model::Model(const std::string& path)
     LoadModel(path);
 }
 
+void Model::Draw(const SceneData& sceneData, const glm::mat4& model)
+{
+    for (const auto& mesh : meshes) mesh->Draw(sceneData, model);
+}
+
 void Model::LoadModel(const std::string& path)
 {
     directory = path.substr(0, path.find_last_of('/'));
@@ -103,7 +108,3 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     return std::make_shared<Mesh>(vertices, indices, m_Material);
 }
 
-void Model::Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model)
-{
-    for (const auto& mesh : meshes) mesh->Draw(view, proj, model);
-}

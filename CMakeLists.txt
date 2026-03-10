@@ -24,5 +24,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/vendor/glm
     ${CMAKE_SOURCE_DIR}/vendor/stb_image
+    ${CMAKE_SOURCE_DIR}/vendor/entt
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw3 opengl32 assimp)

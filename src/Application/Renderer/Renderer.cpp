@@ -1,10 +1,9 @@
 #include <Application/Renderer/Renderer.hpp>
 #include <Application/Renderer/ShaderLibrary.hpp>
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include <vector>
+#include <Application/Renderer/OpenGLObjects.hpp>
 
-Renderer::Renderer()
+void Renderer::Init()
 {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -13,38 +12,28 @@ Renderer::Renderer()
     }
         
     glEnable(GL_DEPTH_TEST);
-
+    
     ShaderLibrary::Load("basic", "../../../shaders/basic.vert",
         "../../../shaders/basic.fragment");
+    
+    ShaderLibrary::Load("skybox", "../../../shaders/skybox.vert",
+        "../../../shaders/skybox.fragment");
 }
 
-void Renderer::ChangeColor(float r, float g, float b) const
+void Renderer::Clear(const glm::vec4& color) 
 {
-    glClearColor(r, g, b, 1.0f);
-}
-
-void Renderer::RenderScene(Scene& scene, Camera& camera)
-{
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 proj = camera.GetProjectionMatrix();
-
-    glm::vec3 lightPos(0.0f, 4.0f, -3.0f);
-    glm::vec3 lightColor(1.0f);
-
-    std::vector<Entity>& entities = scene.GetEntities();
-    for (auto& e : entities)
-        RenderEntity(e, view, proj, e.GetModelMatrix());
-}
-
-void Renderer::RenderEntity(Entity& e, glm::mat4& view, glm::mat4& proj,
-    glm::mat4& model)
-{
-    Model& m_Model = e.GetModel();
-    m_Model.Draw(view, proj, model);
-}
-
-void Renderer::Clear() const
-{
+    glClearColor(color.r, color.g, color.b, color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    glViewport(x, y, width, height);
+}
+
+void Renderer::DrawIndexed(const std::shared_ptr<VAO>& vertexArray, uint32_t indexCount)
+{
+    vertexArray->Bind();
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+    vertexArray->Unbind();
+}

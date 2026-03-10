@@ -1,20 +1,15 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <Layers/GameLayer/Scene/Scene.hpp>
-#include <Layers/GameLayer/Camera/Camera.hpp>
+#include <glm/glm.hpp>
+#include <memory>
 
-class Renderer 
+class VAO;
+class Renderer
 {
 public:
-    Renderer();
-    ~Renderer() = default;
-
-    void Clear() const;
-    void ChangeColor(float r, float g, float b) const;
-    void RenderScene(Scene& scene, Camera& camera);
-
-private:
-    void RenderEntity(Entity& e, glm::mat4& view, glm::mat4& proj,
-        glm::mat4& model);
+    static void Init();
+    static void Clear(const glm::vec4& color = { 0.1f, 0.1f, 0.1f, 1.0f });
+    static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+    static void DrawIndexed(const std::shared_ptr<VAO>& vertexArray, uint32_t indexCount = 0);
 };

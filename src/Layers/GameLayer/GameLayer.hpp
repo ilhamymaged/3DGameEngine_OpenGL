@@ -1,9 +1,8 @@
 #pragma once
 
 #include <Application/LayerStack/Layer.hpp>
-
-#include <Layers/GameLayer/Camera/Camera.hpp>
 #include <Layers/GameLayer/Scene/SceneManager.hpp>
+#include <Layers/GameLayer/Camera/Camera.hpp>
 
 class GameLayer : public Layer
 {
@@ -14,7 +13,7 @@ public:
 	void OnDetach() override;
 	void OnUpdate(float dt) override;
 	void OnEvent(Event& e) override;
-	void OnRender(Renderer& r) override;
+	void OnRender() override;
 
 	inline SceneManager& GetSceneManager() { return *m_SceneManager; }
 

@@ -8,6 +8,7 @@
 #include <Application/Renderer/Texture.hpp>
 #include <Application/Renderer/Shader.hpp>
 #include <Application/Renderer/Material.hpp>
+#include <Application/Renderer/SceneRenderer.hpp>
 
 class Mesh
 {
@@ -17,7 +18,7 @@ public:
         std::shared_ptr<Material> material);
     ~Mesh() = default;
 
-    void Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model);  
+    void Draw(const SceneData& sceneData,const glm::mat4& model);  
 private:
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;

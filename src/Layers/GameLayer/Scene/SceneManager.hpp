@@ -6,14 +6,14 @@ class Event;
 class SceneManager
 {
 public:
-    SceneManager(const std::vector<Scene>& scenes);
+    SceneManager(std::vector<std::unique_ptr<Scene>> scenes);
 
     void OnUpdate(float dt);
     void OnEvent(Event& e);
 
-    Scene& GetCurrentScene() { return m_Scenes.at(m_CurrentScene); }
+    Scene& GetCurrentScene() { return *m_Scenes.at(m_CurrentScene); }
 
 private:
-    std::vector<Scene> m_Scenes;
+    std::vector<std::unique_ptr<Scene>> m_Scenes;
     int m_CurrentScene;
 };

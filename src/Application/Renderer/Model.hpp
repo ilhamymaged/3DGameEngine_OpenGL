@@ -8,12 +8,13 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <Application/Renderer/SceneRenderer.hpp> 
 
 class Model
 {
 public:
     Model(const std::string& path);
-    void Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model);
+    void Draw(const SceneData& sceneData,const glm::mat4& model);
 
 private:
     void LoadModel(const std::string& path);

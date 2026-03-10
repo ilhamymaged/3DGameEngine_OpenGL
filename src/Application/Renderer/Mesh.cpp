@@ -1,6 +1,5 @@
-#include <glad/glad.h>
 #include <Application/Renderer/Mesh.hpp>
-#include <Application/Renderer/ShaderLibrary.hpp>
+#include <Application/Renderer/Renderer.hpp>
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, 
     const std::vector<unsigned int>& indices,
@@ -24,18 +23,14 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     Ebo->Unbind();
 }
 
-void Mesh::Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model)
+void Mesh::Draw(const SceneData& sceneData,const glm::mat4& model)
 {
     m_Material->Bind();
+    auto& shader = m_Material->GetShader();
+    shader.setMat4("view", sceneData.ViewMatrix);
+    shader.setMat4("proj", sceneData.ProjectionMatrix);
 
-    auto shader = m_Material->GetShader();
-
-    shader.setMat4("view", view);
-    shader.setMat4("proj", proj);
     shader.setMat4("model", model);
-
-    Vao->Bind();
-    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
-    Vao->Unbind();
+    Renderer::DrawIndexed(Vao, static_cast<uint32_t>(indices.size()));
 }
 

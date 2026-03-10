@@ -93,6 +93,7 @@ public:
     static EventType GetStaticType() { return EventType::KeyPressedEvent; }
     EventType getType() const override { return GetStaticType(); }
     int getKey() const { return key; }
+    int getScanCode() const { return scancode; }
 
 private:
     int key;

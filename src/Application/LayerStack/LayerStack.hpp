@@ -10,7 +10,7 @@ public:
 	void OnDetach() override;
 	void OnEvent(Event& e) override;
 	void OnUpdate(float dt) override;
-	void OnRender(Renderer& r) override;
+	void OnRender() override;
 
 	~LayerStack();
 

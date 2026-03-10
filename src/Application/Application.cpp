@@ -4,8 +4,9 @@
 #include <Layers/GameLayer/GameLayer.hpp>
 
 Application::Application(const std::string &title, int width, int height)
-    : m_Window(title, width, height), m_Renderer(), m_LayerStack()
+    : m_Window(title, width, height), m_LayerStack()
 {
+    Renderer::Init();
     Input::Init(m_Window.GetGLFWwindow());
 
     m_LayerStack.PushLayer(new GameLayer(width, height));
@@ -32,8 +33,7 @@ void Application::Run()
         Time::Update(); 
         m_LayerStack.OnUpdate(Time::GetDeltaTime());
 
-        m_Renderer.Clear();
-        m_LayerStack.OnRender(m_Renderer);
+        m_LayerStack.OnRender();
 
         m_Window.SwapBuffers();
         Input::Get().ClearEvents();
