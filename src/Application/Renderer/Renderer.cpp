@@ -18,6 +18,12 @@ void Renderer::Init()
     
     ShaderLibrary::Load("skybox", "../../../shaders/skybox.vert",
         "../../../shaders/skybox.fragment");
+
+    ShaderLibrary::Load(
+        "grid",
+        "../../../shaders/grid.vert",
+        "../../../shaders/grid.fragment"
+    );
 }
 
 void Renderer::Clear(const glm::vec4& color) 

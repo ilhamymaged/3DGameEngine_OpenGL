@@ -2,6 +2,7 @@
 #include <Application/Time/Time.hpp>
 #include <Application/Inputs/Inputs.hpp>
 #include <Layers/GameLayer/GameLayer.hpp>
+#include <Layers/ImGuiLayer/ImGuiLayer.hpp>
 
 Application::Application(const std::string &title, int width, int height)
     : m_Window(title, width, height), m_LayerStack()
@@ -10,6 +11,7 @@ Application::Application(const std::string &title, int width, int height)
     Input::Init(m_Window.GetGLFWwindow());
 
     m_LayerStack.PushLayer(new GameLayer(width, height));
+    m_LayerStack.PushLayer(new ImGuiLayer());
     m_LayerStack.OnAttach();
 }
 

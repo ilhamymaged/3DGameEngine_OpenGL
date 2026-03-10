@@ -17,9 +17,7 @@ void SceneRenderer::Render(Scene& scene, Camera& camera)
 
     std::vector<Entity>& entities = scene.GetEntities();
     for (auto& entity : entities)
-    {
         RenderEntity(entity);
-    }
 
     s_SceneData = nullptr; 
 }

@@ -13,6 +13,11 @@ void Model::Draw(const SceneData& sceneData, const glm::mat4& model)
     for (const auto& mesh : meshes) mesh->Draw(sceneData, model);
 }
 
+const std::string& Model::GetName()
+{
+    return directory;
+}
+
 void Model::LoadModel(const std::string& path)
 {
     directory = path.substr(0, path.find_last_of('/'));

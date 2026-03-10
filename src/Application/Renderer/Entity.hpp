@@ -10,7 +10,6 @@ public:
     Entity(std::shared_ptr<Model> model, const Transform& transform);
 
     inline glm::mat4& GetModelMatrix() { return m_Transform.GetModelMatrix(); }
-    
     inline Model& GetModel() { return *m_Model; }
 
 protected:  

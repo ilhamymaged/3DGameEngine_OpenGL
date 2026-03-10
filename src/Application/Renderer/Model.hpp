@@ -16,6 +16,8 @@ public:
     Model(const std::string& path);
     void Draw(const SceneData& sceneData,const glm::mat4& model);
 
+    const std::string& GetName();
+
 private:
     void LoadModel(const std::string& path);
     void ProcessNode(aiNode* node, const aiScene* scene);
