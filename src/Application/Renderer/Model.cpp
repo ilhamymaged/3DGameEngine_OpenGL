@@ -1,5 +1,6 @@
 #include <Application/Renderer/Model.hpp>
 #include <filesystem>
+#include <Application/Renderer/ShaderLibrary.hpp>
 
 Model::Model(const std::string& path)
 {
@@ -89,7 +90,6 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     std::vector<std::shared_ptr<Texture>> textures;
 
     unsigned int count = material->GetTextureCount(aiTextureType_DIFFUSE);
-
     for (unsigned int i = 0; i < count; i++)
     {
         aiString str;
@@ -98,13 +98,12 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
         textures.push_back(Texture::Load(texturePath));
     }
 
-    return std::make_shared<Mesh>(vertices, indices, textures);
+    auto& shader = ShaderLibrary::Get("basic");
+    auto m_Material = std::make_shared<Material>(shader, textures);
+    return std::make_shared<Mesh>(vertices, indices, m_Material);
 }
 
-void Model::Draw()
+void Model::Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model)
 {
-    for (const auto& mesh : meshes)
-    {
-        mesh->Draw();
-    }
+    for (const auto& mesh : meshes) mesh->Draw(view, proj, model);
 }

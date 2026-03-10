@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Application/Renderer/Mesh.hpp>
+#include <glm/glm.hpp>
 #include <vector>
 #include <iostream>
 #include <memory>
@@ -12,7 +13,7 @@ class Model
 {
 public:
     Model(const std::string& path);
-    void Draw();
+    void Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model);
 
 private:
     void LoadModel(const std::string& path);

@@ -11,7 +11,7 @@ struct Transform
     Transform(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale)
         :position(pos), rotation(rot), scale(scale){}
 
-    glm::mat4 ModelMatrix() const
+    glm::mat4 GetModelMatrix() const
     {
         glm::mat4 model = glm::mat4(1.0);
 

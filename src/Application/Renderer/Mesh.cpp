@@ -1,9 +1,11 @@
-#include <Application/Renderer/Mesh.hpp>
 #include <glad/glad.h>
+#include <Application/Renderer/Mesh.hpp>
+#include <Application/Renderer/ShaderLibrary.hpp>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,
-    const std::vector<std::shared_ptr<Texture>>& textures) :
-    vertices(vertices), indices(indices), textures(textures)
+Mesh::Mesh(const std::vector<Vertex>& vertices, 
+    const std::vector<unsigned int>& indices,
+    std::shared_ptr<Material> material)
+    :vertices(vertices), indices(indices), m_Material(material)
 {
     Vao = std::make_shared<VAO>();
     Vbo = std::make_shared<VBO>(vertices.data(), vertices.size() * sizeof(Vertex));
@@ -22,14 +24,18 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
     Ebo->Unbind();
 }
 
-void Mesh::Draw()
+void Mesh::Draw(glm::mat4& view, glm::mat4& proj, glm::mat4& model)
 {
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i);
-        textures[i]->Bind();
-    }
+    m_Material->Bind();
+
+    auto shader = m_Material->GetShader();
+
+    shader.setMat4("view", view);
+    shader.setMat4("proj", proj);
+    shader.setMat4("model", model);
+
     Vao->Bind();
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
     Vao->Unbind();
 }
+

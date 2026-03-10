@@ -9,9 +9,11 @@ class Entity
 public:
     Entity(std::shared_ptr<Model> model, const Transform& transform);
 
-    void Draw(Shader& shader) const;
-    inline const glm::vec3& GetPosition() const { return transform.position; }
+    inline glm::mat4& GetModelMatrix() { return m_Transform.GetModelMatrix(); }
+    
+    inline Model& GetModel() { return *m_Model; }
+
 protected:  
-    std::shared_ptr<Model> model;
-    Transform transform;
+    std::shared_ptr<Model> m_Model;
+    Transform m_Transform;
 };

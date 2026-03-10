@@ -1,4 +1,5 @@
 #include <Application/Platform/Window.hpp>
+#include <Application/Inputs/Events.hpp>
 
 Window::Window(const std::string &title, int width, int height)
     :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0)
@@ -58,12 +59,11 @@ GLFWwindow* Window::GetGLFWwindow() const
     return m_Window;
 }
 
-//void Window::onEvent(Event& e)
-//{
-//    EventDispatcher eventDispatcher(e);
-//    eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& e)
-//    {
-//        if (e.getKey() == GLFW_KEY_ESCAPE) Close();
-//        if (e.getKey() == GLFW_KEY_F11) ToggleFullScreen();
-//    });
-//}
+void Window::OnEvent(Event& e)
+{
+    EventDispatcher eventDispatcher(e);
+    eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& e)
+    {
+        if (e.getKey() == GLFW_KEY_ESCAPE) Close();
+    });
+}

@@ -17,6 +17,7 @@ public:
 
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
+    glm::vec3& GetPosition();
     void FollowPlayer(const glm::vec3& playerPos, const glm::vec3& offset);
     void OnUpdate(float deltaTime);
     void processScrolling(double x, double y);

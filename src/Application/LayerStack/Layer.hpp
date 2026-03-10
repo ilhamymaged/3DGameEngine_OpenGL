@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 
+class Renderer;
 class Layer
 {
 public:
@@ -11,4 +12,5 @@ public:
 	virtual void OnDetach() = 0;
 	virtual void OnEvent(Event& e) = 0;
 	virtual void OnUpdate(float dt) = 0;
+	virtual void OnRender(Renderer& r) = 0;
 };

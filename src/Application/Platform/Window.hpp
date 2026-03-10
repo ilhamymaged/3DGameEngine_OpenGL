@@ -1,8 +1,10 @@
 #pragma once
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+class Event;
 class Window 
 {
 public:
@@ -12,9 +14,13 @@ public:
     bool ShouldClose() const;
     void SwapBuffers() const;
     void PollEvents() const;
+
+    GLFWwindow* GetGLFWwindow() const;
+    void OnEvent(Event& e);
+
+private:
     void Close() const;
 
-    GLFWwindow *GetGLFWwindow() const;
 private:
     GLFWwindow *m_Window;
     int m_Width;

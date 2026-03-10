@@ -10,6 +10,11 @@ glm::mat4 Camera::GetProjectionMatrix()
     return glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
 }
 
+glm::vec3& Camera::GetPosition()
+{
+    return position;
+}
+
 void Camera::FollowPlayer(const glm::vec3& playerPos, const glm::vec3& offset)
 {
     position = glm::mix(position, playerPos + offset, 0.1f);

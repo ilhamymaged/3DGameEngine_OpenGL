@@ -1,6 +1,7 @@
 #include <Layers/GameLayer/Scene/SceneManager.hpp>
 
-SceneManager::SceneManager(const std::vector<Scene>& scenes) : m_Scenes{scenes} {}
+SceneManager::SceneManager(const std::vector<Scene>& scenes) : m_Scenes{scenes},
+m_CurrentScene{0} {}
 
 void SceneManager::OnUpdate(float dt)
 {

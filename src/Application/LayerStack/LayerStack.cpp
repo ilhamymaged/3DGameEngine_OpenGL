@@ -24,6 +24,12 @@ void LayerStack::OnUpdate(float dt)
 		layer->OnUpdate(dt);
 }
 
+void LayerStack::OnRender(Renderer& r)
+{
+	for (auto layer : m_Layers)
+		layer->OnRender(r);
+}
+
 LayerStack::~LayerStack()
 {
 	for (auto layer : m_Layers)

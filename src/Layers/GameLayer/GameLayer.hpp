@@ -8,10 +8,15 @@
 class GameLayer : public Layer
 {
 public:
+	GameLayer(int width, int height);
+
 	void OnAttach() override;
 	void OnDetach() override;
 	void OnUpdate(float dt) override;
 	void OnEvent(Event& e) override;
+	void OnRender(Renderer& r) override;
+
+	inline SceneManager& GetSceneManager() { return *m_SceneManager; }
 
 private:
 	std::unique_ptr<Camera> m_Camera;

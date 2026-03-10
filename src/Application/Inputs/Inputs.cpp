@@ -1,6 +1,8 @@
 #include <Application/Inputs/Inputs.hpp>
 #include <iostream>
 
+Input* Input::m_Instance = nullptr;
+
 Input::Input(GLFWwindow *window) : m_Window(window), m_CursorEnabled(false)
 {
     glfwSetWindowUserPointer(window, this);
@@ -69,26 +71,6 @@ bool Input::IsKeyPressed(int key)
     auto it = m_KeyStates.find(key);
     bool pressed = it != m_KeyStates.end() && it->second;
     return pressed;
-}
-
-void Input::Update(float deltaTime)
-{
-    bool ctrlPressed = IsKeyPressed(GLFW_KEY_LEFT_CONTROL);
-    if (ctrlPressed && !m_CursorEnabled)
-    {
-        m_CursorEnabled = true;
-        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else if (!ctrlPressed && m_CursorEnabled)
-    {
-        m_CursorEnabled = false;
-        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-        double x, y;
-        glfwGetCursorPos(m_Window, &x, &y);
-        
-        m_EventQueue.push_back(std::make_unique<MouseMoved>(x, y));
-    }
 }
 
 bool Input::IsCursorEnabled()

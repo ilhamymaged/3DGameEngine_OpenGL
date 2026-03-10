@@ -14,5 +14,6 @@ public:
 private:
     Window m_Window;
     Renderer m_Renderer;
+
     LayerStack m_LayerStack;    
 };

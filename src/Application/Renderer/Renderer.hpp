@@ -1,23 +1,20 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <Application/Renderer/Shader.hpp>
-#include <iostream>
-#include <memory>
-#include <Application/Renderer/OpenGLObjects.hpp>
+#include <Layers/GameLayer/Scene/Scene.hpp>
+#include <Layers/GameLayer/Camera/Camera.hpp>
 
 class Renderer 
 {
 public:
-    Renderer(GLFWwindow* window, int width, int height);
+    Renderer();
     ~Renderer() = default;
 
     void Clear() const;
-    void changeColor(float r, float g, float b) const;
-    void Render();
+    void ChangeColor(float r, float g, float b) const;
+    void RenderScene(Scene& scene, Camera& camera);
 
 private:
-    GLFWwindow* window;
-    std::shared_ptr<Shader> shader;
+    void RenderEntity(Entity& e, glm::mat4& view, glm::mat4& proj,
+        glm::mat4& model);
 };
