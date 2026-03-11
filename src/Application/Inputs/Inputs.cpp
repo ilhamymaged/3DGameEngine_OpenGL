@@ -6,7 +6,7 @@ Input* Input::m_Instance = nullptr;
 Input::Input(GLFWwindow *window) : m_Window(window), m_CursorEnabled(false)
 {
     glfwSetWindowUserPointer(window, this);
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetKeyCallback(window,[](GLFWwindow *win, int key, int scancode, int action, int mods)
     {

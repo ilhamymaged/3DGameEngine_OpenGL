@@ -8,8 +8,8 @@
 #include <Application/Renderer/Texture.hpp>
 #include <Application/Renderer/Shader.hpp>
 #include <Application/Renderer/Material.hpp>
-#include <Application/Renderer/SceneRenderer.hpp>
 
+struct SceneData;
 class Mesh
 {
 public:

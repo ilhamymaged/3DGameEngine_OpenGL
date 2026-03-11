@@ -1,7 +1,7 @@
-#include <Layers/GameLayer/GameLayer.hpp>
 #include <Application/Renderer/Renderer.hpp>
-#include <Application/Renderer/ShaderLibrary.hpp>
-#include <Application/Renderer/SkyBox.hpp>
+#include <Layers/GameLayer/GameLayer.hpp>
+#include <Layers/GameLayer/ECS/Components.hpp>
+#include <Layers/GameLayer/Systems/Systems.hpp>
 
 GameLayer::GameLayer(int width, int height)
 {
@@ -15,22 +15,28 @@ GameLayer::GameLayer(int width, int height)
 		"../../../assets/skyboxes/sky1/back.jpg"
 	};
 
-	auto skyBox = std::make_unique<SkyBox>(faces);
-	auto grid = std::make_unique<Grid>();
+	entt::registry registry;
 
-	m_Camera = std::make_unique<Camera>(width, height);
-	
+	auto skyBox = registry.create();
+	registry.emplace<SkyBoxComponent>(skyBox, faces);
+
+	auto grid = registry.create();
+	registry.emplace<GridComponent>(grid);
+
+	auto camera = registry.create();
+	registry.emplace<CameraComponent>(camera, Camera(width, height));
+
 	std::vector<std::unique_ptr<Scene>> scenes;
-	std::vector<Entity> entities;
 
-	std::shared_ptr<Model> model =
-		std::make_shared<Model>("../../../assets/models/backpack/backpack.obj");
+	Model model("../../../assets/models/backpack/backpack.obj");
 	Transform transform;
 	transform.position = glm::vec3(0.0f, 2.0f, 0.0f);
 
-	entities.emplace_back(Entity(model, transform));
-	
-	auto scene = std::make_unique<Scene>(entities/*, std::move(skyBox)*/, std::move(grid));
+	auto backPack = registry.create();
+	registry.emplace<MeshRenderer>(backPack, model);
+	registry.emplace<Transform>(backPack, transform);
+
+	auto scene = std::make_unique<Scene>(registry);
 	scenes.emplace_back(std::move(scene));
 	m_SceneManager = std::make_unique<SceneManager>(std::move(scenes));
 }
@@ -40,34 +46,24 @@ void GameLayer::OnDetach(){}
 
 void GameLayer::OnUpdate(float dt)
 {
-	m_SceneManager->OnUpdate(dt);
-	m_Camera->OnUpdate(dt);
+	m_SceneManager->OnUpdate(dt);	
+
+	entt::registry& registry = m_SceneManager->GetCurrentScene().GetRegistry();
+	CameraSystem::OnUpdate(registry, dt);
 }
 
 void GameLayer::OnEvent(Event& e)
 {	
 	m_SceneManager->OnEvent(e);
-	m_Camera->OnEvent(e);
 
-	EventDispatcher dispatcher(e);
-	dispatcher.Dispatch<WindowResized>([&](WindowResized& w)
-		{
-			Renderer::SetViewport(0, 0, w.GetNewWidth(), w.GetNewHeight());
-			m_Camera->updateAspectRatio(w.GetNewWidth(), w.GetNewHeight());
-		});
+	entt::registry& registry = m_SceneManager->GetCurrentScene().GetRegistry();
+	CameraSystem::onEvent(registry, e);
 }
 
 void GameLayer::OnRender()
 {
 	Renderer::Clear({ 0.1f, 0.1f, 0.15f, 1.0f });
-	Scene& scene = m_SceneManager->GetCurrentScene();
-
-	auto grid = scene.GetGrid();
-	if (grid) grid->Draw(m_Camera->GetViewMatrix(), m_Camera->GetProjectionMatrix(), 
-		m_Camera->GetPosition());
-
-	SceneRenderer::Render(scene, *m_Camera);
-
-	auto skyBox = scene.GetSkyBox();
-	if(skyBox) skyBox->Draw(m_Camera->GetViewMatrix(), m_Camera->GetProjectionMatrix());
+	
+	entt::registry& registry = m_SceneManager->GetCurrentScene().GetRegistry();
+	RenderSystem::OnRender(registry);
 }

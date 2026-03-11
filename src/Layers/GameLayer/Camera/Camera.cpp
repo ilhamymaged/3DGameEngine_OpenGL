@@ -24,7 +24,6 @@ void Camera::FollowPlayer(const glm::vec3& playerPos, const glm::vec3& offset)
 void Camera::OnUpdate(float deltaTime)
 {
     Input& input = Input::Get();
-    float speed = 5.0f;
     glm::vec3 right = glm::normalize(glm::cross(front, up));
 
     if (input.IsKeyPressed(GLFW_KEY_W))

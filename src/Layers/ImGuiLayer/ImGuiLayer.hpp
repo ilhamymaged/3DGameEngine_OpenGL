@@ -10,5 +10,4 @@ public:
     void OnUpdate(float dt) override;
     void OnEvent(Event& e) override;
     void OnRender() override;
-
 };

@@ -8,8 +8,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <Application/Renderer/SceneRenderer.hpp> 
 
+struct SceneData;   
 class Model
 {
 public:

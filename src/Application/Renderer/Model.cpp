@@ -108,7 +108,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
         textures.push_back(Texture::Load(texturePath));
     }
 
-    auto& shader = ShaderLibrary::Get("basic");
+    auto shader = ShaderLibrary::Get("basic");
     auto m_Material = std::make_shared<Material>(shader, textures);
     return std::make_shared<Mesh>(vertices, indices, m_Material);
 }

@@ -133,7 +133,6 @@ void SkyBox::Draw(const glm::mat4& view, const glm::mat4& projection)
     shader->setInt("skybox", 0);
 
     glBindVertexArray(m_VAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glDepthFunc(GL_LESS);

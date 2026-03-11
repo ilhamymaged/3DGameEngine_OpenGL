@@ -1,5 +1,6 @@
 #include <Application/Renderer/Mesh.hpp>
 #include <Application/Renderer/Renderer.hpp>
+#include <Layers/GameLayer/Systems/RenderSystem.hpp>
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, 
     const std::vector<unsigned int>& indices,

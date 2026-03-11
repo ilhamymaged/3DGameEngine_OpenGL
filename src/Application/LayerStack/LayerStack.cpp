@@ -38,7 +38,7 @@ LayerStack::~LayerStack()
 
 void LayerStack::PushLayer(Layer* layer)
 {
-	m_Layers.push_back(layer);
+	m_Layers.emplace_back(layer);
 }
 
 void LayerStack::PopLayer(Layer* layer)
