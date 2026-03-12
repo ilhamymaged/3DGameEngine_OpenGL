@@ -2,7 +2,7 @@
 
 int main()
 {
-	Application* app = new Application("3D Game", 1280, 720);
+	Application* app = new Application("Editor", 1600, 900);
 	app->Run();
 	delete app;
 }

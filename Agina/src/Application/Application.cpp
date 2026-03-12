@@ -15,11 +15,6 @@ Application::Application(const std::string &title, int width, int height)
     m_LayerStack.OnAttach();
 }
 
-Application::~Application()
-{
-    m_LayerStack.OnDetach();
-}
-
 void Application::Run()
 {
     while (!m_Window.ShouldClose())
@@ -40,4 +35,9 @@ void Application::Run()
         m_Window.SwapBuffers();
         Input::Get().ClearEvents();
     }
+}
+
+void Application::ShutDown()
+{
+    m_LayerStack.OnDetach();
 }

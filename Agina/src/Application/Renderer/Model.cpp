@@ -1,9 +1,11 @@
 #include <Application/Renderer/Model.hpp>
 #include <filesystem>
 #include <Application/Renderer/ShaderLibrary.hpp>
+#include <Application/Utility/LocU.hpp>
 
-Model::Model(const std::string& path)
+Model::Model(const std::string& name)
 {
+    std::string path = (GetEngineRoot() / "models" / name).string();
     if(!std::filesystem::exists(path)) std::cerr << "Didn't Find " << path << std::endl; 
     LoadModel(path);
 }

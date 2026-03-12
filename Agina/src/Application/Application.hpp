@@ -8,11 +8,17 @@ class Application
 {
 public:
     Application(const std::string &title, int width, int height);
-    ~Application();
+    virtual ~Application() = default;
 
-    void Run();
+    virtual void Run();
+protected:
+    virtual void ShutDown();
+
 private:
     Window m_Window;
-
     LayerStack m_LayerStack;    
+};
+
+namespace Agina {
+    Application* CreateApplication();
 };

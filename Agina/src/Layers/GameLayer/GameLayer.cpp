@@ -17,8 +17,8 @@ GameLayer::GameLayer(int width, int height)
 
 	entt::registry registry;
 
-	auto skyBox = registry.create();
-	registry.emplace<SkyBoxComponent>(skyBox, faces);
+	//auto skyBox = registry.create();
+	//registry.emplace<SkyBoxComponent>(skyBox, faces);
 
 	auto grid = registry.create();
 	registry.emplace<GridComponent>(grid);
@@ -28,7 +28,7 @@ GameLayer::GameLayer(int width, int height)
 
 	std::vector<std::unique_ptr<Scene>> scenes;
 
-	Model model("../../../assets/models/backpack/backpack.obj");
+	Model model("backpack/backpack.obj");
 	Transform transform;
 	transform.position = glm::vec3(0.0f, 2.0f, 0.0f);
 

@@ -1,26 +1,15 @@
 #include <Application/Renderer/Shader.hpp>    
 #include <filesystem>
+#include <Application/Utility/LocU.hpp>
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath)
+Shader::Shader(const std::string& vertexName, const std::string& fragName)
 {
-    if (!std::filesystem::exists(vertexPath))
-    {
-        std::cerr << "Vertex shader file not found: " << vertexPath << std::endl;
-        throw std::runtime_error("Vertex shader file not found");
-    }
-
-    if (!std::filesystem::exists(fragmentPath))
-    {
-        std::cerr << "Fragment shader file not found: " << fragmentPath << std::endl;
-        throw std::runtime_error("Fragment shader file not found");
-    }
-
     std::ifstream vShaderFile;
     std::ifstream fShaderFile;
     std::stringstream vShaderStream, fShaderStream;
 
-    vShaderFile.open(vertexPath);
-    fShaderFile.open(fragmentPath);
+    vShaderFile.open(GetEngineRoot() / "shaders" / vertexName);
+    fShaderFile.open(GetEngineRoot() / "shaders" / fragName);
     vShaderStream << vShaderFile.rdbuf();
     fShaderStream << fShaderFile.rdbuf();
 

@@ -13,17 +13,9 @@ void Renderer::Init()
         
     glEnable(GL_DEPTH_TEST);
     
-    ShaderLibrary::Load("basic", "../../../shaders/basic.vert",
-        "../../../shaders/basic.fragment");
-    
-    ShaderLibrary::Load("skybox", "../../../shaders/skybox.vert",
-        "../../../shaders/skybox.fragment");
-
-    ShaderLibrary::Load(
-        "grid",
-        "../../../shaders/grid.vert",
-        "../../../shaders/grid.fragment"
-    );
+    ShaderLibrary::Load("basic", "basic.vert", "basic.fragment");
+    ShaderLibrary::Load("skybox", "skybox.vert", "skybox.fragment");
+    ShaderLibrary::Load("grid", "grid.vert", "grid.fragment");
 }
 
 void Renderer::Clear(const glm::vec4& color) 
