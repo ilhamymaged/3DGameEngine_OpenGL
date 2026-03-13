@@ -1,20 +1,21 @@
 #include <EntryPoint.hpp>
+#include <EditorLayer/EditorLayer.hpp>
 
-class Editor : public Application
+namespace Agina
 {
-public:
-	Editor() : Application("Editor", 1600, 900)
+	class Editor : public Application
 	{
+	public:
+		Editor() : Application("Agina Editor", 1280, 720, true) 
+		{
+			m_LayerStack.PushLayer(new EditorLayer());
+		}
 
-	}
+		void ShutDown() override { Application::ShutDown(); }
+	};
 
-	void ShutDown() override
+	Application* CreateApplication()
 	{
-		Application::ShutDown();
+		return new Editor();
 	}
-};
-
-Application* Agina::CreateApplication()
-{
-	return new Editor();
 }

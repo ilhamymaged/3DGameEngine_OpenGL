@@ -1,11 +1,11 @@
 #pragma once
-#include <Application/Application.hpp>
+#include <Application.hpp>
 
-extern Application* Agina::CreateApplication();
+extern Agina::Application* Agina::CreateApplication();
 
 int main()
 {
-	Application* app = Agina::CreateApplication();
+	Agina::Application* app = Agina::CreateApplication();
 	app->Run();
 	delete app;
 }

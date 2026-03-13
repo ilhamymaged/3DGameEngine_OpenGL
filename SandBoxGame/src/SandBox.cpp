@@ -1,8 +1,18 @@
-#include <Application/Application.hpp>
+#include <EntryPoint.hpp>
 
-int main()
+class SandBoxGame : public Agina::Application
 {
-	Application* app = new Application("Editor", 1600, 900);
-	app->Run();
-	delete app;
+public:
+	SandBoxGame() : Application("SandBoxGame", 1280, 720, false) {}
+
+	void ShutDown() override
+	{
+		Application::ShutDown();
+	}
+};
+
+Agina::Application* Agina::CreateApplication()
+{
+	return new SandBoxGame();
 }
+
