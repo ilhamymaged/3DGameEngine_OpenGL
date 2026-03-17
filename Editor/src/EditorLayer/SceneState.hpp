@@ -6,7 +6,8 @@ namespace Agina
 	{
 		Edit,
 		Play,
-		Pause
+		Pause,
+		Count	
 	};
 }
 

@@ -22,9 +22,11 @@ namespace Agina
 
     private:
         void Close() const;
+        void ToggleFullScreen();
 
     private:
         GLFWwindow* m_Window;
+        bool m_FullSCreen;
         int m_Width;
         int m_Height;
         int m_PosX;

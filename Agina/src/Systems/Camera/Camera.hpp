@@ -12,7 +12,7 @@ namespace Agina
             yaw{ -90.0f }, pitch{ 0.0f }, lastX{ 0.0f }, lastY{ 0.0f }, speed{ 5.0f },
             firstMouse{ true }, sensitivity{ 0.1f }, FOV{ 45.0f }, aspectRatio{ (float)width / height }
         {
-            position = glm::vec3(0.0f, 2.0f, 0.0f);
+            position = glm::vec3(0.0f, 2.0f, 6.0f);
             front = glm::vec3(0.0f, 0.0f, -1.0f);
             up = glm::vec3(0.0f, 1.0f, 0.0f);
         }

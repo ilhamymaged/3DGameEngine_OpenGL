@@ -73,6 +73,7 @@ namespace Agina
         ImGuiLayer::EnableDocking();
 		DrawViewPort(m_ActiveScene, m_EditorScene, m_FrameBuffer.get(), m_ViewportSize, m_SceneState);
 		DrawSceneHierarchy(m_ActiveScene, m_SelectedEntity);
-		DrawInspector(m_ViewportSize, m_SceneState, m_SelectedEntity, m_ActiveScene);
+		DrawInspector(glm::vec2(m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight()),
+			m_SceneState, m_SelectedEntity, m_ActiveScene);
 	}
 }

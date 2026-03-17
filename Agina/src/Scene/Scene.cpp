@@ -32,6 +32,9 @@ namespace Agina
 
             Entity dstEntity = newScene->CreateEntity(tag);
 
+            if (srcEntity.HasComponent<TagComponent>())
+                dstEntity.AddComponent<TagComponent>(srcEntity.GetComponent<TagComponent>());
+            
             if (srcEntity.HasComponent<Transform>())
                 dstEntity.AddComponent<Transform>(srcEntity.GetComponent<Transform>());
 

@@ -4,7 +4,7 @@
 namespace Agina
 {
     Window::Window(const std::string& title, int width, int height)
-        :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0)
+        :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0), m_FullSCreen(false)
     {
         if (!glfwInit())
         {
@@ -15,6 +15,9 @@ namespace Agina
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        //Make The screen Boardless 
+        //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
         m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!m_Window)
@@ -61,12 +64,42 @@ namespace Agina
         return m_Window;
     }
 
-    void Window::OnEvent(Event& e)
+    void Window::ToggleFullScreen()
     {
-        //EventDispatcher eventDispatcher(e);
-        //eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& e)
-        //    {
-        //        if (e.getKey() == GLFW_KEY_ESCAPE) Close();
-        //    });
+        
+        m_FullSCreen = !m_FullSCreen;
+
+        if(m_FullSCreen)
+        {
+
+            glfwGetWindowPos(m_Window, &m_PosX, &m_PosY);
+            glfwGetWindowSize(m_Window, &m_Width, &m_Height);
+            
+            GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+
+            glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+            glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+            glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+            glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+            glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_FALSE);
+            glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        }
+        else
+        {
+            glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_TRUE);
+            glfwSetWindowMonitor(m_Window, nullptr, m_PosX, m_PosY, m_Width, m_Height, 0);
+        }
+    }
+
+    void Window::OnEvent(Event &e)
+    {
+        EventDispatcher eventDispatcher(e);
+        eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed &e)
+        {
+            if (e.getKey() == GLFW_KEY_ESCAPE) Close();
+            // if (e.getKey() == GLFW_KEY_F11) ToggleFullScreen();
+        });
     }
 }

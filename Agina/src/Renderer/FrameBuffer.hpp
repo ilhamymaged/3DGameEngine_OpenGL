@@ -5,7 +5,8 @@
 
 namespace Agina
 {
-    class Framebuffer {
+    class Framebuffer 
+    {
     public:
         Framebuffer(uint32_t width, uint32_t height)
             : m_Width(width), m_Height(height)
@@ -44,6 +45,7 @@ namespace Agina
     private:
         void Init()
         {
+            //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glCreateFramebuffers(1, &m_RendererID);
             glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 

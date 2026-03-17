@@ -5,13 +5,13 @@
 
 namespace Agina
 {
+
 	void DrawSceneHierarchy(Scene* scene, Entity& e)
 	{
         ImGui::Begin("Scene Hierarchy");
         if (scene)
         {
             auto view = scene->m_Registry.view<TagComponent>();
-            ImGui::Separator();
             for (auto entityHandle : view)
             {
                 auto& tag = view.get<TagComponent>(entityHandle).tag;
@@ -19,7 +19,6 @@ namespace Agina
                     e = { entityHandle, scene};
             }
         }
-
         ImGui::End();
 	}
 }
