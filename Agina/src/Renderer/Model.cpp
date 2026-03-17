@@ -5,7 +5,7 @@
 
 namespace Agina
 {
-    Model::Model(const std::string& name)
+    Model::Model(const std::string& name): m_Name(name)
     {
         std::string path = (GetEngineRoot() / "models" / name).string();
         if (!std::filesystem::exists(path)) std::cerr << "Didn't Find " << path << std::endl;
@@ -19,7 +19,7 @@ namespace Agina
 
     const std::string& Model::GetName()
     {
-        return directory;
+        return m_Name;
     }
 
     void Model::LoadModel(const std::string& path)
@@ -29,7 +29,7 @@ namespace Agina
 
         const aiScene* scene = importer.ReadFile(path,
             aiProcess_Triangulate |
-            aiProcess_FlipUVs |
+            // aiProcess_FlipUVs |
             aiProcess_GenNormals
         );
 

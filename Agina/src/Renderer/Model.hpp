@@ -25,6 +25,7 @@ namespace Agina
         void ProcessNode(aiNode* node, const aiScene* scene);
         std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
+        std::string m_Name;
         std::vector<std::shared_ptr<Mesh>> meshes;
         std::string directory;
     };

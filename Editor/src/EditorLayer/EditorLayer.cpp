@@ -15,7 +15,8 @@ namespace Agina
 		m_EditorScene = std::make_unique<Scene>();
 
 		auto backpack = m_EditorScene->CreateEntity("BackPack");
-		Model model("backpack/backpack.obj");
+		// Model model("backpack/backpack.obj");
+		Model model("car/car.obj");
 		Transform t(glm::vec3(0.0f, 2.0f, 0.0f));
 		backpack.AddComponent<Transform>(t);
 		backpack.AddComponent<MeshRenderer>(model);

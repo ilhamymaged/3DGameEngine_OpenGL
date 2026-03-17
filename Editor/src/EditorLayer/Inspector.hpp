@@ -4,7 +4,6 @@
 #include <imgui.h>
 #include "SceneState.hpp"
 
-
 namespace Agina
 {
     void DrawInspector(const glm::vec2& viewPortSize, SceneState s, Entity& e,
@@ -31,6 +30,13 @@ namespace Agina
                 ImGui::DragFloat3("Translation", &transform.position.x, 0.1f);
                 ImGui::DragFloat3("Rotation", &transform.rotation.x, 0.1f);
                 ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
+            }
+
+            ImGui::Separator();
+            if (e.HasComponent<MeshRenderer>())
+            {
+                auto meshRenderer = e.GetComponent<MeshRenderer>();
+                ImGui::Text("Model: %s", meshRenderer.model.GetName().c_str());
             }
 
             ImGui::Separator();
