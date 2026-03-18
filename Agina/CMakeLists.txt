@@ -1,3 +1,7 @@
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 cmake_minimum_required(VERSION 3.10)
 project(Agina LANGUAGES CXX C)
 
@@ -29,6 +33,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     vendor/imgui/backends
     vendor/assimp/include
     vendor/assimp/build/include
+    vendor/spdlog
 )
 
 link_directories()

@@ -61,6 +61,14 @@ namespace Agina
             {
                 glm::vec3 pos = cameraComponent.camera.GetPosition();
                 ImGui::Text("Position: %.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
+                ImGui::SameLine();
+                if(ImGui::Button("Reset##Position"))
+                    cameraComponent.camera.SetPosition(cameraComponent.camera.GetDefaultPosition());
+
+                ImGui::DragFloat("Speed", &cameraComponent.camera.GetSpeed(), 1.0f, 0.0f, 1000.0f, "%0.2f");
+                ImGui::SameLine();
+                if(ImGui::Button("Reset##Speed"))
+                    cameraComponent.camera.SetSpeed(cameraComponent.camera.GetDefaultSpeed());
             }
 
             ImGui::Separator();

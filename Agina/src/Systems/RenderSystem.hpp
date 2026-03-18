@@ -36,9 +36,9 @@ namespace Agina
 					m.model.Draw(data, modelMatrix);
 				}
 
-				//auto skyView = reg.view<SkyBoxComponent>();
-				//for (auto [e, s] : skyView.each())
-				//	s.skyBox.Draw(data.ViewMatrix, data.ProjectionMatrix);
+				auto skyView = reg.view<SkyBoxComponent>();
+				for (auto [e, s] : skyView.each())
+					s.skyBox.Draw(data.ViewMatrix, data.ProjectionMatrix);
 			}
 
 		}

@@ -7,6 +7,7 @@
 #include <Systems/Systems.hpp>
 #include "ViewPort.hpp"
 #include <Core/Inputs/Inputs.hpp>
+#include <Core/AssetManager/AssetManager.hpp>
 
 namespace Agina
 {
@@ -15,8 +16,8 @@ namespace Agina
 		m_EditorScene = std::make_unique<Scene>();
 
 		auto backpack = m_EditorScene->CreateEntity("BackPack");
-		// Model model("backpack/backpack.obj");
-		Model model("car/car.obj");
+		Model& model = AssetManager::LoadModel("backpack/backpack.obj");
+		// Model& model = AssetManager::LoadModel("car/car.obj");
 		Transform t(glm::vec3(0.0f, 2.0f, 0.0f));
 		backpack.AddComponent<Transform>(t);
 		backpack.AddComponent<MeshRenderer>(model);
@@ -34,13 +35,27 @@ namespace Agina
 			static_cast<int>(m_FrameBuffer->GetWidth()),
 			static_cast<int>(m_FrameBuffer->GetHeight())
 			));
+		
+		auto skyBox = m_EditorScene->CreateEntity("SkyBox");
+
+		std::vector<std::string> skyBoxFaces = 
+		{
+			(GetEngineRoot() / "skyboxes/sky1" / "right.jpg").string(),
+			(GetEngineRoot() / "skyboxes/sky1" / "left.jpg").string(),
+			(GetEngineRoot() / "skyboxes/sky1" / "top.jpg").string(),
+			(GetEngineRoot() / "skyboxes/sky1" / "bottom.jpg").string(),
+			(GetEngineRoot() / "skyboxes/sky1" / "front.jpg").string(),
+			(GetEngineRoot() / "skyboxes/sky1" / "back.jpg").string(),
+		};
+		
+		skyBox.AddComponent<SkyBoxComponent>(skyBoxFaces);
 
 		m_ActiveScene = m_EditorScene.get();
 	}
 
 	void EditorLayer::OnDetach()
 	{
-
+		AssetManager::Clear();
 	}
 
 	void EditorLayer::OnEvent(Event& e)

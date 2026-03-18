@@ -100,7 +100,7 @@ namespace Agina
         EventDispatcher eventDispatcher(e);
         eventDispatcher.Dispatch<MouseMoved>([&](MouseMoved& event)
             {
-                ProcessMouse(event.getX(), event.getY());
+                ProcessMouse(static_cast<float>(event.getX()), static_cast<float>(event.getY()));
             });
 
         eventDispatcher.Dispatch<MouseScrolled>([&](MouseScrolled& event)

@@ -2,6 +2,7 @@
 #include <Renderer/SkyBox.hpp>
 #include <stb_image/stb_image.h>
 #include <Renderer/ShaderLibrary.hpp>
+#include <Core/Logger/Logger.hpp>
 
 namespace Agina
 {
@@ -101,12 +102,11 @@ namespace Agina
                     data
                 );
 
+                AG_CORE_INFO("Loaded A SkyBox Face {}: {}", i, faces[i]);
                 stbi_image_free(data);
             }
             else
-            {
-                std::cout << "Failed to load skybox texture: " << faces[i] << std::endl;
-            }
+                AG_CORE_ERROR("Failed To Load A SkyBox Face {}: {}", i, faces[i]);
         }
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

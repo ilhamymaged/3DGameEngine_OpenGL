@@ -1,4 +1,5 @@
 #include "Texture.hpp"
+#include <Core/Logger/Logger.hpp>
 #include <stb_image/stb_image.h>
 
 namespace Agina
@@ -10,12 +11,11 @@ namespace Agina
         auto it = textures.find(path);
 
         if (it != textures.end())
-            return it->second;   // already loaded
+            return it->second;   
 
         auto texture = std::shared_ptr<Texture>(new Texture(path));
-
         textures[path] = texture;
-
+        AG_CORE_INFO("Loaded Texture {}", path);
         return texture;
     }
 

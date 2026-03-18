@@ -2,6 +2,7 @@
 #include <Core/Time/Time.hpp>
 #include <Core/Inputs/Inputs.hpp>
 #include <ImGui/ImGuiLayer.hpp>
+#include <Core/Logger/Logger.hpp>
 
 namespace Agina
 {
@@ -10,6 +11,8 @@ namespace Agina
     {
         Renderer::Init();
         Input::Init(GetWindow());
+        Logger::Init();
+        AG_CORE_INFO("Engine Initialized");
         if (ImGuiUsed) ImGuiLayer::Init(GetWindow());
     }
 

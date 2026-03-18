@@ -9,10 +9,11 @@ namespace Agina
     {
     public:
         Camera(int width, int height) :
-            yaw{ -90.0f }, pitch{ 0.0f }, lastX{ 0.0f }, lastY{ 0.0f }, speed{ 5.0f },
-            firstMouse{ true }, sensitivity{ 0.1f }, FOV{ 45.0f }, aspectRatio{ (float)width / height }
+            yaw{ -90.0f }, pitch{ 0.0f }, lastX{ 0.0f }, lastY{ 0.0f }, speed{ 5.0f }, defaultSpeed {5.0f}
+            ,firstMouse{ true }, sensitivity{ 0.1f }, FOV{ 45.0f }, aspectRatio{ (float)width / height }
         {
-            position = glm::vec3(0.0f, 2.0f, 6.0f);
+            defaultPosition = glm::vec3(0.0f, 2.0f, 6.0f); 
+            position = defaultPosition;
             front = glm::vec3(0.0f, 0.0f, -1.0f);
             up = glm::vec3(0.0f, 1.0f, 0.0f);
         }
@@ -20,9 +21,13 @@ namespace Agina
         glm::mat4 GetViewMatrix();
         glm::mat4 GetProjectionMatrix();
         glm::vec3& GetPosition();
+        inline void SetPosition(const glm::vec3& pos) {position = pos;}
+        inline glm::vec3 GetDefaultPosition() {return defaultPosition;};
 
-        inline void SetSpeed(float speed) { speed = speed; }
-        inline float GetSpeed() { return speed; }
+        inline void SetSpeed(float s) { speed = s; }
+        inline float& GetSpeed() {return speed;}
+        inline float GetDefaultSpeed() {return defaultSpeed;} 
+
         void FollowPlayer(const glm::vec3& playerPos, const glm::vec3& offset);
         void OnUpdate(float deltaTime);
         void processScrolling(double x, double y);
@@ -33,10 +38,12 @@ namespace Agina
     private:
         float aspectRatio;
 
+        glm::vec3 defaultPosition;
         glm::vec3 position;
         glm::vec3 front;
         glm::vec3 up;
 
+        float defaultSpeed;
         float speed;
         float yaw;
         float pitch;
