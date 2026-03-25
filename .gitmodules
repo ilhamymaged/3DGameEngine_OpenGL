@@ -1,0 +1,6 @@
+[submodule "Agina/vendor/glfw"]
+	path = Agina/vendor/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "Agina/vendor/assimp"]
+	path = Agina/vendor/assimp
+	url = https://github.com/assimp/assimp
