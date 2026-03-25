@@ -5,6 +5,7 @@
 #include <Core/Inputs/Events.hpp>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 namespace Agina
 {

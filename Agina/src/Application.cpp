@@ -3,6 +3,8 @@
 #include <Core/Inputs/Inputs.hpp>
 #include <ImGui/ImGuiLayer.hpp>
 #include <Core/Logger/Logger.hpp>
+#include <Core/AssetManager/AssetManager.hpp>
+#include <Renderer/ShaderLibrary.hpp>
 
 namespace Agina
 {
@@ -58,6 +60,8 @@ namespace Agina
 
     void Application::ShutDown()
     {
+        AssetManager::Clear();
+        ShaderLibrary::Clear();
         m_LayerStack.OnDetach();
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene/scene.hpp>
+#include <Scene/Scene.hpp>
 #include <imgui.h>
 #include <glm/glm.hpp>
 #include <Renderer/FrameBuffer.hpp>

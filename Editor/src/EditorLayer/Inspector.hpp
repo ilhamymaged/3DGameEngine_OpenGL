@@ -3,6 +3,8 @@
 #include <ECS/Entity.hpp>
 #include <imgui.h>
 #include "SceneState.hpp"
+#include <glm/glm.hpp>
+#include <ECS/Components.hpp>
 
 namespace Agina
 {
@@ -17,7 +19,7 @@ namespace Agina
                 auto& tag = e.GetComponent<TagComponent>().tag;
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
-                strncpy_s(buffer, tag.c_str(), sizeof(buffer));
+                strncpy(buffer, tag.c_str(), sizeof(buffer));
 
                 if (ImGui::InputText("Tag", buffer, sizeof(buffer)))
                     tag = std::string(buffer);

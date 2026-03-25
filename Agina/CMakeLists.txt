@@ -1,7 +1,3 @@
-if (MSVC)
-    add_compile_options(/utf-8)
-endif()
-
 cmake_minimum_required(VERSION 3.10)
 project(Agina LANGUAGES CXX C)
 
@@ -22,24 +18,31 @@ list(APPEND SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC
     src
-    vendor/glfw
     vendor/glad/include
     vendor/glm
     vendor/stb_image
     vendor/entt
     vendor/imgui
     vendor/imgui/backends
-    vendor/assimp/include
-    vendor/assimp/build/include
     vendor/spdlog
 )
 
-link_directories()
+add_subdirectory(vendor/glfw)
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "If the test suite for Assimp is built" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "If the supplementary tools for Assimp are built" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Assimp as a static library" FORCE)
+
+add_subdirectory(vendor/assimp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    "${CMAKE_SOURCE_DIR}/Agina/vendor/glfw/glfw3.lib"
-    opengl32 
-    "${CMAKE_SOURCE_DIR}/Agina/vendor/assimp/build/lib/Release/assimp-vc143-mt.lib"
+    assimp
+    glfw
 )

@@ -7,5 +7,6 @@ int main()
 {
 	Agina::Application* app = Agina::CreateApplication();
 	app->Run();
+    app->ShutDown();
 	delete app;
 }

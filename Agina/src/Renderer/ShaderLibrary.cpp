@@ -20,4 +20,9 @@ namespace Agina
 
         return it->second;
     }
+
+    void ShaderLibrary::Clear()
+    {
+        shaders.clear();
+    }
 }

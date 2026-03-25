@@ -17,6 +17,8 @@ namespace Agina
 
         static std::shared_ptr<Shader> Get(const std::string& name);
 
+        static void Clear();
+
     private:
         static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
     };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Renderer/Renderer.hpp>
-#include <Core/platform/Window.hpp>
+#include <Core/Platform/Window.hpp>
 #include <Core/LayerStack/LayerStack.hpp>
 
 namespace Agina 
@@ -14,9 +14,9 @@ namespace Agina
 
 
         virtual void Run();
+        virtual void ShutDown();
     protected:
         GLFWwindow* GetWindow();
-        virtual void ShutDown();
         
         LayerStack m_LayerStack;
         bool ImGuiUsed;

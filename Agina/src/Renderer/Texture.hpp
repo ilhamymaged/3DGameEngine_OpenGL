@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <unordered_map>
+#include <memory>
 
 namespace Agina
 {
