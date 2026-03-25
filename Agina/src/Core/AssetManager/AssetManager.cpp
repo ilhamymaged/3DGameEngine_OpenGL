@@ -14,9 +14,7 @@ namespace Agina
     {
         auto it = s_Models.find(name);
         if (it == s_Models.end())
-        {
             it = s_Models.insert(std::make_pair(name, Model(name))).first;
-        }
         AG_CORE_INFO("Model Loaded {}", name);
         return it->second;
     }

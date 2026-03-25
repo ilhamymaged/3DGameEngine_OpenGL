@@ -6,12 +6,15 @@
 
 namespace Agina
 {
-    Application::Application(const std::string &title, int width, int height, bool is)
-        : m_Window(title, width, height), m_LayerStack(), ImGuiUsed(is)
+    Application::Application(const std::string &title, int width, int height, bool is, const std::string& logoPath)
+        :   m_LoggerInitialized((Logger::Init(), true)),
+            m_Window(title, width, height, logoPath),
+            m_LayerStack(),
+            ImGuiUsed(is)
     {
         Renderer::Init();
         Input::Init(GetWindow());
-        Logger::Init();
+
         AG_CORE_INFO("Engine Initialized");
         if (ImGuiUsed) ImGuiLayer::Init(GetWindow());
     }

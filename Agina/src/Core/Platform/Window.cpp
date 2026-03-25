@@ -1,11 +1,20 @@
 #include <Core/Platform/Window.hpp>
 #include <Core/Inputs/Events.hpp>
+#include <stb_image/stb_image.h>
+#include <Core/Utility/LocU.hpp>
+#include <Core/Logger/Logger.hpp>
 
 namespace Agina
 {
-    Window::Window(const std::string& title, int width, int height)
+    Window::Window(const std::string& title, int width, int height, const std::string& logoPath)
         :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0), m_FullSCreen(false)
     {
+
+        glfwSetErrorCallback([](int error, const char* description) 
+        {
+            fprintf(stderr, "Error: %s\n", description);    
+        });
+
         if (!glfwInit())
         {
             std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -22,10 +31,18 @@ namespace Agina
         m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!m_Window)
         {
-            std::cerr << "Failed to create GLFW window" << std::endl;
+            AG_CORE_ERROR("Failed To Create GLFW Window");
             glfwTerminate();
-            throw std::runtime_error("GLFW window creation failed");
+            throw std::runtime_error("GLFW Window Creation Failed");
         }
+
+        GLFWimage image; 
+        image.pixels = stbi_load(logoPath.c_str(), &image.width, &image.height, 0, 4);
+
+        glfwSetWindowIcon(m_Window, 1, &image);
+        stbi_image_free(image.pixels);
+
+        AG_CORE_INFO("Added Logo Successfully");
 
         glfwMakeContextCurrent(m_Window);
         glfwSwapInterval(0);

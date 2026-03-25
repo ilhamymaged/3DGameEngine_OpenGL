@@ -37,7 +37,6 @@ namespace Agina
 			));
 		
 		auto skyBox = m_EditorScene->CreateEntity("SkyBox");
-
 		std::vector<std::string> skyBoxFaces = 
 		{
 			(GetEngineRoot() / "skyboxes/sky1" / "right.jpg").string(),
@@ -49,7 +48,6 @@ namespace Agina
 		};
 		
 		skyBox.AddComponent<SkyBoxComponent>(skyBoxFaces);
-
 		m_ActiveScene = m_EditorScene.get();
 	}
 

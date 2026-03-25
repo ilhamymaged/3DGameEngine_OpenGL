@@ -1,6 +1,7 @@
 #include <Renderer/Shader.hpp>    
 #include <filesystem>
 #include <Core/Utility/LocU.hpp>
+#include <Core/Logger/Logger.hpp>
 
 namespace Agina
 {
@@ -36,7 +37,8 @@ namespace Agina
         if (!success)
         {
             glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-            std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+            AG_CORE_ERROR("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+            AG_CORE_ERROR(infoLog);
         }
 
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -47,7 +49,8 @@ namespace Agina
         if (!success)
         {
             glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-            std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+            AG_CORE_ERROR("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
+            AG_CORE_ERROR(infoLog);
         }
 
         m_programID = glCreateProgram();
@@ -59,7 +62,8 @@ namespace Agina
         if (!success)
         {
             glGetProgramInfoLog(m_programID, 512, NULL, infoLog);
-            std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+            AG_CORE_ERROR("ERROR::SHADER::PROGRAM::LINKING_FAILED\n"); 
+            AG_CORE_ERROR(infoLog);
         }
 
         glDeleteShader(vertex);
@@ -69,21 +73,21 @@ namespace Agina
     void Shader::setMat4(const std::string& name, const glm::mat4& mat)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) std::cerr << name << " is not used or found.\n";
+        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
         glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
     }
 
     void Shader::setVec3(const std::string& name, const glm::vec3& vec)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) std::cerr << name << " is not used or found.\n";
+        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
         glUniformMatrix3fv(loc, 1, GL_FALSE, &(vec)[0]);
     }
 
     void Shader::setInt(const std::string& name, int value)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) std::cerr << name << " is not used or found.\n";
+        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
         glUniform1i(loc, value);
     }
 

@@ -8,7 +8,6 @@ namespace Agina
 {
     SkyBox::SkyBox(const std::vector<std::string>& faces)
     {
-
         float skyboxVertices[] =
         {
             -1.0f,  1.0f, -1.0f,
@@ -102,12 +101,13 @@ namespace Agina
                     data
                 );
 
-                AG_CORE_INFO("Loaded A SkyBox Face {}: {}", i, faces[i]);
                 stbi_image_free(data);
             }
             else
                 AG_CORE_ERROR("Failed To Load A SkyBox Face {}: {}", i, faces[i]);
         }
+        
+        AG_CORE_INFO("Loaded A SkyBox");
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

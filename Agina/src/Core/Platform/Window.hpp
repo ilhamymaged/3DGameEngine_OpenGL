@@ -10,7 +10,7 @@ namespace Agina
     class Window
     {
     public:
-        Window(const std::string& title, int width, int height);
+        Window(const std::string& title, int width, int height, const std::string& logoPath);
         ~Window();
 
         bool ShouldClose() const;

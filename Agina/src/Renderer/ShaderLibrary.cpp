@@ -14,7 +14,7 @@ namespace Agina
     std::shared_ptr<Shader> ShaderLibrary::Get(const std::string& name)
     {
         auto it = shaders.find(name);
-
+        
         if (it == shaders.end())
             throw std::runtime_error("Shader not found: " + name);
 

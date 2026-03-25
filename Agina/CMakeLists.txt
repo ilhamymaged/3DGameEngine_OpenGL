@@ -23,9 +23,9 @@ list(APPEND SOURCES
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
+    src
     vendor/glfw
     vendor/glad/include
-    src
     vendor/glm
     vendor/stb_image
     vendor/entt

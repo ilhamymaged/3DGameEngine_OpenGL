@@ -1,18 +1,27 @@
 #include <EntryPoint.hpp>
+#include "Game.cpp"
+#include <Core/Utility/LocU.hpp>
 
-class SandBoxGame : public Agina::Application
+namespace Agina
 {
-public:
-	SandBoxGame() : Application("SandBoxGame", 1280, 720, false) {}
 
-	void ShutDown() override
+	static std::string s_LogoPath = (GetEngineRoot() / "logos/logo0.jpg").string(); 
+	class SandBoxGame : public Application
 	{
-		Application::ShutDown();
+	public:
+		SandBoxGame() : Application("SandBoxGame", 1280, 720, false, s_LogoPath) 
+		{
+			m_LayerStack.PushLayer(new GameLayer());
+		}
+
+		void ShutDown() override
+		{
+			Application::ShutDown();
+		}
+	};
+
+	Application* CreateApplication()
+	{
+		return new SandBoxGame();
 	}
-};
-
-Agina::Application* Agina::CreateApplication()
-{
-	return new SandBoxGame();
 }
-

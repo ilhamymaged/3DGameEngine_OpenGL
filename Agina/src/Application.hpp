@@ -9,7 +9,7 @@ namespace Agina
     class Application
     {
     public:
-        Application(const std::string& title, int width, int height, bool use_ImGui);
+        Application(const std::string& title, int width, int height, bool use_ImGui, const std::string& logoPath);
         virtual ~Application() = default;
 
 
@@ -21,6 +21,7 @@ namespace Agina
         LayerStack m_LayerStack;
         bool ImGuiUsed;
     private:
+        bool m_LoggerInitialized; 
         Window m_Window;
     };
 
