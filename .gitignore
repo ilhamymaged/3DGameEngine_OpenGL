@@ -5,7 +5,6 @@ Debug/
 Release/
 *.log
 *.tmp
-*.obj
 *.pdb
 *.ilk
 *.exe

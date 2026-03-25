@@ -1,11 +1,11 @@
 #include <EntryPoint.hpp>
 #include <EditorLayer/EditorLayer.hpp>
+#include <Core/Utility/LocU.hpp>
 
 namespace Agina
 {
 
-    static std::string s_LogoPath = "";
-
+	static std::string s_LogoPath = (GetEngineRoot() / "logos/logo0.jpg").string(); 
 	class Editor : public Application
 	{
 	public:

@@ -7,7 +7,7 @@ namespace Agina
     public:
         void OnAttach() override
         {
-            
+
         }
 
 		void OnDetach() override
@@ -22,7 +22,7 @@ namespace Agina
 
 		void OnUpdate(float dt) override
         {
-
+                
         }
 
 		void OnRender() override
