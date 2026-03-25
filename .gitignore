@@ -13,4 +13,4 @@ Release/
 *.vcxproj.user
 *.opensdf
 *.sdf
-.cache
+.cache/
