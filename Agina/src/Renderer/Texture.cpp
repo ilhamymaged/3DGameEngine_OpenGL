@@ -4,21 +4,6 @@
 
 namespace Agina
 {
-    std::unordered_map<std::string, std::shared_ptr<Texture>> Texture::textures;
-        
-    std::shared_ptr<Texture> Texture::Load(const std::string& path)
-    {
-        auto it = textures.find(path);
-
-        if (it != textures.end())
-            return it->second;   
-
-        auto texture = std::shared_ptr<Texture>(new Texture(path));
-        textures[path] = texture;
-        AG_CORE_INFO("Loaded Texture {}", path);
-        return texture;
-    }
-
     Texture::Texture(const std::string& path)
     {
         glGenTextures(1, &m_ID);
@@ -47,9 +32,7 @@ namespace Agina
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
-        {
-            std::cout << "Failed to load texture: " << path << "." << std::endl;
-        }
+			AG_CORE_ERROR("Failed to load texture: {0}", path);
         stbi_image_free(data);
     }
 

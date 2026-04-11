@@ -7,8 +7,7 @@
 #include "SceneState.hpp"
 #include <glm/glm.hpp>
 
-namespace Agina
-{
+namespace Agina {
 
 	class EditorLayer : public Layer
 	{
@@ -24,7 +23,7 @@ namespace Agina
 		Scene* m_ActiveScene;
 
 		Entity m_SelectedEntity;
-		std::unique_ptr<Framebuffer> m_FrameBuffer;
+		std::unique_ptr<FrameBuffer> m_FrameBuffer;
 		glm::vec2 m_ViewportSize;
 		SceneState m_SceneState = SceneState::Edit;
 	};

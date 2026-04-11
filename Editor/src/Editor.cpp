@@ -2,14 +2,12 @@
 #include <EditorLayer/EditorLayer.hpp>
 #include <Core/Utility/LocU.hpp>
 
-namespace Agina
-{
+namespace Agina {
 
-	static std::string s_LogoPath = (GetEngineRoot() / "logos/logo0.jpg").string(); 
 	class Editor : public Application
 	{
 	public:
-		Editor() : Application("Agina Editor", 1280, 720, true, s_LogoPath) 
+		Editor() : Application("Agina Editor", 1280, 720, true) 
 		{
 			m_LayerStack.PushLayer(new EditorLayer());
 		}

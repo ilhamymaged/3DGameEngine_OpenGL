@@ -6,13 +6,13 @@
 
 namespace Agina
 {
-    Window::Window(const std::string& title, int width, int height, const std::string& logoPath)
+    Window::Window(const std::string& title, int width, int height)
         :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0), m_FullSCreen(false)
     {
 
         glfwSetErrorCallback([](int error, const char* description) 
         {
-            fprintf(stderr, "Error: %s\n", description);    
+			AG_CORE_ERROR("GLFW Error {}: {}", error, description);
         });
 
         if (!glfwInit())
@@ -25,9 +25,6 @@ namespace Agina
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        //Make The screen Boardless 
-        //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-
         m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!m_Window)
         {
@@ -35,14 +32,6 @@ namespace Agina
             glfwTerminate();
             throw std::runtime_error("GLFW Window Creation Failed");
         }
-
-        GLFWimage image; 
-        image.pixels = stbi_load(logoPath.c_str(), &image.width, &image.height, 0, 4);
-
-        glfwSetWindowIcon(m_Window, 1, &image);
-        stbi_image_free(image.pixels);
-
-        AG_CORE_INFO("Added Logo Successfully");
 
         glfwMakeContextCurrent(m_Window);
         glfwSwapInterval(0);

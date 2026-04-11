@@ -1,20 +1,17 @@
 #include <Renderer/Model.hpp>
 #include <filesystem>
-#include <Renderer/ShaderLibrary.hpp>
-#include <Core/Utility/LocU.hpp>
+#include <Core/AssetManager/AssetManager.hpp>
 
 namespace Agina
 {
-    Model::Model(const std::string& name): m_Name(name)
+    Model::Model(const std::string& path): m_Name(path)
     {
-        std::string path = (GetEngineRoot() / "models" / name).string();
-        if (!std::filesystem::exists(path)) std::cerr << "Didn't Find " << path << std::endl;
         LoadModel(path);
     }
 
-    void Model::Draw(const SceneData& sceneData, const glm::mat4& model)
+    void Model::Draw()
     {
-        for (const auto& mesh : meshes) mesh->Draw(sceneData, model);
+        for (auto& mesh : m_Meshes) mesh.Draw();
     }
 
     const std::string& Model::GetName()
@@ -24,12 +21,12 @@ namespace Agina
 
     void Model::LoadModel(const std::string& path)
     {
-        directory = path.substr(0, path.find_last_of('/'));
+        m_Directory = path.substr(0, path.find_last_of('/'));
         Assimp::Importer importer;
 
         const aiScene* scene = importer.ReadFile(path,
             aiProcess_Triangulate |
-            // aiProcess_FlipUVs |
+            aiProcess_FlipUVs |
             aiProcess_GenNormals
         );
 
@@ -48,7 +45,7 @@ namespace Agina
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(ProcessMesh(mesh, scene));
+            m_Meshes.push_back(ProcessMesh(mesh, scene));
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -57,7 +54,7 @@ namespace Agina
         }
     }
 
-    std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+    Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
@@ -99,21 +96,6 @@ namespace Agina
             for (unsigned int j = 0; j < face.mNumIndices; j++)
                 indices.push_back(face.mIndices[j]);
         }
-
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<std::shared_ptr<Texture>> textures;
-
-        unsigned int count = material->GetTextureCount(aiTextureType_DIFFUSE);
-        for (unsigned int i = 0; i < count; i++)
-        {
-            aiString str;
-            material->GetTexture(aiTextureType_DIFFUSE, i, &str);
-            std::string texturePath = directory + "/" + str.C_Str();
-            textures.push_back(Texture::Load(texturePath));
-        }
-
-        auto shader = ShaderLibrary::Get("basic");
-        auto m_Material = std::make_shared<Material>(shader, textures);
-        return std::make_shared<Mesh>(vertices, indices, m_Material);
+        return Mesh(vertices, indices);
     }
 }

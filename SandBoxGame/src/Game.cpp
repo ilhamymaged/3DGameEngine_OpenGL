@@ -7,7 +7,6 @@ namespace Agina
     public:
         void OnAttach() override
         {
-
         }
 
 		void OnDetach() override

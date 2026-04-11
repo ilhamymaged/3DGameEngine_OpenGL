@@ -1,18 +1,16 @@
 #include <Renderer/Shader.hpp>    
 #include <filesystem>
-#include <Core/Utility/LocU.hpp>
 #include <Core/Logger/Logger.hpp>
 
 namespace Agina
 {
-    Shader::Shader(const std::string& vertexName, const std::string& fragName)
+    Shader::Shader(const std::string& name, const std::string& vertexName, const std::string& fragName)
+        :m_Name(name)
     {
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
         std::stringstream vShaderStream, fShaderStream;
 
-        vShaderFile.open(GetEngineRoot() / "shaders" / vertexName);
-        fShaderFile.open(GetEngineRoot() / "shaders" / fragName);
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
 
@@ -73,21 +71,21 @@ namespace Agina
     void Shader::setMat4(const std::string& name, const glm::mat4& mat)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
+        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
         glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
     }
 
     void Shader::setVec3(const std::string& name, const glm::vec3& vec)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
+        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
         glUniformMatrix3fv(loc, 1, GL_FALSE, &(vec)[0]);
     }
 
     void Shader::setInt(const std::string& name, int value)
     {
         uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR(name + " is not used or found.\n");
+        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
         glUniform1i(loc, value);
     }
 

@@ -19,7 +19,7 @@ list(APPEND SOURCES
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 if (MSVC)
-    add_compile_options(/utf-8)
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -41,8 +41,10 @@ set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built" FORC
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Assimp as a static library" FORCE)
 
 add_subdirectory(vendor/assimp)
+#add_subdirectory(vendor/NVRHI)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     assimp
     glfw
+    #nvrhi
 )

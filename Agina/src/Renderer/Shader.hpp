@@ -11,7 +11,7 @@ namespace Agina
     class Shader
     {
     public:
-        Shader(const std::string& vertexName, const std::string& fragName);
+        Shader(const std::string& name, const std::string& vertexName, const std::string& fragName);
         ~Shader();
 
         void Use() const;
@@ -21,5 +21,6 @@ namespace Agina
 
     private:
         unsigned int m_programID;
+        std::string m_Name;
     };
 }

@@ -1,39 +1,28 @@
 #include <Renderer/Mesh.hpp>
-#include <Renderer/Renderer.hpp>
-#include <Systems/RenderSystem.hpp>
 
 namespace Agina
 {
     Mesh::Mesh(const std::vector<Vertex>& vertices,
-        const std::vector<unsigned int>& indices,
-        std::shared_ptr<Material> material)
-        :vertices(vertices), indices(indices), m_Material(material)
+        const std::vector<unsigned int>& indices)
+        :m_IndexCount(indices.size()), m_VAO(),
+		m_VBO(vertices.data(), vertices.size() * sizeof(Vertex)),
+		m_EBO(indices.data(), indices.size() * sizeof(unsigned int))
     {
-        Vao = std::make_shared<VAO>();
-        Vbo = std::make_shared<VBO>(vertices.data(), vertices.size() * sizeof(Vertex));
-        Ebo = std::make_shared<EBO>(indices.data(), indices.size() * sizeof(unsigned int));
 
-        Vao->Bind();
-        Vbo->Bind();
-        Ebo->Bind();
+        m_VAO.Bind();
+        m_VBO.Bind();
+        m_EBO.Bind();
 
-        Vao->AddAttribute(0, 3, sizeof(Vertex), (void*)offsetof(Vertex, m_position));
-        Vao->AddAttribute(1, 3, sizeof(Vertex), (void*)offsetof(Vertex, m_normal));
-        Vao->AddAttribute(2, 2, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoords));
+        m_VAO.AddAttribute(0, 3, sizeof(Vertex), (void*)offsetof(Vertex, m_position));
+        m_VAO.AddAttribute(1, 3, sizeof(Vertex), (void*)offsetof(Vertex, m_normal));
+        m_VAO.AddAttribute(2, 2, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoords));
 
-        Vao->Unbind();
-        Vbo->Unbind();
-        Ebo->Unbind();
+        m_VAO.Unbind();
     }
 
-    void Mesh::Draw(const SceneData& sceneData, const glm::mat4& model)
+    void Mesh::Draw()
     {
-        m_Material->Bind();
-        auto& shader = m_Material->GetShader();
-        shader.setMat4("view", sceneData.ViewMatrix);
-        shader.setMat4("proj", sceneData.ProjectionMatrix);
-
-        shader.setMat4("model", model);
-        Renderer::DrawIndexed(Vao, static_cast<uint32_t>(indices.size()));
+        m_VAO.Bind();
+		glDrawElements(GL_TRIANGLES, m_IndexCount, GL_UNSIGNED_INT, 0);
     }
 }

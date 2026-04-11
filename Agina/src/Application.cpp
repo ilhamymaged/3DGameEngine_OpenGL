@@ -4,13 +4,12 @@
 #include <ImGui/ImGuiLayer.hpp>
 #include <Core/Logger/Logger.hpp>
 #include <Core/AssetManager/AssetManager.hpp>
-#include <Renderer/ShaderLibrary.hpp>
 
 namespace Agina
 {
-    Application::Application(const std::string &title, int width, int height, bool is, const std::string& logoPath)
-        :   m_LoggerInitialized((Logger::Init(), true)),
-            m_Window(title, width, height, logoPath),
+    Application::Application(const std::string &title, int width, int height, bool is)
+        :   IsLoggerInit((Logger::Init(), true)),
+            m_Window(title, width, height),
             m_LayerStack(),
             ImGuiUsed(is)
     {
@@ -61,7 +60,6 @@ namespace Agina
     void Application::ShutDown()
     {
         AssetManager::Clear();
-        ShaderLibrary::Clear();
         m_LayerStack.OnDetach();
     }
 }

@@ -5,7 +5,6 @@
 #include <Renderer/Renderer.hpp>
 #include <Core/Utility/LocU.hpp>
 #include <Systems/Systems.hpp>
-#include "ViewPort.hpp"
 #include <Core/Inputs/Inputs.hpp>
 #include <Core/AssetManager/AssetManager.hpp>
 
@@ -15,18 +14,18 @@ namespace Agina
 	{
 		m_EditorScene = std::make_unique<Scene>();
 
-		auto backpack = m_EditorScene->CreateEntity("BackPack");
-		Model& model = AssetManager::LoadModel("backpack/backpack.obj");
+		//auto backpack = m_EditorScene->CreateEntity("BackPack");
+		//Model& model = AssetManager::LoadModel("backpack/backpack.obj");
 		// Model& model = AssetManager::LoadModel("car/car.obj");
-		Transform t(glm::vec3(0.0f, 2.0f, 0.0f));
-		backpack.AddComponent<Transform>(t);
-		backpack.AddComponent<MeshRenderer>(model);
+		//Transform t(glm::vec3(0.0f, 2.0f, 0.0f));
+		//backpack.AddComponent<Transform>(t);
+		//backpack.AddComponent<MeshRenderer>(model);
 
-		auto grid = m_EditorScene->CreateEntity("Grid");
-		grid.AddComponent<GridComponent>();
+		//auto grid = m_EditorScene->CreateEntity("Grid");
+		//grid.AddComponent<GridComponent>();
 
 		m_ViewportSize = { 800, 600 };
-		m_FrameBuffer = std::make_unique<Framebuffer>((uint32_t)
+		m_FrameBuffer = std::make_unique<FrameBuffer>((uint32_t)
 			m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 		auto camera = m_EditorScene->CreateEntity("Camera");
@@ -36,18 +35,18 @@ namespace Agina
 			static_cast<int>(m_FrameBuffer->GetHeight())
 			));
 		
-		auto skyBox = m_EditorScene->CreateEntity("SkyBox");
-		std::vector<std::string> skyBoxFaces = 
-		{
-			(GetEngineRoot() / "skyboxes/sky1" / "right.jpg").string(),
-			(GetEngineRoot() / "skyboxes/sky1" / "left.jpg").string(),
-			(GetEngineRoot() / "skyboxes/sky1" / "top.jpg").string(),
-			(GetEngineRoot() / "skyboxes/sky1" / "bottom.jpg").string(),
-			(GetEngineRoot() / "skyboxes/sky1" / "front.jpg").string(),
-			(GetEngineRoot() / "skyboxes/sky1" / "back.jpg").string(),
-		};
-		
-		skyBox.AddComponent<SkyBoxComponent>(skyBoxFaces);
+		//auto skyBox = m_EditorScene->CreateEntity("SkyBox");
+		//std::vector<std::string> skyBoxFaces = 
+		//{
+		//	(GetEngineRoot() / "skyboxes/sky1" / "right.jpg").string(),
+		//	(GetEngineRoot() / "skyboxes/sky1" / "left.jpg").string(),
+		//	(GetEngineRoot() / "skyboxes/sky1" / "top.jpg").string(),
+		//	(GetEngineRoot() / "skyboxes/sky1" / "bottom.jpg").string(),
+		//	(GetEngineRoot() / "skyboxes/sky1" / "front.jpg").string(),
+		//	(GetEngineRoot() / "skyboxes/sky1" / "back.jpg").string(),
+		//};
+		//
+		//skyBox.AddComponent<SkyBoxComponent>(skyBoxFaces);
 		m_ActiveScene = m_EditorScene.get();
 	}
 
@@ -74,18 +73,17 @@ namespace Agina
 
 	void EditorLayer::OnRender()
 	{
-		m_FrameBuffer->Bind();
+		/*m_FrameBuffer->Bind();
 
 		Renderer::SetViewport(0, 0, m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight());
 		Renderer::Clear({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderSystem::OnRender(m_ActiveScene->m_Registry);
 
-		m_FrameBuffer->Unbind();
+		m_FrameBuffer->Unbind();*/
 	}
 	void EditorLayer::OnImGuiRender()
 	{
         ImGuiLayer::EnableDocking();
-		DrawViewPort(m_ActiveScene, m_EditorScene, m_FrameBuffer.get(), m_ViewportSize, m_SceneState);
 		DrawSceneHierarchy(m_ActiveScene, m_SelectedEntity);
 		DrawInspector(glm::vec2(m_FrameBuffer->GetWidth(), m_FrameBuffer->GetHeight()),
 			m_SceneState, m_SelectedEntity, m_ActiveScene);

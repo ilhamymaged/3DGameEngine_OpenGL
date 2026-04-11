@@ -4,12 +4,14 @@
 
 namespace Agina
 {
+	static std::string GAME_TITLE = "SandBoxGame"; 
+	static uint16_t GAME_WIDTH = 1280;
+	static uint16_t GAME_HEIGHT = 720;
 
-	static std::string s_LogoPath = (GetEngineRoot() / "logos/logo0.jpg").string(); 
 	class SandBoxGame : public Application
 	{
 	public:
-		SandBoxGame() : Application("SandBoxGame", 1280, 720, false, s_LogoPath) 
+		SandBoxGame() : Application(GAME_TITLE, GAME_WIDTH, GAME_HEIGHT, false) 
 		{
 			m_LayerStack.PushLayer(new GameLayer());
 		}

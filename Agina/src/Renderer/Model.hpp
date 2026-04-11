@@ -11,22 +11,21 @@
 
 namespace Agina
 {
-    struct SceneData;
     class Model
     {
     public:
         Model(const std::string& path);
-        void Draw(const SceneData& sceneData, const glm::mat4& model);
+        void Draw();
 
         const std::string& GetName();
 
     private:
         void LoadModel(const std::string& path);
         void ProcessNode(aiNode* node, const aiScene* scene);
-        std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
+        Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
         std::string m_Name;
-        std::vector<std::shared_ptr<Mesh>> meshes;
-        std::string directory;
+        std::vector<Mesh> m_Meshes;
+        std::string m_Directory;
     };
 }
