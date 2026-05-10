@@ -1,7 +1,7 @@
+#include <glad/glad.h>
 #include <Core/Platform/Window.hpp>
 #include <Core/Inputs/Events.hpp>
 #include <stb_image/stb_image.h>
-#include <Core/Utility/LocU.hpp>
 #include <Core/Logger/Logger.hpp>
 
 namespace Agina
@@ -102,10 +102,8 @@ namespace Agina
     void Window::OnEvent(Event &e)
     {
         EventDispatcher eventDispatcher(e);
-        eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed &e)
-        {
-            if (e.getKey() == GLFW_KEY_ESCAPE) Close();
-            // if (e.getKey() == GLFW_KEY_F11) ToggleFullScreen();
+        eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr){
+            glViewport(0, 0, wr.GetNewWidth(), wr.GetNewHeight());
         });
     }
 }

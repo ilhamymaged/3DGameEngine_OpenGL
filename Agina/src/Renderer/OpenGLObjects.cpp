@@ -1,4 +1,5 @@
 #include <Renderer/OpenGLObjects.hpp>
+#include "OpenGLObjects.hpp"
 
 namespace Agina
 {
@@ -51,6 +52,11 @@ namespace Agina
         glBindVertexArray(0);
     }
 
+    uint32_t VAO::GetID() const
+    {
+        return m_ID;
+    }
+
     VBO::VBO(const void* data, unsigned int size)
     {
         glGenBuffers(1, &m_ID);
@@ -73,4 +79,7 @@ namespace Agina
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+
 }
+
+

@@ -1,4 +1,6 @@
 #include <Renderer/Mesh.hpp>
+#include <Renderer/Renderer.hpp>
+#include "Mesh.hpp"
 
 namespace Agina
 {
@@ -19,10 +21,14 @@ namespace Agina
 
         m_VAO.Unbind();
     }
-
-    void Mesh::Draw()
+    
+    uint32_t Mesh::GetVAO()
     {
-        m_VAO.Bind();
-		glDrawElements(GL_TRIANGLES, m_IndexCount, GL_UNSIGNED_INT, 0);
+        return m_VAO.GetID();
+    }
+    
+    uint32_t Mesh::GetIndexCount()
+    {
+        return m_IndexCount;
     }
 }

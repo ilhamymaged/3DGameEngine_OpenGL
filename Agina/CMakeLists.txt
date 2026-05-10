@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
-list(APPEND SOURCES vendor/glad/src/glad.c vendor/stb_image/stb_image/stb_image.cpp)
+list(APPEND SOURCES vendor/glad/src/glad.c vendor/stb_image/stb_image/stb_image.cpp
+vendor/miniaudio/miniaudio/miniaudio.cpp)
 
 list(APPEND SOURCES
     vendor/imgui/imgui.cpp
@@ -31,6 +32,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     vendor/imgui
     vendor/imgui/backends
     vendor/spdlog
+    vendor/miniaudio
 )
 
 add_subdirectory(vendor/glfw)
@@ -41,10 +43,8 @@ set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built" FORC
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Assimp as a static library" FORCE)
 
 add_subdirectory(vendor/assimp)
-#add_subdirectory(vendor/NVRHI)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     assimp
     glfw
-    #nvrhi
 )

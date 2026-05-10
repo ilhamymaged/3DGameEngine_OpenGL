@@ -13,7 +13,7 @@ namespace Agina
 		void OnEvent(Event& e) override;
 		void OnUpdate(float dt) override;
 		void OnRender() override;
-		void OnImGuiRender() override;
+		void OnUIRender() override;
 
 		~LayerStack();
 

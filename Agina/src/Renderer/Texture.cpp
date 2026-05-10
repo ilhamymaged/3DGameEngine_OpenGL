@@ -32,7 +32,7 @@ namespace Agina
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
-			AG_CORE_ERROR("Failed to load texture: {0}", path);
+			AG_CORE_ERROR("Failed To Load Texture: {0}", path);
         stbi_image_free(data);
     }
 

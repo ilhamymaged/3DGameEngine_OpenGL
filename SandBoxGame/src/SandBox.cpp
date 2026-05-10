@@ -1,6 +1,5 @@
 #include <EntryPoint.hpp>
-#include "Game.cpp"
-#include <Core/Utility/LocU.hpp>
+#include "GameLayer.hpp"
 
 namespace Agina
 {
@@ -13,7 +12,7 @@ namespace Agina
 	public:
 		SandBoxGame() : Application(GAME_TITLE, GAME_WIDTH, GAME_HEIGHT, false) 
 		{
-			m_LayerStack.PushLayer(new GameLayer());
+			m_LayerStack.PushLayer(new GameLayer(GAME_WIDTH, GAME_HEIGHT));
 		}
 
 		void ShutDown() override

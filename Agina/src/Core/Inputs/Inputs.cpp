@@ -84,6 +84,11 @@ namespace Agina
         return pressed;
     }
 
+    bool Input::IsKeyPressed(Key key)
+    {
+        return IsKeyPressed(static_cast<int>(key));
+	}
+
     bool Input::IsCursorEnabled()
     {
         return m_CursorEnabled;

@@ -5,11 +5,9 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-#include <Renderer/Material.hpp>
 
 namespace Agina
 {
-    struct SceneData;
     class Mesh
     {
     public:
@@ -17,7 +15,9 @@ namespace Agina
             const std::vector<unsigned int>& indices);
         ~Mesh() = default;
 
-        void Draw();
+        uint32_t GetVAO();
+        uint32_t GetIndexCount();
+
     private:
         VAO m_VAO;
         VBO m_VBO;

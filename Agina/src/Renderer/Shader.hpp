@@ -12,9 +12,13 @@ namespace Agina
     {
     public:
         Shader(const std::string& name, const std::string& vertexName, const std::string& fragName);
+        Shader(const Shader&) = delete;
+        Shader& operator=(const Shader&) = delete;
+        Shader(Shader&& other) noexcept;
+        Shader& operator=(Shader&& other) noexcept;
         ~Shader();
 
-        void Use() const;
+        Shader& Use();
         void setMat4(const std::string& name, const glm::mat4& mat);
         void setVec3(const std::string& name, const glm::vec3& vec);
         void setInt(const std::string& name, int value);

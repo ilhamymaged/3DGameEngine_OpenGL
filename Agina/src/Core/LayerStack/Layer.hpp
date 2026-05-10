@@ -16,6 +16,6 @@ namespace Agina
 		virtual void OnEvent(Event& e) = 0;
 		virtual void OnUpdate(float dt) = 0;
 		virtual void OnRender() = 0;
-		virtual void OnImGuiRender() = 0;
+		virtual void OnUIRender() = 0;
 	};
 }

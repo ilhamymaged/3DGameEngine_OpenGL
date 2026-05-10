@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <iostream>
 
 namespace Agina
 {
@@ -14,7 +15,7 @@ namespace Agina
         void Unbind() const;
 
     private:
-        unsigned int m_ID;
+        uint32_t m_ID;
     };
 
     class VAO
@@ -28,8 +29,10 @@ namespace Agina
         void Bind() const;
         void Unbind() const;
 
+        uint32_t GetID() const; 
+
     private:
-        unsigned int m_ID;
+        uint32_t m_ID;
     };
 
     class EBO

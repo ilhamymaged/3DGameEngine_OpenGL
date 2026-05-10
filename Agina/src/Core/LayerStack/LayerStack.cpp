@@ -32,13 +32,13 @@ namespace Agina
 		for (auto layer : m_Layers)
 			layer->OnRender();
 	}
-	
-	void LayerStack::OnImGuiRender()
+
+	void LayerStack::OnUIRender()
 	{
 		for (auto layer : m_Layers)
-			layer->OnImGuiRender();
+			layer->OnUIRender();
 	}
-
+	
 	LayerStack::~LayerStack()
 	{
 		for (auto layer : m_Layers)

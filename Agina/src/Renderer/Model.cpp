@@ -9,11 +9,6 @@ namespace Agina
         LoadModel(path);
     }
 
-    void Model::Draw()
-    {
-        for (auto& mesh : m_Meshes) mesh.Draw();
-    }
-
     const std::string& Model::GetName()
     {
         return m_Name;

@@ -15,7 +15,6 @@ namespace Agina
     {
     public:
         Model(const std::string& path);
-        void Draw();
 
         const std::string& GetName();
 

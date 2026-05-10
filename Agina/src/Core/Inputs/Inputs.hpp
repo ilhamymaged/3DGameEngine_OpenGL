@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include "KeyMappings.hpp"
 
 namespace Agina
 {
@@ -19,6 +20,7 @@ namespace Agina
         void UnLockMouse();
 
         bool IsKeyPressed(int key);
+        bool IsKeyPressed(Key key);
 
         void ClearEvents();
         std::vector<std::unique_ptr<Event>>& GetEventQueue();

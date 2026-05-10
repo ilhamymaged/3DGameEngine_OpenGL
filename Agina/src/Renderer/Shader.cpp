@@ -4,12 +4,18 @@
 
 namespace Agina
 {
-    Shader::Shader(const std::string& name, const std::string& vertexName, const std::string& fragName)
+    Shader::Shader(const std::string& name, const std::string& vertexPath, const std::string& fragPath)
         :m_Name(name)
     {
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
+        std::ifstream vShaderFile(vertexPath);
+        std::ifstream fShaderFile(fragPath);
         std::stringstream vShaderStream, fShaderStream;
+
+        if (!vShaderFile.is_open())
+            AG_CORE_ERROR("Failed to open vertex shader: " + vertexPath);
+
+        if (!fShaderFile.is_open())
+            AG_CORE_ERROR("Failed to open fragment shader: " + fragPath);
 
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -70,21 +76,21 @@ namespace Agina
 
     void Shader::setMat4(const std::string& name, const glm::mat4& mat)
     {
-        uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
+        int loc = glGetUniformLocation(m_programID, name.c_str());
         if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
         glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
     }
 
     void Shader::setVec3(const std::string& name, const glm::vec3& vec)
     {
-        uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
+        int loc = glGetUniformLocation(m_programID, name.c_str());
         if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniformMatrix3fv(loc, 1, GL_FALSE, &(vec)[0]);
+        glUniform3fv(loc, 1, &vec[0]);
     }
 
     void Shader::setInt(const std::string& name, int value)
     {
-        uint32_t loc = glGetUniformLocation(m_programID, name.c_str());
+        int loc = glGetUniformLocation(m_programID, name.c_str());
         if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
         glUniform1i(loc, value);
     }
@@ -94,8 +100,28 @@ namespace Agina
         glDeleteProgram(m_programID);
     }
 
-    void Shader::Use() const
+    Shader& Shader::Use()
     {
         glUseProgram(m_programID);
+        return *this;
+    }
+
+    Shader::Shader(Shader&& other) noexcept
+    {
+        m_programID = other.m_programID;
+        m_Name = std::move(other.m_Name);
+        other.m_programID = 0;
+    }
+
+    Shader& Shader::operator=(Shader&& other) noexcept
+    {
+        if (this != &other)
+        {
+            glDeleteProgram(m_programID);
+            m_programID = other.m_programID;
+            m_Name = std::move(other.m_Name);
+            other.m_programID = 0;
+        }
+        return *this;
     }
 }

@@ -11,3 +11,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Agina)
 target_include_directories(${PROJECT_NAME} PRIVATE
 	src
 )
+
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
+endif()
+
