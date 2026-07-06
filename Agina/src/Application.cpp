@@ -6,6 +6,7 @@
 #include <UI/UI.hpp>
 #include <Sound/AudioSystem.hpp>
 #include <Renderer/Renderer.hpp>
+#include <Core/FileSystem/FileSystem.hpp>
 
 namespace Agina
 {
@@ -14,6 +15,12 @@ namespace Agina
             m_Window(title, width, height),
             m_LayerStack()
     {
+        auto path = std::filesystem::current_path()
+            .parent_path()
+            .parent_path()
+            .parent_path()
+            .parent_path();
+        FileSystem::Init(path);
         Input::Init(GetWindow());
         UI::Init(GetWindow());
         AudioSystem::Init();
@@ -42,7 +49,7 @@ namespace Agina
                 m_LayerStack.OnEvent(*e);
             }
 
-            Renderer::ClearColor();
+            Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             m_LayerStack.OnRender();
 
             UI::BeginFrame();

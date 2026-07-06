@@ -1,6 +1,7 @@
 #include <Renderer/Shader.hpp>    
 #include <filesystem>
 #include <Core/Logger/Logger.hpp>
+#include <fstream>
 
 namespace Agina
 {
@@ -81,6 +82,13 @@ namespace Agina
         glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
     }
 
+    void Shader::setVec4(const std::string& name, const glm::vec4& vec)
+    {
+        int loc = glGetUniformLocation(m_programID, name.c_str());
+        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
+        glUniform4fv(loc, 1, &vec[0]);
+    }
+
     void Shader::setVec3(const std::string& name, const glm::vec3& vec)
     {
         int loc = glGetUniformLocation(m_programID, name.c_str());
@@ -95,6 +103,13 @@ namespace Agina
         glUniform1i(loc, value);
     }
 
+    void Shader::setFloat(const std::string& name, float value)
+    {   
+        int loc = glGetUniformLocation(m_programID, name.c_str());
+        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
+        glUniform1f(loc, value);
+    }
+
     Shader::~Shader()
     {
         glDeleteProgram(m_programID);
@@ -103,25 +118,6 @@ namespace Agina
     Shader& Shader::Use()
     {
         glUseProgram(m_programID);
-        return *this;
-    }
-
-    Shader::Shader(Shader&& other) noexcept
-    {
-        m_programID = other.m_programID;
-        m_Name = std::move(other.m_Name);
-        other.m_programID = 0;
-    }
-
-    Shader& Shader::operator=(Shader&& other) noexcept
-    {
-        if (this != &other)
-        {
-            glDeleteProgram(m_programID);
-            m_programID = other.m_programID;
-            m_Name = std::move(other.m_Name);
-            other.m_programID = 0;
-        }
         return *this;
     }
 }

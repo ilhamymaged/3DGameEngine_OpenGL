@@ -5,6 +5,9 @@
 
 #include <Core/Logger/Logger.hpp>
 
+#include <Renderer/Material.hpp>
+#include <Renderer/Mesh.hpp>
+
 namespace Agina {
 	void Renderer::Init()
 	{
@@ -23,6 +26,11 @@ namespace Agina {
 		glClearColor(r, g, b, a);
 	}
 
+	void Renderer::Draw(const Mesh& mesh, const Material& mat) 
+	{
+		mat.Bind();
+		mesh.Draw();
+	}
 }
 
 

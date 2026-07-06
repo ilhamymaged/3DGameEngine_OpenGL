@@ -9,7 +9,7 @@ namespace Agina {
     {
     public:
         static void Init(const std::filesystem::path& root);
-        static std::filesystem::path GetAssetPath(const std::string& relative);
+        static std::filesystem::path EngineAssets();
 
     private:
         static std::filesystem::path s_AssetRoot;

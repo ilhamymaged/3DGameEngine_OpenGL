@@ -12,7 +12,7 @@ namespace Agina
 	public:
 		SandBoxGame() : Application(GAME_TITLE, GAME_WIDTH, GAME_HEIGHT, false) 
 		{
-			m_LayerStack.PushLayer(new GameLayer(GAME_WIDTH, GAME_HEIGHT));
+			m_LayerStack.PushLayer(new GameLayer());
 		}
 
 		void ShutDown() override
