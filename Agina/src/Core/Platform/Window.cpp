@@ -69,42 +69,14 @@ namespace Agina
         return m_Window;
     }
 
-    void Window::ToggleFullScreen()
-    {
-        
-        m_FullSCreen = !m_FullSCreen;
-
-        if(m_FullSCreen)
-        {
-
-            glfwGetWindowPos(m_Window, &m_PosX, &m_PosY);
-            glfwGetWindowSize(m_Window, &m_Width, &m_Height);
-            
-            GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-
-            glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-            glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-            glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-            glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-            glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_FALSE);
-            glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-        }
-        else
-        {
-            glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_TRUE);
-            glfwSetWindowMonitor(m_Window, nullptr, m_PosX, m_PosY, m_Width, m_Height, 0);
-        }
-    }
-
     void Window::OnEvent(Event &e)
     {
         EventDispatcher eventDispatcher(e);
         eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr)
             {
                 if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
-                glfwSetWindowSize(m_Window, wr.GetNewWidth(), wr.GetNewHeight());
+                m_Width = wr.GetNewWidth();
+                m_Height = wr.GetNewHeight();
             });
     }
 }

@@ -12,7 +12,7 @@ namespace Agina {
 		return m_Parameters.at(name);
 	}
 
-	void Material::Set(const std::string& name, const MaterialValue& value)
+	void Material::Set(const std::string& name, const MaterialValue& value) 
 	{
 		m_Parameters[name] = value;
 	}

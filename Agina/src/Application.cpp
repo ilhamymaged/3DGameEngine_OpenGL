@@ -10,11 +10,15 @@
 
 namespace Agina
 {
+    Application* Application::s_Instance = nullptr;
+
     Application::Application(const std::string &title, int width, int height, bool is)
         :   IsLoggerInit((Logger::InitEngineLogger(), true)),
             m_Window(title, width, height),
             m_LayerStack()
     {
+        s_Instance = this;
+
         auto path = std::filesystem::current_path()
             .parent_path()
             .parent_path()
@@ -24,7 +28,7 @@ namespace Agina
         Input::Init(GetWindow());
         UI::Init(GetWindow());
         AudioSystem::Init();
-        Renderer::Init();
+        Renderer::Init(width, height);
         Logger::InitClientLogger(title);
 
         AG_CORE_INFO("Engine Initialized");
@@ -46,6 +50,7 @@ namespace Agina
             for (auto &e : Input::Get().GetEventQueue())
             {
                 m_Window.OnEvent(*e);
+                Renderer::OnEvent(*e);
                 m_LayerStack.OnEvent(*e);
             }
 
@@ -62,13 +67,15 @@ namespace Agina
             
             Input::Get().ClearEvents();
         }
-    }
 
-    void Application::ShutDown()
-    {
         AssetManager::Clear();
         UI::ShutDown();
         AudioSystem::ShutDown();
         m_LayerStack.OnDetach();
+    }
+
+    void Application::ShutDown()
+    {
+        m_Window.Close();
     }
 }

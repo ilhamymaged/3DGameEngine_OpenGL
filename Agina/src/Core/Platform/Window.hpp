@@ -20,9 +20,7 @@ namespace Agina
         GLFWwindow* GetGLFWwindow() const;
         void OnEvent(Event& e);
 
-    private:
         void Close() const;
-        void ToggleFullScreen();
 
     private:
         GLFWwindow* m_Window;
