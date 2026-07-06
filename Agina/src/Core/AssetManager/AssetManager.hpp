@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Renderer/Shader.hpp>
-#include <Renderer/Model.hpp>
 #include <Renderer/Texture.hpp>
 #include <iostream>
 #include <unordered_map>
@@ -12,17 +11,14 @@ namespace Agina
     {
     public:
 		static Texture& LoadTexture(const std::string& name, const std::string& path);
-		static Model& LoadModel(const std::string& name, const std::string& path);
 		static Shader& LoadShader(const std::string& name, const std::string& path);
 
         static Shader& GetShader(const std::string& name);
-        static Model& GetModel(const std::string& name);
         static Texture& GetTexture(const std::string& name);
 
         static void Clear();
     private:
 		static std::unordered_map<std::string, Texture> s_Textures;
-        static std::unordered_map<std::string, Model> s_Models;
 		static std::unordered_map<std::string, Shader> s_Shaders;
     };
 }

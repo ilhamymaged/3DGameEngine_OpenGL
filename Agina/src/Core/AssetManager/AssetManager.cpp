@@ -4,13 +4,11 @@
 
 namespace Agina
 {
-    std::unordered_map<std::string, Model> AssetManager::s_Models;
     std::unordered_map<std::string, Texture> AssetManager::s_Textures;
 	std::unordered_map<std::string, Shader> AssetManager::s_Shaders;
 
     void AssetManager::Clear()
     {
-        s_Models.clear();
         s_Textures.clear();
         s_Shaders.clear();
     }
@@ -25,16 +23,6 @@ namespace Agina
 		s_Textures.emplace(name, Texture(path));
         return s_Textures.find(name)->second;
 
-    }
-
-    Model& AssetManager::LoadModel(const std::string& name, const std::string& path)
-    {
-        auto it = s_Models.find(name);
-        if (it != s_Models.end())
-            return it->second;
-
-        s_Models.emplace(name, Model(path));
-		return s_Models.find(name)->second;
     }
 
     Shader& AssetManager::LoadShader(const std::string& name, const std::string& path)
@@ -71,18 +59,6 @@ namespace Agina
         {
             AG_CORE_ERROR("Didn't Find Texture With Name {0}", name);
             throw std::runtime_error("Didn't Find Texture With Name: " + name);
-        }
-    }
-
-    Model& AssetManager::GetModel(const std::string& name)
-    {
-        auto it = s_Models.find(name);
-        if (it != s_Models.end())
-            return it->second;
-        else
-        {
-            AG_CORE_ERROR("Didn't Find Model With Name {0}", name);
-            throw std::runtime_error("Didn't Find Model With Name: " + name);
         }
     }
 

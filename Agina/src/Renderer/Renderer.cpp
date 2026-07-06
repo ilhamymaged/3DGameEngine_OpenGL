@@ -1,60 +1,28 @@
 #include "Renderer.hpp"
-#include "RenderBackend.hpp"
 
-std::vector<Agina::RenderCommand> Agina::Renderer::s_CommandQueue;
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
-void Agina::Renderer::Init()
-{
-	RenderBackend::Init();
+#include <Core/Logger/Logger.hpp>
+
+namespace Agina {
+	void Renderer::Init()
+	{
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			AG_CORE_ERROR("Failed To Load GLAD");
+			throw std::runtime_error("Failed To Load GLAD");
+		}
+
+		AG_CORE_INFO("OpenGL Context Initialized");
+	}
+
+	void Renderer::ClearColor(float r, float g, float b, float a)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(r, g, b, a);
+	}
+
 }
 
-void Agina::Renderer::Shutdown()
-{
-	RenderBackend::Shutdown();
-}
 
-void Agina::Renderer::BeginFrame()
-{
-
-}
-
-void Agina::Renderer::EndFrame()
-{
-	Flush();
-}
-
-void Agina::Renderer::SubmitQuad(const glm::vec2 &pos, const glm::vec2 &size, Texture &texture)
-{
-	RenderCommand cmd;
-    cmd.type = RenderCommand::Quad;
-    cmd.position = pos;
-    cmd.size = size;
-    cmd.texture = &texture;
-
-    s_CommandQueue.push_back(cmd);
-}
-
-void Agina::Renderer::Flush()
-{
-	for (auto& cmd : s_CommandQueue)
-    {
-        switch (cmd.type)
-        {
-            case RenderCommand::Quad:
-                RenderBackend::DrawQuad(cmd.position, cmd.size, *cmd.texture);
-                break;
-        }
-    }
-
-    s_CommandQueue.clear();
-}
-
-void Agina::Renderer::SetClearColor(float r, float g, float b, float a)
-{
-	RenderBackend::SetClearColor(r, g, b, a);
-}
-
-void Agina::Renderer::Clear()
-{
-	RenderBackend::Clear();
-}

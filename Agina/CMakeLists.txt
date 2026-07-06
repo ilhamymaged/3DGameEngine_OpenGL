@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
-project(Agina LANGUAGES CXX C)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(Agina C CXX)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 list(APPEND SOURCES vendor/glad/src/glad.c vendor/stb_image/stb_image/stb_image.cpp
@@ -37,14 +33,24 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 add_subdirectory(vendor/glfw)
 
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "If the test suite for Assimp is built" FORCE)
-set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "If the supplementary tools for Assimp are built" FORCE)
-set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built" FORCE)
+cmake_policy(SET CMP0077 NEW)
+
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Assimp as a static library" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)     
+set(INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE) 
+
+set(ASSIMP_BUILD_AMF_IMPORTER OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_FBX_IMPORTER OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_BLEND_IMPORTER OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_IFC_IMPORTER OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_3DS_IMPORTER OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(vendor/assimp)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(Agina PUBLIC
     assimp
     glfw
 )

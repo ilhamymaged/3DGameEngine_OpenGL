@@ -1,4 +1,3 @@
-#include <glad/glad.h>
 #include <Core/Platform/Window.hpp>
 #include <Core/Inputs/Events.hpp>
 #include <stb_image/stb_image.h>
@@ -102,8 +101,10 @@ namespace Agina
     void Window::OnEvent(Event &e)
     {
         EventDispatcher eventDispatcher(e);
-        eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr){
-            glViewport(0, 0, wr.GetNewWidth(), wr.GetNewHeight());
-        });
+        eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr)
+            {
+                if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
+                glfwSetWindowSize(m_Window, wr.GetNewWidth(), wr.GetNewHeight());
+            });
     }
 }

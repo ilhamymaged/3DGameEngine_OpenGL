@@ -19,7 +19,7 @@ namespace Agina
         void LockMouse();
         void UnLockMouse();
 
-        bool IsKeyPressed(int key);
+        bool IsKeyPressed(int key); 
         bool IsKeyPressed(Key key);
 
         void ClearEvents();

@@ -5,15 +5,15 @@
 
 namespace Agina
 {
-	class LayerStack : public Layer
+	class LayerStack
 	{
 	public:
-		void OnAttach() override;
-		void OnDetach() override;
-		void OnEvent(Event& e) override;
-		void OnUpdate(float dt) override;
-		void OnRender() override;
-		void OnUIRender() override;
+		void OnAttach();
+		void OnDetach();
+		void OnEvent(Event& e);
+		void OnUpdate(float dt);
+		void OnRender();
+		void OnUIRender();	
 
 		~LayerStack();
 

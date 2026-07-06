@@ -4,6 +4,3 @@
 [submodule "Agina/vendor/assimp"]
 	path = Agina/vendor/assimp
 	url = https://github.com/assimp/assimp
-[submodule "Agina/vendor/NVRHI"]
-	path = Agina/vendor/NVRHI
-	url = https://github.com/NVIDIA-RTX/NVRHI
