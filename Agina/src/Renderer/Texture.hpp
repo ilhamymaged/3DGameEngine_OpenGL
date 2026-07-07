@@ -11,7 +11,8 @@ namespace Agina
 	{
 	public:
 		Texture(const std::string& path);
-		void Bind() const;
+		~Texture();
+		void Bind(uint32_t slot = 0) const;
 	private:
 		uint32_t m_ID;
 	};

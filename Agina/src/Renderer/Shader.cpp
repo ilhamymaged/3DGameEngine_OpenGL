@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <Core/Logger/Logger.hpp>
 #include <fstream>
+#include <sstream> 
 
 namespace Agina
 {
@@ -77,37 +78,48 @@ namespace Agina
 
     void Shader::setMat4(const std::string& name, const glm::mat4& mat)
     {
-        int loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
     }
 
     void Shader::setVec4(const std::string& name, const glm::vec4& vec)
     {
-        int loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniform4fv(loc, 1, &vec[0]);
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniform4fv(loc, 1, &vec[0]);
     }
 
     void Shader::setVec3(const std::string& name, const glm::vec3& vec)
     {
-        int loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniform3fv(loc, 1, &vec[0]);
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniform3fv(loc, 1, &vec[0]);
     }
 
     void Shader::setInt(const std::string& name, int value)
     {
-        int loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniform1i(loc, value);
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniform1i(loc, value);
     }
 
     void Shader::setFloat(const std::string& name, float value)
     {   
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniform1f(loc, value);
+    }
+
+    int Shader::GetUniformLocation(const std::string& name)
+    {
+        if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+            return m_UniformLocationCache[name];
+
         int loc = glGetUniformLocation(m_programID, name.c_str());
-        if (loc == -1) AG_CORE_ERROR("In " + m_Name + ": " + name + " is not used or found.\n");
-        glUniform1f(loc, value);
+
+        if (loc == -1)
+        {
+            AG_CORE_WARN("In " + m_Name + ": " + name + " is not used or found (might be optimized out by compiler).");
+        }
+
+        m_UniformLocationCache[name] = loc;
+        return loc;
     }
 
     Shader::~Shader()

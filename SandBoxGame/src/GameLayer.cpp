@@ -7,49 +7,57 @@
 #include <Core/Inputs/KeyMappings.hpp>
 #include <Renderer/Camera.hpp>
 #include <Core/Inputs/Inputs.hpp>
+#include <Renderer/CubemapTexture.hpp> 
+#include <ECS/RenderSystem.hpp>
+#include <ECS/Components.hpp>
+#include <Core/FileSystem/FileSystem.hpp>
+#include <UI/UI.hpp>
 
 using namespace Agina;
 
-std::shared_ptr<Material> mat = nullptr;
-std::shared_ptr<Material> playerMat = nullptr;
-std::shared_ptr<Material> terrainMat = nullptr;
-
-std::shared_ptr<Mesh> mesh = nullptr;
-std::shared_ptr<Mesh> sphereMesh = nullptr;
-std::shared_ptr<Mesh> terrainMesh = nullptr;
-
-Transform triangleTransform;
-Transform player;
-Transform terrain;
-
-Camera camera;
+entt::registry m_Registry;
+entt::entity cameraEntity;
 
 void GameLayer::OnAttach()
 {	
-	camera = Camera(glm::vec3(0.0f, 0.0f, 1.0f));
+	cameraEntity = m_Registry.create();
+	auto& camComp = m_Registry.emplace<CameraComponent>(cameraEntity);
+	camComp.Cam = Camera(glm::vec3(0.0f, 2.0f, 5.0f));
+	camComp.IsPrimary = true;
 
-	mat = Material::Create(MaterialType::LIT);
-	playerMat = Material::Create(MaterialType::LIT);
-	terrainMat = Material::Create(MaterialType::LIT);
+	auto lightEntity = m_Registry.create();
+	m_Registry.emplace<DirectionalLightComponent>(
+		lightEntity,
+		glm::vec3(-10.0f, 20.0f, -5.0f), 
+		glm::vec3(0.0f, 0.0f, 0.0f)     
+	);
 
-	mesh = Mesh::Create(MeshType::TRIANGLE);
-	sphereMesh = Mesh::Create(MeshType::SPHERE);
-	terrainMesh = Mesh::Create(MeshType::TERRAIN);
-	
-	triangleTransform = Transform(glm::vec3(2.0f, 1.0f, 0.0));
-	player = Transform(glm::vec3(0.0f, 2.0f, 0.0f));
-	terrain = Transform();
+	auto skyEntity = m_Registry.create();
+	m_Registry.emplace<SkyboxComponent>(skyEntity, true);
 
-	mat->Set("u_Color", glm::vec3(0.0f, 1.0f, 0.0f));
-	mat->Set("u_HasColor", true);
-	playerMat->Set("u_Color", glm::vec3(1.0f, 0.0f, 0.0f));
-	playerMat->Set("u_HasColor", true);
-	terrainMat->Set("u_Color", glm::vec3(0.3f, 0.2f, 0.1f));
-	terrainMat->Set("u_HasColor", true);
+	auto triangleMesh = Mesh::Create(MeshType::TRIANGLE);
+	auto sphereMesh = Mesh::Create(MeshType::SPHERE);
+	auto gridMesh = Mesh::Create(MeshType::TERRAIN); 
 
-	//camera.SetMode(CameraMode::Follow);
-	//camera.SetFocusTarget(&player.Position);
-	//camera.SetFollowOffset(glm::vec3(0.0f, 1.5f, 5.0f));
+	auto triangle = m_Registry.create();
+	m_Registry.emplace<Transform>(triangle, glm::vec3(2.0f, 1.0f, 0.0f));
+	auto& triMat = m_Registry.emplace<MeshComponent>(triangle, triangleMesh, Material::Create(MaterialType::LIT));
+	triMat.MaterialAsset->Set("u_Color", glm::vec3(0.0f, 1.0f, 0.0f));
+	triMat.MaterialAsset->Set("u_HasColor", true);
+
+	auto player = m_Registry.create();
+	m_Registry.emplace<Transform>(player, glm::vec3(0.0f, 2.0f, 0.0f));
+	auto& pMat = m_Registry.emplace<MeshComponent>(player, sphereMesh, Material::Create(MaterialType::LIT));
+	pMat.MaterialAsset->Set("u_Color", glm::vec3(1.0f, 0.0f, 0.0f));
+	pMat.MaterialAsset->Set("u_HasColor", true);
+
+	auto floor = m_Registry.create();
+	m_Registry.emplace<Transform>(floor, glm::vec3(0.0f));
+	auto& fMat = m_Registry.emplace<MeshComponent>(floor, gridMesh, Material::Create(MaterialType::LIT));
+	fMat.MaterialAsset->Set("u_Color", glm::vec3(1.0f, 1.0f, 1.0f));
+	fMat.MaterialAsset->Set("u_HasColor", true);
+	std::string grassTexturePath = (FileSystem::AppAssets() / "textures/highqualitybrickn.jpg").string();
+	fMat.DiffuseTextureAsset = std::make_shared<Texture>(grassTexturePath);
 }
 
 void GameLayer::OnEvent(Event& e)
@@ -63,54 +71,34 @@ void GameLayer::OnEvent(Event& e)
 		}
 	});
 
-	camera.OnEvent(e);
+	auto& camComp = m_Registry.get<CameraComponent>(cameraEntity);
+	camComp.Cam.OnEvent(e);
 }
 
 void GameLayer::OnUpdate(float dt)
 {
-	camera.Update(dt);
-
-	//auto& input = Input::Get();
-	//const float playerSpeed = 3.0f;
-
-	//auto forward = glm::vec3(0.0f, 0.0f, -1.0f);
-	//auto right = glm::vec3(1.0f, 0.0f, 0.0f);
-
-	//if (input.IsKeyPressed(static_cast<int>(Key::W))) player.Position += forward * playerSpeed * dt;
-	//if (input.IsKeyPressed(static_cast<int>(Key::S))) player.Position -= forward * playerSpeed * dt;
-	//if (input.IsKeyPressed(static_cast<int>(Key::A))) player.Position -= right * playerSpeed * dt;
-	//if (input.IsKeyPressed(static_cast<int>(Key::D))) player.Position += right * playerSpeed * dt;
-	//if (input.IsKeyPressed(static_cast<int>(Key::Space))) player.Position.y += playerSpeed * dt;
-	//if (input.IsKeyPressed(static_cast<int>(Key::LeftShift))) player.Position.y -= playerSpeed * dt;
+	m_Registry.get<CameraComponent>(cameraEntity).Cam.Update(dt);
 }
 
 void GameLayer::OnRender()
 {
-	glm::vec3 directionalLightPosition = glm::vec3(-10.0f, 20.0f, -5.0f);
-	glm::vec3 lightTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	Renderer::BeginShadowPass(directionalLightPosition, lightTargetPoint);
-	Renderer::Draw(*mesh, *mat, triangleTransform);
-	Renderer::Draw(*sphereMesh, *playerMat, player);
-	Renderer::Draw(*terrainMesh, *terrainMat, terrain);
-	Renderer::EndShadowPass();
-
-	Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-	Renderer::BeginScene(camera);
-	Renderer::Draw(*mesh, *mat, triangleTransform);
-	Renderer::Draw(*sphereMesh, *playerMat, player);
-	Renderer::Draw(*terrainMesh, *terrainMat, terrain);
-	Renderer::EndScene();
+	RenderSystem::Render(m_Registry);
 }
 
-
-void GameLayer::OnDetach()
-{
-
-}
-
+void GameLayer::OnDetach() {}
 void GameLayer::OnUIRender()
 {
+	UI::BeginWindow("ECS System Controller Dashboard");
 
+	auto skyboxView = m_Registry.view<SkyboxComponent>();
+	if (!skyboxView.empty())
+	{
+		auto skyEntity = skyboxView.front();
+		auto& skyboxComp = skyboxView.get<SkyboxComponent>(skyEntity);
+
+		UI::Checkbox("Enable Environmental Skybox Background", &skyboxComp.Enabled);
+	}
+
+	UI::Spacing(5.0f);
+	UI::EndWindow();
 }

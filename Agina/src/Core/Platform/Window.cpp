@@ -2,6 +2,8 @@
 #include <Core/Inputs/Events.hpp>
 #include <stb_image/stb_image.h>
 #include <Core/Logger/Logger.hpp>
+#include <Core/Inputs/KeyMappings.hpp>
+#include <Core/Inputs/Inputs.hpp>
 
 namespace Agina
 {
@@ -77,6 +79,21 @@ namespace Agina
                 if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
                 m_Width = wr.GetNewWidth();
                 m_Height = wr.GetNewHeight();
+            });
+
+        eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& kp)
+            {
+                if (kp.getKey() == static_cast<int>(Key::LeftControl))
+                {
+                    if (glfwGetInputMode(m_Window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+                    {
+                        Input::Get().UnLockMouse();
+                    }
+                    else 
+                    {
+                        Input::Get().LockMouse();
+                    }
+                }
             });
     }
 }

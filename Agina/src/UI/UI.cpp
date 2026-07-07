@@ -5,6 +5,10 @@
 #include <imgui_impl_opengl3.h>
 
 namespace Agina {
+	bool UI::WantsCaptureMouse()
+	{
+		return ImGui::GetCurrentContext() != nullptr && ImGui::GetIO().WantCaptureMouse;
+	}
 
 	void UI::BeginWindow(const std::string& name, bool fullScreen)
 	{
@@ -42,6 +46,11 @@ namespace Agina {
 	void UI::EndToolbar()
 	{
 		ImGui::End();
+	}
+
+	bool UI::Checkbox(const std::string& label, bool* value)
+	{
+		return ImGui::Checkbox(label.c_str(), value);
 	}
 
 	bool UI::Button(const std::string& name, float width, float height)

@@ -1,0 +1,6 @@
+#pragma once
+#include <string_view>
+
+namespace Agina {
+    inline constexpr std::string_view ENGINE_SOURCE_DIR = "@CMAKE_SOURCE_DIR@";
+}

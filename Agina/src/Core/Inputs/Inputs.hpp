@@ -37,6 +37,6 @@ namespace Agina
         GLFWwindow* m_Window;
         std::unordered_map<int, bool> m_KeyStates;
         std::vector<std::unique_ptr<Event>> m_EventQueue;
-        bool m_CursorEnabled;
+        bool m_CursorEnabled = false;
     };
 }

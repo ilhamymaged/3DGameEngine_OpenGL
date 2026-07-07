@@ -1,5 +1,8 @@
 project(Agina C CXX)
 
+configure_file(AginaConfig.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/AginaConfig.hpp")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+
 file(GLOB_RECURSE SOURCES src/*.cpp)
 list(APPEND SOURCES vendor/glad/src/glad.c vendor/stb_image/stb_image/stb_image.cpp
 vendor/miniaudio/miniaudio/miniaudio.cpp)

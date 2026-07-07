@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 namespace Agina
 {
@@ -20,7 +21,11 @@ namespace Agina
         void setFloat(const std::string& name, float value);
 
     private:
+        int GetUniformLocation(const std::string& name);
+
+    private:
         uint32_t m_programID;
         std::string m_Name;
+        std::unordered_map<std::string, int> m_UniformLocationCache;
     };
 }

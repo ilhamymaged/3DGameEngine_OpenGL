@@ -35,8 +35,14 @@ namespace Agina
         stbi_image_free(data);
     }
 
-    void Texture::Bind() const
+    Texture::~Texture()
     {
+        glDeleteTextures(1, &m_ID);
+    }
+
+    void Texture::Bind(uint32_t slot) const
+    {
+        glActiveTexture(GL_TEXTURE0 + slot); 
         glBindTexture(GL_TEXTURE_2D, m_ID);
     }
 }

@@ -13,7 +13,11 @@ layout (std140, binding = 1) uniform ShadowBuffer {
 
 uniform vec3 u_Color;
 uniform bool u_HasColor;
-uniform sampler2D u_ShadowMap; 
+
+uniform sampler2D u_DiffuseMap; // Slot 0
+uniform bool u_HasTexture;
+
+uniform sampler2D u_ShadowMap; // Slot 7
 
 float CalculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
@@ -38,28 +42,18 @@ float CalculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 
     for (int i = 0; i < 4; i++)
     {
-        // Check 4 regions with linear blending active
         float pcfDepth = texture(u_ShadowMap, projCoords.xy + offsets[i] * texelSize * 1.5).r; 
         shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;
     }
 
     shadow /= 4.0;
-
-//    for (int x = -1; x < 1; x++)
-//    {
-//        for (int y = -1; y < 1; y++)
-//        {
-//            float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-//            shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;
-//        }
-//    }
-//    shadow /= 9.0;
     return shadow;
 }
 
 void main()
 {           
     vec3 baseColor = u_HasColor ? u_Color : vec3(1.0);
+    if (u_HasTexture) baseColor *= texture(u_DiffuseMap, v_TexCoords);
     vec3 norm = normalize(v_Normal);
     
     vec3 ambient = 0.15 * baseColor;

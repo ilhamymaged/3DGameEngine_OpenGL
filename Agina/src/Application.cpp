@@ -19,19 +19,14 @@ namespace Agina
     {
         s_Instance = this;
 
-        auto path = std::filesystem::current_path()
-            .parent_path()
-            .parent_path()
-            .parent_path()
-            .parent_path();
-        FileSystem::Init(path);
+        FileSystem::Init("");
         Input::Init(GetWindow());
         UI::Init(GetWindow());
         AudioSystem::Init();
         Renderer::Init(width, height);
         Logger::InitClientLogger(title);
 
-        AG_CORE_INFO("Engine Initialized");
+        AG_CORE_INFO("Engine Initialized Perfectly!");
     }
 
     GLFWwindow* Application::GetWindow()
@@ -44,6 +39,8 @@ namespace Agina
         m_LayerStack.OnAttach();
         while (!m_Window.ShouldClose())
         {
+            Time::Update();
+            float dt = Time::GetDeltaTime();
 
             m_Window.PollEvents();
 
@@ -54,6 +51,8 @@ namespace Agina
                 m_LayerStack.OnEvent(*e);
             }
 
+            m_LayerStack.OnUpdate(dt);
+
             Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             m_LayerStack.OnRender();
 
@@ -61,10 +60,7 @@ namespace Agina
             m_LayerStack.OnUIRender();
             UI::EndFrame();
 
-            Time::Update();
-            m_LayerStack.OnUpdate(Time::GetDeltaTime());
             m_Window.SwapBuffers();
-            
             Input::Get().ClearEvents();
         }
 
@@ -72,6 +68,7 @@ namespace Agina
         UI::ShutDown();
         AudioSystem::ShutDown();
         m_LayerStack.OnDetach();
+        Renderer::Shutdown();
     }
 
     void Application::ShutDown()

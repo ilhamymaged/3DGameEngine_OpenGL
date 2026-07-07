@@ -4,6 +4,7 @@
 #include <Core/Inputs/Inputs.hpp>
 #include <Core/Inputs/KeyMappings.hpp>
 #include <Core/Inputs/Events.hpp>
+#include <UI/UI.hpp>
 
 namespace Agina {
 
@@ -72,7 +73,12 @@ namespace Agina {
 
 		dispatcher.Dispatch<MouseMoved>([&](MouseMoved& me)
 		{
-			// Mouse look only in Free mode
+			if (Input::Get().IsCursorEnabled())
+			{
+				m_FirstMouse = true; // Reset look-delta so it won't snap when re-locking
+				return;
+			}
+
 			if (m_Mode != CameraMode::Free) return;
 
 			double xpos = me.getX();
@@ -105,7 +111,7 @@ namespace Agina {
 
 		dispatcher.Dispatch<MouseScrolled>([&](MouseScrolled& ms)
 		{
-			// Zoom (adjust FOV)
+			if (Input::Get().IsCursorEnabled());
 			m_FOV -= (float)ms.getYoffset() * m_ScrollSpeed;
 			if (m_FOV < 1.0f) m_FOV = 1.0f;
 			if (m_FOV > 90.0f) m_FOV = 90.0f;
