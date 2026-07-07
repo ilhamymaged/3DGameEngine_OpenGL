@@ -5,6 +5,7 @@
 #include <variant>
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include "Texture.hpp"
 
 namespace Agina {
 
@@ -12,8 +13,8 @@ namespace Agina {
 
 	enum MaterialType
 	{
-		LIT, // Phong Model
-		UNLIT // Pure Light
+		LIT, 
+		UNLIT 
 	};
 
 	class Material

@@ -2,6 +2,8 @@
 #include <Core/LayerStack/Layer.hpp>
 
 
+struct GameData;
+
 class GameLayer : public Agina::Layer
 {
 public:

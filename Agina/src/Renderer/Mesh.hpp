@@ -16,6 +16,8 @@ namespace Agina {
 	enum class MeshType
 	{
 		TRIANGLE,
+		SPHERE,
+		TERRAIN
 	};
 
 	class Mesh 
@@ -35,6 +37,8 @@ namespace Agina {
 		
 	private:
 		static std::shared_ptr<Mesh> Triangle();
+		static std::shared_ptr<Mesh> Sphere(float radius = 1.0f, uint32_t sectors = 32, uint32_t stacks = 16);
+		static std::shared_ptr<Mesh> Terrain(float width = 50.0f, float depth = 50.0f, uint32_t m = 64, uint32_t n = 64);
 	};
 
 }
