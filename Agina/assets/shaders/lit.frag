@@ -53,7 +53,7 @@ float CalculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 void main()
 {           
     vec3 baseColor = u_HasColor ? u_Color : vec3(1.0);
-    if (u_HasTexture) baseColor *= texture(u_DiffuseMap, v_TexCoords);
+    if (u_HasTexture) baseColor *= texture(u_DiffuseMap, v_TexCoords).rgb;
     vec3 norm = normalize(v_Normal);
     
     vec3 ambient = 0.15 * baseColor;

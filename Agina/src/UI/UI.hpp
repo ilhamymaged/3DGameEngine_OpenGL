@@ -1,7 +1,9 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
 #include <iostream>
+
+#include <glm/glm.hpp>
+struct GLFWwindow;
 
 namespace Agina {
 
@@ -19,6 +21,11 @@ namespace Agina {
 
 		static bool Checkbox(const std::string& label, bool* value);
 		static bool Button(const std::string & = "Empty", float width = 0, float height = 0);
+
+		static void Text(const std::string& label);
+		static void SelectableItem(const std::string& label);
+
+		static void DragVec3(const std::string&, glm::vec3&);
 
 		static void CenterNextItemX(float width);
 		static void CenterNextItemY(float height);

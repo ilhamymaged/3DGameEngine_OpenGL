@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-namespace Agina
-{
+namespace Agina {
+    
     class Event;
     class Window
     {
@@ -23,8 +23,11 @@ namespace Agina
         void Close() const;
 
     private:
+        void ToggleFullScreen();
+
+    private:
         GLFWwindow* m_Window;
-        bool m_FullSCreen;
+        bool m_FullScreen;
         int m_Width;
         int m_Height;
         int m_PosX;

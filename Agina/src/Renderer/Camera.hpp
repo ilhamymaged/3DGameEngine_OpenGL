@@ -26,7 +26,6 @@ namespace Agina {
 		void SetMode(CameraMode mode) { m_Mode = mode; }
 		CameraMode GetMode() const { return m_Mode; }
 
-		// Follow target - camera will position itself at target + offset and look at target
 		void SetFocusTarget(const glm::vec3* target) { m_FocusTarget = target; }
 		void SetFollowOffset(const glm::vec3& offset) { m_FollowOffset = offset; }
 

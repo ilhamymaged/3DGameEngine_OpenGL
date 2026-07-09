@@ -25,5 +25,6 @@ namespace Agina {
 		static MeshData CreateTriangle();
 		static MeshData CreateSphere(float radius, uint32_t sectors, uint32_t stacks);
 		static MeshData CreateTerrain(float width, float depth, uint32_t m, uint32_t n);
+		static MeshData CreateQuad();
 	};
 }

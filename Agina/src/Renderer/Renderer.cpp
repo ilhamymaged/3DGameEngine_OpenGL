@@ -13,6 +13,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "SkyBox.hpp"
 
+#define DEBUG_SHADOW_MAP 0
+
 namespace Agina {
 
 	struct CameraBufferData 
@@ -37,6 +39,10 @@ namespace Agina {
 
 		std::unique_ptr<Shader> ShadowDepthShader = nullptr;
 		std::unique_ptr<Shader> SkyboxShader = nullptr;
+#if DEBUG_SHADOW_MAP
+		std::unique_ptr<Shader> DebugShadowMapShader = nullptr;
+		std::shared_ptr<Mesh> QuadMesh;
+#endif
 
 		int WindowWidth;
 		int WindowHeight;
@@ -76,6 +82,13 @@ namespace Agina {
 			(FileSystem::EngineAssets() / "shaders/skybox.vert").string(),
 			(FileSystem::EngineAssets() / "shaders/skybox.frag").string());
 
+#if DEBUG_SHADOW_MAP
+		s_Data->DebugShadowMapShader = std::make_unique<Shader>("debugShadowMap",
+			(FileSystem::EngineAssets() / "shaders/debugShadowMap.vert").string(),
+			(FileSystem::EngineAssets() / "shaders/debugShadowMap.frag").string());
+
+		s_Data->QuadMesh = Mesh::Create(MeshType::QUAD);
+#endif
 		s_Data->SkyBox = std::make_unique<Skybox>();
 	}
 
@@ -116,6 +129,14 @@ namespace Agina {
 
 	void Renderer::BeginScene(const Camera& cam)
 	{
+#if DEBUG_SHADOW_MAP 
+		glViewport(0, 0, s_Data->WindowWidth, s_Data->WindowHeight);
+
+		s_Data->DebugShadowMapShader->Use();
+		s_Data->DebugShadowMapShader->setInt("u_ShadowMap", RendererData::ShadowTextureSlot);
+		s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
+		s_Data->QuadMesh->Draw();
+#else
 		glViewport(0, 0, s_Data->WindowWidth, s_Data->WindowHeight);
 
 		CameraBufferData cameraData
@@ -126,6 +147,7 @@ namespace Agina {
 
 		s_Data->CameraBufferUBO->SetData(&cameraData, sizeof(CameraBufferData));
 		s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
+#endif
 	}
 
 	void Renderer::EndScene()

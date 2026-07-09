@@ -6,11 +6,13 @@
 namespace Agina {
 
 	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
-		: Mesh(MeshData{ vertices, indices }) {}
+		: Mesh(MeshData{ vertices, indices }) {m_AABB = ComputeAABB(vertices);}
 
 	Mesh::Mesh(const MeshData& data)
 		: m_IndexCount(data.indices.size())
 	{
+		m_AABB = ComputeAABB(data.vertices);
+
 		glGenVertexArrays(1, &m_VAO);
 		glGenBuffers(1, &m_VBO);
 		glGenBuffers(1, &m_EBO);
@@ -58,9 +60,26 @@ namespace Agina {
 		case MeshType::TRIANGLE: return std::make_shared<Mesh>(GeometryGenerator::CreateTriangle());
 		case MeshType::SPHERE:   return std::make_shared<Mesh>(GeometryGenerator::CreateSphere(1.0f, 32, 16));
 		case MeshType::TERRAIN:  return std::make_shared<Mesh>(GeometryGenerator::CreateTerrain(50.0f, 50.0f, 64, 64));
+		case MeshType::QUAD:  return std::make_shared<Mesh>(GeometryGenerator::CreateQuad());
 		}
 		AG_CORE_WARN("Unknown Built-in Mesh Type Requested");
 		return nullptr;
+	}
+
+	AABB Mesh::ComputeAABB(const std::vector<Vertex>& vertices)
+	{
+		AABB box;
+
+		box.Min = vertices.front().pos;
+		box.Max = vertices.front().pos;
+
+		for (const auto& v : vertices)
+		{
+			box.Min = glm::min(box.Min, v.pos);
+			box.Max = glm::max(box.Max, v.pos);
+		}
+
+		return box;
 	}
 
 }

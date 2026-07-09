@@ -17,6 +17,21 @@ namespace Agina
 		return data;
 	}
 
+	MeshData GeometryGenerator::CreateQuad()
+	{
+		MeshData data;
+		data.vertices =
+		{
+			{{-1.f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  0.0f}},
+			{{ 1.0f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  0.0f}},
+			{{-1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  1.0f}},
+			{{1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  1.0f}}
+		};
+
+		data.indices = {0, 1, 2, 2, 1, 3};
+		return data;
+	}
+
 	MeshData GeometryGenerator::CreateSphere(float radius, uint32_t sectors, uint32_t stacks) 
 	{
 		MeshData data;

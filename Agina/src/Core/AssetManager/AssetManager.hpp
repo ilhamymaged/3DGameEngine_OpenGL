@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unordered_map>
 
+
 namespace Agina
 {
     class AssetManager

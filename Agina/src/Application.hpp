@@ -7,7 +7,7 @@ namespace Agina  {
     class Application
     {
     public:
-        Application(const std::string& title, int width, int height, bool use_ImGui);
+        Application(const std::string& title, int width, int height);
         virtual ~Application() = default;
 
         static Application& Get() { return *s_Instance; }

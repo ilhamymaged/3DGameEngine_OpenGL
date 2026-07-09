@@ -4,7 +4,7 @@
 class Editor : public Agina::Application
 {
 public:
-	Editor() : Agina::Application("Agina Editor", 1280, 720, true) 
+	Editor() : Agina::Application("Agina Editor", 1280, 720) 
 	{
 		m_LayerStack.PushLayer(new EditorLayer());
 	}

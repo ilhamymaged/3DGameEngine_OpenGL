@@ -4,6 +4,7 @@
 #include <memory>
 #include <Renderer/Transform.hpp>
 #include "GeometryGenerator.hpp"
+#include <glm/glm.hpp>
 
 namespace Agina {
 
@@ -11,7 +12,14 @@ namespace Agina {
 	{
 		TRIANGLE,
 		SPHERE,
-		TERRAIN
+		TERRAIN,
+		QUAD
+	};
+
+	struct AABB
+	{
+		glm::vec3 Min;
+		glm::vec3 Max;
 	};
 
 	class Mesh 
@@ -26,12 +34,17 @@ namespace Agina {
 		void Draw() const;	
 	
 		static std::shared_ptr<Mesh> Create(MeshType type);
+		const AABB& GetAABB() const { return m_AABB; }
 
+	private:
+		AABB ComputeAABB(const std::vector<Vertex>& vertices);
+			
 	private:
 		uint32_t m_VAO;
 		uint32_t m_VBO;
 		uint32_t m_EBO;
 		size_t m_IndexCount;
+		AABB m_AABB;
 	};
 
 }

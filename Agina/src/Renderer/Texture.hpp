@@ -13,7 +13,11 @@ namespace Agina
 		Texture(const std::string& path);
 		~Texture();
 		void Bind(uint32_t slot = 0) const;
+
+		inline const std::string& GetPath() { return m_Path; }
+
 	private:
 		uint32_t m_ID;
+		std::string m_Path;
 	};
 }

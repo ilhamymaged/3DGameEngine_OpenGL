@@ -4,7 +4,7 @@
 
 namespace Agina
 {
-    Texture::Texture(const std::string& path)
+    Texture::Texture(const std::string& path) : m_Path(path)
     {
         glGenTextures(1, &m_ID);
         glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -15,7 +15,7 @@ namespace Agina
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         int width, height, nrChannels;
-        //stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(true);
         unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {

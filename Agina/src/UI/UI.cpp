@@ -4,6 +4,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include <GLFW/glfw3.h>
+
 namespace Agina {
 	bool UI::WantsCaptureMouse()
 	{
@@ -43,6 +45,21 @@ namespace Agina {
 			ImGuiWindowFlags_NoSavedSettings);
 	}
 
+	void UI::SelectableItem(const std::string& label)
+	{
+		ImGui::Selectable(label.c_str());
+	}
+
+	void UI::Text(const std::string& label)
+	{
+		ImGui::Text(label.c_str());
+	}
+
+	void UI::DragVec3(const std::string& label, glm::vec3& vec3)
+	{
+		ImGui::DragFloat3(label.c_str(), &vec3[0], 0.1f);
+	}
+
 	void UI::EndToolbar()
 	{
 		ImGui::End();
@@ -73,7 +90,6 @@ namespace Agina {
 
 		if (offset > 0.0) ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offset);
 	}
-
 
 	void UI::Spacing(float y)
 	{

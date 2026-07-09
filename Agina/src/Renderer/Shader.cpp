@@ -43,7 +43,7 @@ namespace Agina
         if (!success)
         {
             glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-            AG_CORE_ERROR("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+            AG_CORE_ERROR(m_Name + ": ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
             AG_CORE_ERROR(infoLog);
         }
 
@@ -55,7 +55,7 @@ namespace Agina
         if (!success)
         {
             glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-            AG_CORE_ERROR("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
+            AG_CORE_ERROR(m_Name + ": ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
             AG_CORE_ERROR(infoLog);
         }
 
@@ -68,7 +68,7 @@ namespace Agina
         if (!success)
         {
             glGetProgramInfoLog(m_programID, 512, NULL, infoLog);
-            AG_CORE_ERROR("ERROR::SHADER::PROGRAM::LINKING_FAILED\n"); 
+            AG_CORE_ERROR(m_Name + ": ERROR::SHADER::PROGRAM::LINKING_FAILED\n"); 
             AG_CORE_ERROR(infoLog);
         }
 

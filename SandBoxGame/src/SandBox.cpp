@@ -10,7 +10,7 @@ namespace Agina
 	class SandBoxGame : public Application
 	{
 	public:
-		SandBoxGame() : Application(GAME_TITLE, GAME_WIDTH, GAME_HEIGHT, false) 
+		SandBoxGame() : Application(GAME_TITLE, GAME_WIDTH, GAME_HEIGHT) 
 		{
 			m_LayerStack.PushLayer(new GameLayer());
 		}

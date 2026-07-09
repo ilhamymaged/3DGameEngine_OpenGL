@@ -8,7 +8,7 @@
 namespace Agina
 {
     Window::Window(const std::string& title, int width, int height)
-        :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0), m_FullSCreen(false)
+        :m_Width(width), m_Height(height), m_PosX(0), m_PosY(0), m_FullScreen(false)
     {
 
         glfwSetErrorCallback([](int error, const char* description) 
@@ -94,6 +94,40 @@ namespace Agina
                         Input::Get().LockMouse();
                     }
                 }
+
             });
     }
+
+    void Window::ToggleFullScreen()
+    {
+        m_FullScreen = !m_FullScreen;
+
+        if (m_FullScreen)
+        {
+            glfwGetWindowPos(m_Window, &m_PosX, &m_PosY);
+            glfwGetWindowSize(m_Window, &m_Width, &m_Height);
+
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            if (monitor)
+            {
+                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                if (mode)
+                {
+                    glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_FALSE);
+                    glfwSetWindowPos(m_Window, 0, 0);
+                    glfwSetWindowSize(m_Window, mode->width, mode->height);
+                }
+            }
+
+            m_FullScreen = false;
+        }
+        else
+        {
+            glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_TRUE);
+            glfwSetWindowSize(m_Window, m_Width, m_Height);
+            glfwSetWindowPos(m_Window, m_PosX, m_PosY);
+        }
+
+    }
+
 }
