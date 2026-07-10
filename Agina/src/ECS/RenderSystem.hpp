@@ -1,10 +1,10 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "Scene.hpp"
 
 namespace Agina {
     class RenderSystem 
     {
     public:
-        static void Render(entt::registry& registry);
+        static void Render(Scene& scene);
     };
 }

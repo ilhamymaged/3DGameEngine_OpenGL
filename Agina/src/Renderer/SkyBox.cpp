@@ -44,6 +44,12 @@ namespace Agina {
 		m_Texture = std::make_shared<CubemapTexture>(skyboxFaces);
 	}
 
+	void Skybox::Draw() const
+	{
+		glBindVertexArray(m_VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+
 	Skybox::~Skybox()
 	{
 		glDeleteVertexArrays(1, &m_VAO);
@@ -55,10 +61,6 @@ namespace Agina {
 		m_Texture->Bind(slot);
 	}
 
-	uint32_t Skybox::GetVAO() const 
-	{ 
-		return m_VAO;
-	}
 
 }
 

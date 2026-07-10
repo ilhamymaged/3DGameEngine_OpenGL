@@ -6,7 +6,9 @@
 namespace Agina {
 
 	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
-		: Mesh(MeshData{ vertices, indices }) {m_AABB = ComputeAABB(vertices);}
+		: Mesh(MeshData{ vertices, indices }) {
+		m_AABB = ComputeAABB(vertices);
+	}
 
 	Mesh::Mesh(const MeshData& data)
 		: m_IndexCount(data.indices.size())
@@ -37,7 +39,7 @@ namespace Agina {
 		glBindVertexArray(0);
 	}
 
-	Mesh::~Mesh() 
+	Mesh::~Mesh()
 	{
 		glDeleteVertexArrays(1, &m_VAO);
 		glDeleteBuffers(1, &m_VBO);
@@ -47,15 +49,15 @@ namespace Agina {
 	void Mesh::Bind() const { glBindVertexArray(m_VAO); }
 	void Mesh::Unbind() const { glBindVertexArray(0); }
 
-	void Mesh::Draw() const 
+	void Mesh::Draw() const
 	{
 		Bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_IndexCount), GL_UNSIGNED_INT, nullptr);
 	}
 
-	std::shared_ptr<Mesh> Mesh::Create(MeshType type) 
+	std::shared_ptr<Mesh> Mesh::Create(MeshType type)
 	{
-		switch (type) 
+		switch (type)
 		{
 		case MeshType::TRIANGLE: return std::make_shared<Mesh>(GeometryGenerator::CreateTriangle());
 		case MeshType::SPHERE:   return std::make_shared<Mesh>(GeometryGenerator::CreateSphere(1.0f, 32, 16));
@@ -83,4 +85,3 @@ namespace Agina {
 	}
 
 }
-

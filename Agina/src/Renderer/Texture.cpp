@@ -4,7 +4,7 @@
 
 namespace Agina
 {
-    Texture::Texture(const std::string& path) : m_Path(path)
+    Texture2D::Texture2D(const std::string& path) : m_Path(path)
     {
         glGenTextures(1, &m_ID);
         glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -35,12 +35,12 @@ namespace Agina
         stbi_image_free(data);
     }
 
-    Texture::~Texture()
+    Texture2D::~Texture2D()
     {
         glDeleteTextures(1, &m_ID);
     }
 
-    void Texture::Bind(uint32_t slot) const
+    void Texture2D::Bind(uint32_t slot) 
     {
         glActiveTexture(GL_TEXTURE0 + slot); 
         glBindTexture(GL_TEXTURE_2D, m_ID);

@@ -22,7 +22,7 @@ namespace Agina {
 		glm::vec3 Max;
 	};
 
-	class Mesh 
+	class Mesh
 	{
 	public:
 		Mesh(const MeshData& data);
@@ -31,14 +31,14 @@ namespace Agina {
 
 		void Bind() const;
 		void Unbind() const;
-		void Draw() const;	
-	
+		void Draw() const;
+
 		static std::shared_ptr<Mesh> Create(MeshType type);
 		const AABB& GetAABB() const { return m_AABB; }
 
 	private:
 		AABB ComputeAABB(const std::vector<Vertex>& vertices);
-			
+
 	private:
 		uint32_t m_VAO;
 		uint32_t m_VBO;
@@ -48,4 +48,3 @@ namespace Agina {
 	};
 
 }
-

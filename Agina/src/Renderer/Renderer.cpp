@@ -34,11 +34,7 @@ namespace Agina {
 		std::unique_ptr<UniformBuffer> CameraBufferUBO = nullptr;
 		std::unique_ptr<UniformBuffer> ShadowBufferUBO = nullptr;
 		std::unique_ptr<ShadowMapFB> ShadowDepthMap = nullptr;
-		
-		std::unique_ptr<Skybox> SkyBox = nullptr;
-
 		std::unique_ptr<Shader> ShadowDepthShader = nullptr;
-		std::unique_ptr<Shader> SkyboxShader = nullptr;
 #if DEBUG_SHADOW_MAP
 		std::unique_ptr<Shader> DebugShadowMapShader = nullptr;
 		std::shared_ptr<Mesh> QuadMesh;
@@ -49,8 +45,7 @@ namespace Agina {
 		bool IsShadowPassActive = false;
 
 		static constexpr uint32_t ShadowTextureSlot = 7;
-		static constexpr uint32_t DiffuseTextureSlot = 0;
-	};
+	};	
 
 	static RendererData* s_Data = nullptr;
 
@@ -78,10 +73,6 @@ namespace Agina {
 			(FileSystem::EngineAssets() / "shaders/shadow.vert").string(),
 			(FileSystem::EngineAssets() / "shaders/shadow.frag").string());
 
-		s_Data->SkyboxShader = std::make_unique<Shader>("skybox",
-			(FileSystem::EngineAssets() / "shaders/skybox.vert").string(),
-			(FileSystem::EngineAssets() / "shaders/skybox.frag").string());
-
 #if DEBUG_SHADOW_MAP
 		s_Data->DebugShadowMapShader = std::make_unique<Shader>("debugShadowMap",
 			(FileSystem::EngineAssets() / "shaders/debugShadowMap.vert").string(),
@@ -89,7 +80,6 @@ namespace Agina {
 
 		s_Data->QuadMesh = Mesh::Create(MeshType::QUAD);
 #endif
-		s_Data->SkyBox = std::make_unique<Skybox>();
 	}
 
 	void Renderer::Shutdown() 
@@ -108,6 +98,9 @@ namespace Agina {
 	{
 		s_Data->IsShadowPassActive = true;
 
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+
 		glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
 		glm::mat4 lightView = glm::lookAt(lightPos, lightTarget, glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -125,6 +118,7 @@ namespace Agina {
 	{
 		s_Data->IsShadowPassActive = false;
 		s_Data->ShadowDepthMap->UnbindFramebuffer();
+		glDisable(GL_CULL_FACE);
 	}
 
 	void Renderer::BeginScene(const Camera& cam)
@@ -168,28 +162,17 @@ namespace Agina {
 		{
 			mat.Bind();
 			mat.Set("u_Model", t.GetMatrix());
-			mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
-			mat.Set("u_DiffuseMap", static_cast<int>(RendererData::DiffuseTextureSlot));
+			if (mat.GetMaterialType() == MaterialType::LIT) 
+				mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
 			mesh.Draw();
 		}
 
 	}
 
-	void Renderer::DrawSkybox() 
+	void Renderer::DrawSkybox(const std::shared_ptr<Skybox> skybox) 
 	{
-		if (s_Data->IsShadowPassActive) return;
-
 		glDepthFunc(GL_LEQUAL);
-
-		s_Data->SkyboxShader->Use();
-		s_Data->SkyboxShader->setInt("u_Skybox", 0);
-
-		s_Data->SkyBox->Bind(0);
-
-		glBindVertexArray(s_Data->SkyBox->GetVAO());
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-
+		skybox->Draw();
 		glDepthFunc(GL_LESS);
 	}
 

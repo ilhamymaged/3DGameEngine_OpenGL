@@ -12,13 +12,13 @@ namespace Agina {
 		LoadModel(path);
 	}
 
-	void Model::LoadModel(const std::string& path) 
+	void Model::LoadModel(const std::string& path)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | 
+		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
 			aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			AG_CORE_ERROR("Assimp Model Parsing Error: {0}", importer.GetErrorString());
 			return;
@@ -47,28 +47,28 @@ namespace Agina {
 
 	}
 
-	void Model::ProcessNode(aiNode* node, const aiScene* scene) 
+	void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	{
-		if (!node || !scene) return; 
+		if (!node || !scene) return;
 
-		for (unsigned int i = 0; i < node->mNumMeshes; i++) 
+		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			if(mesh) m_Meshes.push_back(ProcessMesh(mesh, scene));
+			if (mesh) m_Meshes.push_back(ProcessMesh(mesh, scene));
 		}
 
-		for (unsigned int i = 0; i < node->mNumChildren; i++) 
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			ProcessNode(node->mChildren[i], scene);
 		}
 	}
 
-	std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) 
+	std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
-		for (unsigned int i = 0; i < mesh->mNumVertices; i++) 
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex;
 
@@ -76,7 +76,7 @@ namespace Agina {
 			vertex.pos.y = mesh->mVertices[i].y;
 			vertex.pos.z = mesh->mVertices[i].z;
 
-			if (mesh->HasNormals() && mesh->mNormals) 
+			if (mesh->HasNormals() && mesh->mNormals)
 			{
 				vertex.normal.x = mesh->mNormals[i].x;
 				vertex.normal.y = mesh->mNormals[i].y;
@@ -87,12 +87,12 @@ namespace Agina {
 				vertex.normal = glm::vec3(0.0f, 1.0f, 0.0f);
 			}
 
-			if (mesh->mTextureCoords[0]) 
+			if (mesh->mTextureCoords[0])
 			{
 				vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
 				vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
 			}
-			else 
+			else
 			{
 				vertex.texCoords = glm::vec2(0.0f, 0.0f);
 			}
@@ -100,7 +100,7 @@ namespace Agina {
 			vertices.push_back(vertex);
 		}
 
-		for (unsigned int i = 0; i < mesh->mNumFaces; i++) 
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 		{
 			aiFace face = mesh->mFaces[i];
 			if (face.mIndices != nullptr && face.mNumIndices > 0)
@@ -112,7 +112,7 @@ namespace Agina {
 			}
 		}
 
-		std::shared_ptr<Texture> meshTexture = nullptr;
+		std::shared_ptr<Texture2D> meshTexture = nullptr;
 
 		if (scene->mMaterials && mesh->mMaterialIndex < scene->mNumMaterials)
 		{
@@ -128,7 +128,7 @@ namespace Agina {
 		return std::make_shared<Mesh>(vertices, indices);
 	}
 
-	std::shared_ptr<Texture> Model::LoadMaterialTexture(aiMaterial* mat, aiTextureType type, const std::string& directory)
+	std::shared_ptr<Texture2D> Model::LoadMaterialTexture(aiMaterial* mat, aiTextureType type, const std::string& directory)
 	{
 		if (!mat || mat->GetTextureCount(type) == 0) return nullptr;
 
@@ -137,16 +137,16 @@ namespace Agina {
 		std::string fullPath = (std::filesystem::path(directory) / str.C_Str()).string();
 
 		auto it = std::find_if(m_UniqueTextures.begin(), m_UniqueTextures.end(),
-			[&fullPath](const std::shared_ptr<Texture>& texture) {
-				return texture->GetPath() == fullPath;
+			[&fullPath](const std::shared_ptr<Texture2D>& texture) {
+				return static_cast<bool>(texture) && texture->GetPath() == fullPath;
 			});
 
 		if (it != m_UniqueTextures.end())
 		{
-			return *it; 
+			return *it;
 		}
 
-		auto newTexture = std::make_shared<Texture>(fullPath);
+		auto newTexture = std::make_shared<Texture2D>(fullPath);
 		m_UniqueTextures.push_back(newTexture);
 		return newTexture;
 	}

@@ -1,6 +1,7 @@
 #include "GeometryGenerator.hpp"
 #include <glm/ext/scalar_constants.hpp>
 #include <cmath>
+#include <glm/gtc/noise.hpp>
 
 namespace Agina
 {
@@ -86,64 +87,96 @@ namespace Agina
 
 	MeshData GeometryGenerator::CreateTerrain(float width, float depth, uint32_t m, uint32_t n) 
 	{
-		MeshData data;
-		uint32_t vertexCount = m * n;
-		uint32_t faceCount = (m - 1) * (n - 1) * 2;
+        MeshData data;
+        uint32_t vertexCount = m * n;
+        uint32_t faceCount = (m - 1) * (n - 1) * 2;
 
-		float halfWidth = 0.5f * width;
-		float halfDepth = 0.5f * depth;
+        float halfWidth = 0.5f * width;
+        float halfDepth = 0.5f * depth;
 
-		// Distance between vertices
-		float dx = width / (n - 1);
-		float dz = depth / (m - 1);
+        float dx = width / (n - 1);
+        float dz = depth / (m - 1);
 
-		// UV texture coordinate increments
-		float du = 1.0f / (n - 1);
-		float dv = 1.0f / (m - 1);
+        float du = 1.0f / (n - 1);
+        float dv = 1.0f / (m - 1);
 
-		// 1. Generate a perfectly flat grid layout
-		data.vertices.resize(vertexCount);
-		for (uint32_t i = 0; i < m; ++i) 
-		{
-			float z = halfDepth - i * dz;
-			for (uint32_t j = 0; j < n; ++j) 
-			{
-				float x = -halfWidth + j * dx;
+        data.vertices.resize(vertexCount);
+        for (uint32_t i = 0; i < m; ++i)
+        {
+            float z = halfDepth - i * dz;
+            for (uint32_t j = 0; j < n; ++j)
+            {
+                float x = -halfWidth + j * dx;
 
-				// PERFECTLY FLAT: y is exactly 0.0f
-				float y = 0.0f;
+                float frequency = 0.015f;
 
-				uint32_t index = i * n + j;
-				data.vertices[index].pos = glm::vec3(x, y, z);
+                float n1 = glm::perlin(glm::vec2(x * frequency, z * frequency));
+                float n2 = glm::perlin(glm::vec2(x * frequency * 2.5f, z * frequency * 2.5f)) * 0.4f;
+                float n3 = glm::perlin(glm::vec2(x * frequency * 6.0f, z * frequency * 6.0f)) * 0.1f;
 
-				// Since it's flat, all normals point straight UP
-				data.vertices[index].normal = glm::vec3(0.0f, 1.0f, 0.0f);
+                float rawElevation = (n1 + n2 + n3 + 1.5f) / 3.0f;
+                rawElevation = glm::clamp(rawElevation, 0.0f, 1.0f);
 
-				data.vertices[index].texCoords = glm::vec2(j * du, i * dv);
-			}
-		}
+                float finalHeightFactor = glm::pow(rawElevation, 2.2f);
 
-		// 2. Generate Triangles connecting the grid quads
-		data.indices.resize(faceCount * 3);
-		uint32_t k = 0;
-		for (uint32_t i = 0; i < m - 1; ++i) 
-		{
-			for (uint32_t j = 0; j < n - 1; ++j) 
-			{
-				// Triangle 1
-				data.indices[k] = i * n + j;
-				data.indices[k + 1] = i * n + j + 1;
-				data.indices[k + 2] = (i + 1) * n + j;
+                float maxMountainHeight = 8.0f;
+                float y = finalHeightFactor * maxMountainHeight;
 
-				// Triangle 2
-				data.indices[k + 3] = (i + 1) * n + j;
-				data.indices[k + 4] = i * n + j + 1;
-				data.indices[k + 5] = (i + 1) * n + j + 1;
+                uint32_t index = i * n + j;
+                data.vertices[index].pos = glm::vec3(x, y, z);
+				float textureScale = 0.5f; 
+				data.vertices[index].texCoords = glm::vec2(x * textureScale, z * textureScale);
+            }
+        }
 
-				k += 6; 
-			}
-		}
-		return data;
+        data.indices.resize(faceCount * 3);
+        uint32_t k = 0;
+        for (uint32_t i = 0; i < m - 1; ++i)
+        {
+            for (uint32_t j = 0; j < n - 1; ++j)
+            {
+                data.indices[k] = i * n + j;
+                data.indices[k + 1] = i * n + j + 1;
+                data.indices[k + 2] = (i + 1) * n + j;
+
+                data.indices[k + 3] = (i + 1) * n + j;
+                data.indices[k + 4] = i * n + j + 1;
+                data.indices[k + 5] = (i + 1) * n + j + 1;
+
+                k += 6;
+            }
+        }
+
+        for (auto& vertex : data.vertices)
+        {
+            vertex.normal = glm::vec3(0.0f);
+        }
+
+        for (size_t i = 0; i < data.indices.size(); i += 3)
+        {
+            uint32_t idx0 = data.indices[i];
+            uint32_t idx1 = data.indices[i + 1];
+            uint32_t idx2 = data.indices[i + 2];
+
+            glm::vec3 v0 = data.vertices[idx0].pos;
+            glm::vec3 v1 = data.vertices[idx1].pos;
+            glm::vec3 v2 = data.vertices[idx2].pos;
+
+            glm::vec3 edge1 = v1 - v0;
+            glm::vec3 edge2 = v2 - v0;
+            glm::vec3 faceNormal = glm::cross(edge1, edge2);
+
+            data.vertices[idx0].normal += faceNormal;
+            data.vertices[idx1].normal += faceNormal;
+            data.vertices[idx2].normal += faceNormal;
+        }
+
+        for (auto& vertex : data.vertices)
+        {
+            vertex.normal = glm::normalize(vertex.normal);
+        }
+
+        return data;
 	}
 
 }

@@ -7,50 +7,63 @@
 #include <Application.hpp>
 #include <Core/Inputs/KeyMappings.hpp>
 
-using namespace Agina;
-void GameLayer::OnAttach()
-{		
-	m_Scenes.reserve(10);
-	m_Scenes.emplace_back(std::make_unique<Scene>());
-	Scene& m_ActiveScene = *m_Scenes.at(m_ActiveSceneIndex);
-	m_ActiveScene.OnCreate();
+#include <Core/AssetManager/AssetManager.hpp>
+#include <Renderer/Material.hpp>
 
-	m_Camera = m_ActiveScene.GetRegistry().create();
-	auto& camComp = m_ActiveScene.GetRegistry().emplace<CameraComponent>(m_Camera);
-	camComp.Cam = Camera(glm::vec3(0.0f, 2.0f, 5.0f));
-	camComp.IsPrimary = true;
+using namespace Agina;
+
+void GameLayer::OnAttach()
+{	
+	//Camera
+	Entity camera = m_Scene.CreateEntity();
+	camera.AddComponent<CameraComponent>();
+
+	//Sphere
+	Entity sphere = m_Scene.CreateEntity();
+	sphere.AddComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
+	auto& sMat = sphere.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE), 
+		Material::Create(MaterialType::LIT));
+	sMat.MaterialAsset->Set("u_HasColor", true);
+	sMat.MaterialAsset->Set("u_Color", glm::vec3(1.0f, 1.0f, 0.0f));
+
+	//Floor 
+	Entity ground = m_Scene.CreateEntity();
+	ground.AddComponent<Transform>(glm::vec3(0.0f));
+	auto& gMat = ground.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::TERRAIN),
+		Material::Create(MaterialType::LIT));
+	gMat.MaterialAsset->Set("u_HasColor", true);
+	gMat.MaterialAsset->Set("u_Color", glm::vec3(0.0f, 1.0f, 0.0f));
+
+	//SkyBox
+	Entity skyBox = m_Scene.CreateEntity();
+	skyBox.AddComponent<SkyboxComponent>(std::make_shared<Skybox>(), Material::Create(MaterialType::SKYBOX));
 }
 
-void GameLayer::OnEvent(Event& e)
+void GameLayer::OnEvent(Agina::Event& e)
 {
-	EventDispatcher eventDispatcher(e);
-	eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& key) 
+	Agina::EventDispatcher eventDispatcher(e);
+	eventDispatcher.Dispatch<Agina::KeyPressed>([&](Agina::KeyPressed& key) 
 	{
-		if (key.getKey() == static_cast<int>(Key::Escape)) Application::Get().ShutDown();
+		if (key.getKey() == static_cast<int>(Agina::Key::Escape)) Agina::Application::Get().ShutDown();
 	});
 
-	Scene& m_ActiveScene = *m_Scenes.at(m_ActiveSceneIndex);
-	auto& camComp = m_ActiveScene.GetRegistry().get<CameraComponent>(m_Camera);
-	camComp.Cam.OnEvent(e);
+	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
+	if (cameraEntity.has_value()) cameraEntity->GetComponent<CameraComponent>().Cam.OnEvent(e);
 }
 
 void GameLayer::OnUpdate(float dt)
 {
-	Scene& m_ActiveScene = *m_Scenes.at(m_ActiveSceneIndex);
-	m_ActiveScene.GetRegistry().get<CameraComponent>(m_Camera).Cam.Update(dt);
-	PhysicsSystem::Update(m_ActiveScene.GetRegistry(), dt);
+	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
+	if (cameraEntity.has_value()) cameraEntity->GetComponent<CameraComponent>().Cam.Update(dt);
 }
 
 void GameLayer::OnRender()
 {
-	Scene& m_ActiveScene = *m_Scenes.at(m_ActiveSceneIndex);
-	RenderSystem::Render(m_ActiveScene.GetRegistry());
+	RenderSystem::Render(m_Scene);
 }
 
 void GameLayer::OnDetach() 
 {
-	Scene& m_ActiveScene = *m_Scenes.at(m_ActiveSceneIndex);
-	m_ActiveScene.OnDestroy();
 }
 
 void GameLayer::OnUIRender() {}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Renderer/Transform.hpp>
+#include <memory>
 
 namespace Agina {
 
@@ -26,7 +27,7 @@ namespace Agina {
 		static void EndScene();
 
 		static void Draw(const Mesh& mesh, Material& mat, const Transform& t = Transform());
-		static void DrawSkybox();
+		static void DrawSkybox(const std::shared_ptr<Skybox>);
 	};
 }
 

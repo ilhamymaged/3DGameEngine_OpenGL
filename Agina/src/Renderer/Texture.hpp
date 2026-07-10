@@ -4,15 +4,16 @@
 #include <iostream>
 #include <unordered_map>
 #include <memory>
+#include "ITexture.hpp"
 
 namespace Agina
 {
-	class Texture
+	class Texture2D : public ITexture
 	{
 	public:
-		Texture(const std::string& path);
-		~Texture();
-		void Bind(uint32_t slot = 0) const;
+		Texture2D(const std::string& path);
+		~Texture2D();
+		void Bind(uint32_t slot = 0) override;
 
 		inline const std::string& GetPath() { return m_Path; }
 

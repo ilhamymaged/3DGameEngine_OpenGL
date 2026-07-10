@@ -14,7 +14,7 @@ namespace Agina {
 	class Camera
 	{
 	public:
-		Camera(const glm::vec3& pos = glm::vec3(0.0f, 1.0f, 3.0f), float fov = 45.0f);
+		Camera(const glm::vec3& pos = glm::vec3(0.0f, 4.0f, 3.0f), float fov = 45.0f);
 
 		glm::mat4 GetViewMatrix() const;
 		glm::mat4 GetProjectionMatrix(int width, int height) const;

@@ -4,12 +4,12 @@
 #include <Renderer/Transform.hpp> 
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Camera.hpp>
+#include <string>
 
 namespace Agina {
 
     class Mesh;
     class Material;
-    class Texture;
     class Model;
 
     struct TagComponent
@@ -21,7 +21,6 @@ namespace Agina {
     {
         std::shared_ptr<Mesh> MeshAsset;
         std::shared_ptr<Material> MaterialAsset;
-        std::shared_ptr<Texture> DiffuseTextureAsset = nullptr;
     };
 
     struct ModelComponent 
@@ -39,7 +38,8 @@ namespace Agina {
 
     struct SkyboxComponent 
     {
-        bool Enabled = true;
+        std::shared_ptr<Skybox> skyBoxAsset;
+        std::shared_ptr<Material> skyBoxMaterialAsset;
     };
 
     struct DirectionalLightComponent 

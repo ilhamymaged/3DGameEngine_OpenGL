@@ -13,7 +13,8 @@ namespace Agina {
 		~Skybox();
 
 		void Bind(uint32_t slot = 0) const;
-		uint32_t GetVAO() const;
+
+		void Draw() const;
 
 	private:
 		std::shared_ptr<CubemapTexture> m_Texture;

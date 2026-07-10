@@ -9,7 +9,8 @@ layout (std140, binding = 0) uniform CameraData
     mat4 u_View;
 };
 
-layout (std140, binding = 1) uniform ShadowBuffer {
+layout (std140, binding = 1) uniform ShadowBuffer 
+{
     mat4 u_LightSpaceMatrix;
     vec3 u_LightPos;
 };

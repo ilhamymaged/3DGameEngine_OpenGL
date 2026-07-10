@@ -12,7 +12,7 @@
 namespace Agina {
 
 	class Mesh;
-	class Texture;
+	class Texture2D;
 
 	class Model
 	{
@@ -21,17 +21,17 @@ namespace Agina {
 		~Model() = default;
 
 		inline const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const { return m_Meshes; }
-		inline const std::vector<std::shared_ptr<Texture>>& GetTextures() const { return m_MeshTextures; }
+		inline const std::vector<std::shared_ptr<Texture2D>>& GetTextures() const { return m_MeshTextures; }
 
 	private:
 		void LoadModel(const std::string& path);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
-		std::shared_ptr<Texture> LoadMaterialTexture(aiMaterial* mat, aiTextureType type, const std::string& directory);
+		std::shared_ptr<Texture2D> LoadMaterialTexture(aiMaterial* mat, aiTextureType type, const std::string& directory);
 	private:
 		std::vector<std::shared_ptr<Mesh>> m_Meshes;
-		std::vector<std::shared_ptr<Texture>> m_MeshTextures;
-		std::vector<std::shared_ptr<Texture>> m_UniqueTextures;
+		std::vector<std::shared_ptr<Texture2D>> m_MeshTextures;
+		std::vector<std::shared_ptr<Texture2D>> m_UniqueTextures;
 		std::string m_Directory;
 		AABB m_AABB;
 	};

@@ -11,7 +11,6 @@ namespace Agina {
 		glGenTextures(1, &m_ID);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 
-		// Cubemaps do not need vertical inversion like 2D screen textures
 		stbi_set_flip_vertically_on_load(false);
 
 		int width, height, nrChannels;
@@ -25,7 +24,6 @@ namespace Agina {
 				else if (nrChannels == 3) format = GL_RGB;
 				else if (nrChannels == 4) format = GL_RGBA;
 
-				// Increments matching sequential targets: GL_TEXTURE_CUBEMAP_POSITIVE_X + i
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 				stbi_image_free(data);
 			}
@@ -43,14 +41,15 @@ namespace Agina {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	}
 
-	uint32_t CubemapTexture::GetID() const 
-	{ 
-		return m_ID; 
+	void CubemapTexture::Bind(uint32_t slot)
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 	}
 
-	void CubemapTexture::Bind(uint32_t slot) const
-	{
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+	uint32_t CubemapTexture::GetID() const
+	{ 
+		return m_ID; 
 	}
 
 	CubemapTexture::~CubemapTexture()
