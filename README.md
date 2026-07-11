@@ -6,7 +6,7 @@
 ![Status](https://img.shields.io/badge/Status-Active%20Development-orange)
 
 <p align="center">
-  <img src="docs/images/screenshot.png" alt="Engine Screenshot" width="900">
+  <img src="screenshot.png" alt="Engine Screenshot" width="900">
 </p>
 
 A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on providing a modern, modular architecture for real-time rendering and game development.
@@ -44,7 +44,7 @@ A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on pr
 ## Current Screenshot
 
 <p align="center">
-  <img src="docs/images/screenshot.png" width="900">
+  <img src="screenshot.png" width="900">
 </p>
 
 ---
