@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 #include <glad/glad.h>
 #include <Core/Logger/Logger.hpp>
-#include <glm/ext/scalar_constants.hpp> 
+#include <cmath>
 
 namespace Agina {
 
@@ -77,8 +77,8 @@ namespace Agina {
 
 		for (const auto& v : vertices)
 		{
-			box.Min = glm::min(box.Min, v.pos);
-			box.Max = glm::max(box.Max, v.pos);
+			box.Min = std::min(box.Min, v.pos);
+			box.Max = std::max(box.Max, v.pos);
 		}
 
 		return box;

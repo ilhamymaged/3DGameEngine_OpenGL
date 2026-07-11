@@ -1,7 +1,7 @@
 #include "GeometryGenerator.hpp"
 #include <glm/ext/scalar_constants.hpp>
-#include <cmath>
 #include <glm/gtc/noise.hpp>
+#include <Core/Math/Math.hpp>
 
 namespace Agina
 {
@@ -123,9 +123,9 @@ namespace Agina
                 float y = finalHeightFactor * maxMountainHeight;
 
                 uint32_t index = i * n + j;
-                data.vertices[index].pos = glm::vec3(x, y, z);
+                data.vertices[index].pos = Vec3(x, y, z);
 				float textureScale = 0.5f; 
-				data.vertices[index].texCoords = glm::vec2(x * textureScale, z * textureScale);
+				data.vertices[index].texCoords = Vec2(x * textureScale, z * textureScale);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Agina
 
         for (auto& vertex : data.vertices)
         {
-            vertex.normal = glm::vec3(0.0f);
+            vertex.normal = Vec3(0.0f);
         }
 
         for (size_t i = 0; i < data.indices.size(); i += 3)
@@ -158,13 +158,13 @@ namespace Agina
             uint32_t idx1 = data.indices[i + 1];
             uint32_t idx2 = data.indices[i + 2];
 
-            glm::vec3 v0 = data.vertices[idx0].pos;
-            glm::vec3 v1 = data.vertices[idx1].pos;
-            glm::vec3 v2 = data.vertices[idx2].pos;
+            Vec3 v0 = data.vertices[idx0].pos;
+            Vec3 v1 = data.vertices[idx1].pos;
+			Vec3 v2 = data.vertices[idx2].pos;
 
-            glm::vec3 edge1 = v1 - v0;
-            glm::vec3 edge2 = v2 - v0;
-            glm::vec3 faceNormal = glm::cross(edge1, edge2);
+			Vec3 edge1 = v1 - v0;
+			Vec3 edge2 = v2 - v0;
+			Vec3 faceNormal = Math::Cross(edge1, edge2);
 
             data.vertices[idx0].normal += faceNormal;
             data.vertices[idx1].normal += faceNormal;
@@ -173,7 +173,7 @@ namespace Agina
 
         for (auto& vertex : data.vertices)
         {
-            vertex.normal = glm::normalize(vertex.normal);
+            vertex.normal = Math::Normalize(vertex.normal);
         }
 
         return data;

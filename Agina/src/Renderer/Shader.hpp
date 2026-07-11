@@ -2,8 +2,9 @@
 
 #include <glad/glad.h>
 #include <string>
-#include <glm/glm.hpp>
+#include <Core/Math/MathTypes.hpp>
 #include <unordered_map>
+#include <cstdint> // Added for uint32_t safety
 
 namespace Agina
 {
@@ -14,9 +15,9 @@ namespace Agina
         ~Shader();
 
         Shader& Use();
-        void setMat4(const std::string& name, const glm::mat4& mat);
-        void setVec4(const std::string& name, const glm::vec4& vec);
-        void setVec3(const std::string& name, const glm::vec3& vec);
+        void setMat4(const std::string& name, const Mat4& mat); 
+        void setVec4(const std::string& name, const Vec4& vec); 
+        void setVec3(const std::string& name, const Vec3& vec);
         void setInt(const std::string& name, int value);
         void setFloat(const std::string& name, float value);
 

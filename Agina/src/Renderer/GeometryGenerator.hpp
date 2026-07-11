@@ -2,15 +2,15 @@
 
 #include <vector>
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <Core/Math/MathTypes.hpp>
 
 namespace Agina {
 
 	struct Vertex 
 	{
-		glm::vec3 pos;
-		glm::vec3 normal;
-		glm::vec2 texCoords;
+		Vec3 pos;
+		Vec3 normal;
+		Vec2 texCoords;
 	};
 
 	struct MeshData 

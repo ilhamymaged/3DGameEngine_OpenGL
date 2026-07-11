@@ -76,22 +76,23 @@ namespace Agina
         glDeleteShader(fragment);
     };
 
-    void Shader::setMat4(const std::string& name, const glm::mat4& mat)
+    void Shader::setMat4(const std::string& name, const Mat4& mat)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) glUniformMatrix4fv(loc, 1, GL_FALSE, &(mat)[0][0]);
+        if (loc != -1) glUniformMatrix4fv(loc, 1, GL_FALSE, &mat.data[0]);
     }
 
-    void Shader::setVec4(const std::string& name, const glm::vec4& vec)
+
+    void Shader::setVec4(const std::string& name, const Vec4& vec)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) glUniform4fv(loc, 1, &vec[0]);
+        if (loc != -1) glUniform4fv(loc, 1, &vec.x);
     }
 
-    void Shader::setVec3(const std::string& name, const glm::vec3& vec)
+    void Shader::setVec3(const std::string& name, const Vec3& vec)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) glUniform3fv(loc, 1, &vec[0]);
+        if (loc != -1) glUniform3fv(loc, 1, &vec.x);
     }
 
     void Shader::setInt(const std::string& name, int value)

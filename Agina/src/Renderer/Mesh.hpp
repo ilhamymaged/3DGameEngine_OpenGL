@@ -4,7 +4,7 @@
 #include <memory>
 #include <Renderer/Transform.hpp>
 #include "GeometryGenerator.hpp"
-#include <glm/glm.hpp>
+#include <Core/Math/MathTypes.hpp>
 
 namespace Agina {
 
@@ -18,8 +18,8 @@ namespace Agina {
 
 	struct AABB
 	{
-		glm::vec3 Min;
-		glm::vec3 Max;
+		Vec3 Min;
+		Vec3 Max;
 	};
 
 	class Mesh

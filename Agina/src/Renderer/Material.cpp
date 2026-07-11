@@ -3,18 +3,19 @@
 #include <Core/Logger/Logger.hpp>
 #include <Core/FileSystem/FileSystem.hpp>
 #include <Core/AssetManager/AssetManager.hpp>
+#include <type_traits> 
 
 namespace Agina {
 
 	Material::Material(std::shared_ptr<Shader> shader, MaterialType type)
-		: m_Shader(shader), m_MaterialType(type) {}
+		: m_Shader(shader), m_MaterialType(type)  {}
 
 	const MaterialValue& Material::Get(const std::string& name) const
 	{
 		return m_Parameters.at(name);
 	}
 
-	void Material::Set(const std::string& name, const MaterialValue& value) 
+	void Material::Set(const std::string& name, const MaterialValue& value)
 	{
 		m_Parameters[name] = value;
 	}
@@ -34,14 +35,14 @@ namespace Agina {
 	std::shared_ptr<Material> Material::Lit()
 	{
 		return std::make_shared<Material>(AssetManager::LoadShader("lit",
-			(FileSystem::EngineAssets()/"shaders/lit").string()),
+			(FileSystem::EngineAssets() / "shaders/lit").string()),
 			MaterialType::LIT);
 	}
 
 	std::shared_ptr<Material> Material::UnLit()
 	{
 		return std::make_shared<Material>(AssetManager::LoadShader("unlit",
-			(FileSystem::EngineAssets()/"shaders/unlit").string()),
+			(FileSystem::EngineAssets() / "shaders/unlit").string()),
 			MaterialType::UNLIT);
 	}
 
@@ -65,14 +66,13 @@ namespace Agina {
 						m_Shader->setInt(name, v);
 					else if constexpr (std::is_same_v<T, float>)
 						m_Shader->setFloat(name, v);
-					else if constexpr (std::is_same_v<T, glm::vec3>)
+					else if constexpr (std::is_same_v<T, Vec3>)  
 						m_Shader->setVec3(name, v);
-					else if constexpr (std::is_same_v<T, glm::vec4>)
+					else if constexpr (std::is_same_v<T, Vec4>)  
 						m_Shader->setVec4(name, v);
-					else if constexpr (std::is_same_v<T, glm::mat4>)
+					else if constexpr (std::is_same_v<T, Mat4>)  
 						m_Shader->setMat4(name, v);
 				}, value);
 		}
 	}
 }
-

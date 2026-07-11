@@ -20,7 +20,7 @@ namespace Agina {
 
 		static void ClearColor(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f);
 
-		static void BeginShadowPass(const glm::vec3& lightPos, const glm::vec3& lightTarget);
+		static void BeginShadowPass(const Vec3& lightPos, const Vec3& lightTarget);
 		static void EndShadowPass();
 
 		static void BeginScene(const Camera& cam);

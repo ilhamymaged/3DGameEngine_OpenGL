@@ -10,6 +10,8 @@
 #include <Core/AssetManager/AssetManager.hpp>
 #include <Renderer/Material.hpp>
 
+#include <Core/Math/MathTypes.hpp>
+
 using namespace Agina;
 
 void GameLayer::OnAttach()
@@ -20,19 +22,19 @@ void GameLayer::OnAttach()
 
 	//Sphere
 	Entity sphere = m_Scene.CreateEntity();
-	sphere.AddComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
+	sphere.AddComponent<Transform>(Vec3(0.0f, 5.0f, 0.0f));
 	auto& sMat = sphere.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE), 
 		Material::Create(MaterialType::LIT));
 	sMat.MaterialAsset->Set("u_HasColor", true);
-	sMat.MaterialAsset->Set("u_Color", glm::vec3(1.0f, 1.0f, 0.0f));
+	sMat.MaterialAsset->Set("u_Color", Vec3(1.0f, 1.0f, 0.0f));
 
 	//Floor 
 	Entity ground = m_Scene.CreateEntity();
-	ground.AddComponent<Transform>(glm::vec3(0.0f));
+	ground.AddComponent<Transform>(Vec3(0.0f));
 	auto& gMat = ground.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::TERRAIN),
 		Material::Create(MaterialType::LIT));
 	gMat.MaterialAsset->Set("u_HasColor", true);
-	gMat.MaterialAsset->Set("u_Color", glm::vec3(0.0f, 1.0f, 0.0f));
+	gMat.MaterialAsset->Set("u_Color", Vec3(0.0f, 1.0f, 0.0f));
 
 	//SkyBox
 	Entity skyBox = m_Scene.CreateEntity();

@@ -1,19 +1,17 @@
 #include "Transform.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include <Core/Math/Math.hpp>
 
 namespace Agina {
 	
-	Transform::Transform(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale)
+	Transform::Transform(const Vec3& pos, const Vec3& rot, const Vec3& scale)
 		: Position(pos), Rotation(rot), Scale(scale){}
 
-	glm::mat4 Transform::GetMatrix() const
+	Mat4 Transform::GetMatrix() const
 	{
-		glm::mat4 mat = glm::mat4(1.0f);
-		mat = glm::translate(mat, Position);
-		mat = glm::rotate(mat, Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		mat = glm::rotate(mat, Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		mat = glm::rotate(mat, Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-		mat = glm::scale(mat, Scale);
+		Mat4 mat;
+		mat = Math::Translate(mat, Position);
+		mat = Math::Rotate(mat, Rotation);
+		mat = Math::Scale(mat, Scale);
 		return mat;
 	}
 

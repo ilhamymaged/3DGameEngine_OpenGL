@@ -3,12 +3,13 @@
 #include "Shader.hpp"
 #include <memory>
 #include <variant>
-#include <glm/glm.hpp>
 #include <unordered_map>
+#include <cstdint> 
+#include <Core/Math/MathTypes.hpp>
 
 namespace Agina {
 
-	using MaterialValue = std::variant<int, float, glm::vec3, glm::vec4, glm::mat4>;
+	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4>;
 
 	enum MaterialType
 	{

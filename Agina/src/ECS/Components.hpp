@@ -1,10 +1,10 @@
 #pragma once
-#include <glm/glm.hpp>
 #include <memory>
 #include <Renderer/Transform.hpp> 
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Camera.hpp>
 #include <string>
+#include <Core/Math/MathTypes.hpp>
 
 namespace Agina {
 
@@ -44,7 +44,7 @@ namespace Agina {
 
     struct DirectionalLightComponent 
     {
-        glm::vec3 Position;
-        glm::vec3 Target;
+        Vec3 Position;
+        Vec3 Target;
     };
 }

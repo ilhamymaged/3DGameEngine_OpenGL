@@ -3,7 +3,6 @@
 #include <Core/Logger/Logger.hpp>
 #include <filesystem>
 #include <algorithm>
-#include <glm/ext/scalar_constants.hpp> 
 
 namespace Agina {
 
@@ -40,8 +39,8 @@ namespace Agina {
 			}
 			else
 			{
-				m_AABB.Min = glm::min(m_AABB.Min, box.Min);
-				m_AABB.Max = glm::max(m_AABB.Max, box.Max);
+				m_AABB.Min = std::min(m_AABB.Min, box.Min);
+				m_AABB.Max = std::max(m_AABB.Max, box.Max);
 			}
 		}
 
@@ -84,7 +83,7 @@ namespace Agina {
 			}
 			else
 			{
-				vertex.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+				vertex.normal = Vec3(0.0f, 1.0f, 0.0f);
 			}
 
 			if (mesh->mTextureCoords[0])
@@ -94,7 +93,7 @@ namespace Agina {
 			}
 			else
 			{
-				vertex.texCoords = glm::vec2(0.0f, 0.0f);
+				vertex.texCoords = Vec2(0.0f, 0.0f);
 			}
 
 			vertices.push_back(vertex);

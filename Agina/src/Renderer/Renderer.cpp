@@ -10,8 +10,8 @@
 #include <Core/FileSystem/FileSystem.hpp>
 #include "UniformBuffer.hpp"
 #include "ShadowMapFB.hpp"
-#include <glm/gtc/matrix_transform.hpp>
 #include "SkyBox.hpp"
+#include <Core/Math/MathTypes.hpp>
 
 #define DEBUG_SHADOW_MAP 0
 
@@ -19,14 +19,14 @@ namespace Agina {
 
 	struct CameraBufferData 
 	{
-		glm::mat4 Projection;
-		glm::mat4 View;
+		Mat4 Projection;
+		Mat4 View;
 	};
 
 	struct ShadowBufferData 
 	{
-		glm::mat4 LightSpaceMatrix;
-		glm::vec3 LightPos;
+		Mat4 LightSpaceMatrix;
+		Vec3 LightPos;
 	};
 
 	struct RendererData 
@@ -94,15 +94,15 @@ namespace Agina {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::BeginShadowPass(const glm::vec3& lightPos, const glm::vec3& lightTarget) 
+	void Renderer::BeginShadowPass(const Vec3& lightPos, const Vec3& lightTarget) 
 	{
 		s_Data->IsShadowPassActive = true;
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 
-		glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
-		glm::mat4 lightView = glm::lookAt(lightPos, lightTarget, glm::vec3(0.0f, 1.0f, 0.0f));
+		Mat4 lightProjection = Math::Ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
+		Mat4 lightView = Math::LookAt(lightPos, lightTarget, Vec3(0.0f, 1.0f, 0.0f));
 
 		ShadowBufferData shadowData{ lightProjection * lightView, lightPos };
 		s_Data->ShadowBufferUBO->SetData(&shadowData, sizeof(ShadowBufferData));

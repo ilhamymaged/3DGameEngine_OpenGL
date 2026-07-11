@@ -6,6 +6,7 @@
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Model.hpp>  
 #include <Renderer/Texture.hpp>
+#include <Core/Math/MathTypes.hpp>
 
 namespace Agina {
 
@@ -15,8 +16,8 @@ namespace Agina {
 		if (!cameraEntity.has_value()) return;
 		auto& camera = cameraEntity->GetComponent<CameraComponent>().Cam;
 
-		glm::vec3 lightPos(-10.0f, 20.0f, -5.0f);
-		glm::vec3 lightTarget(0.0f, 0.0f, 0.0f);
+		Vec3 lightPos(-10.0f, 20.0f, -5.0f);
+		Vec3 lightTarget(0.0f, 0.0f, 0.0f);
 
 		auto lightEntity = scene.FindEntityWithComponent<DirectionalLightComponent>();
 		if (lightEntity.has_value())
