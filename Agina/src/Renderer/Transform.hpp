@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
 
 namespace Agina {
 

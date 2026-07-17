@@ -1,7 +1,7 @@
+#include <glad/glad.h>
 #include "Skybox.hpp"
 #include <Renderer/CubemapTexture.hpp>
-#include <Core/FileSystem/FileSystem.hpp>
-#include <glad/glad.h>
+#include <Core/FileSystem.hpp>
 #include <vector>
 #include <string>
 

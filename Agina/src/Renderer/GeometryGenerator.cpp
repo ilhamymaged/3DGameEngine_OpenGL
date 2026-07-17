@@ -1,18 +1,35 @@
 #include "GeometryGenerator.hpp"
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/gtc/noise.hpp>
-#include <Core/Math/Math.hpp>
+#include <Core/Math.hpp>
 
 namespace Agina
 {
+	MeshData GeometryGenerator::CreateGrid()
+	{
+		MeshData data;
+
+		data.vertices =
+		{
+			{ { -100.0f, 0.0f, -100.0f }, {0,1,0}, {0,0}, {1,0,0} }, 
+			{ {  100.0f, 0.0f, -100.0f }, {0,1,0}, {1,0}, {1,0,0} }, 
+			{ {  100.0f, 0.0f,  100.0f }, {0,1,0}, {1,1}, {1,0,0} }, 
+			{ { -100.0f, 0.0f,  100.0f }, {0,1,0}, {0,1}, {1,0,0} }  
+		};
+
+		data.indices = { 0, 1, 2, 0, 2, 3 };
+
+		return data;
+	}
+
 	MeshData GeometryGenerator::CreateTriangle() 
 	{
 		MeshData data;
 		data.vertices = 
 		{
-			{{-0.5f, -0.5f, 0.0f}, {0,0,1}, {0,0}},
-			{{ 0.5f, -0.5f, 0.0f}, {0,0,1}, {1,0}},
-			{{ 0.0f,  0.5f, 0.0f}, {0,0,1}, {0.5f,1}}
+			{{-0.5f, -0.5f, 0.0f}, {0,0,1}, {0,0}, {1,0,0}},
+			{{ 0.5f, -0.5f, 0.0f}, {0,0,1}, {1,0}, {1,0,0}},
+			{{ 0.0f,  0.5f, 0.0f}, {0,0,1}, {0.5f,1}, {1,0,0}}
 		};
 		data.indices = { 0, 1, 2 };
 		return data;
@@ -23,10 +40,10 @@ namespace Agina
 		MeshData data;
 		data.vertices =
 		{
-			{{-1.f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  0.0f}},
-			{{ 1.0f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  0.0f}},
-			{{-1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  1.0f}},
-			{{1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  1.0f}}
+			{{-1.f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  0.0f}, {1,0,0}},
+			{{ 1.0f, -1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  0.0f}, {1,0,0}},
+			{{-1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f,  1.0f}, {1,0,0}},
+			{{ 1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f,  1.0f}, {1,0,0}}
 		};
 
 		data.indices = {0, 1, 2, 2, 1, 3};
@@ -39,6 +56,7 @@ namespace Agina
 		float x, y, z, xy;
 		float nx, ny, nz, lengthInv = 1.0f / radius;
 		float s, t;
+		float tx, ty, tz;
 
 		float sectorStep = 2 * glm::pi<float>() / sectors;
 		float stackStep = glm::pi<float>() / stacks;
@@ -60,9 +78,13 @@ namespace Agina
 				nz = z * lengthInv;
 
 				s = (float)j / sectors;
-				t = (float)i / stacks;
+				t = 1.0f - (float)i / stacks;
 
-				data.vertices.push_back({ {x, y, z}, {nx, ny, nz}, {s, t} });
+				tx = -sinf(sectorAngle);
+				ty = cosf(sectorAngle);
+				tz = 0.0f;
+				Vec3 tangent = Math::Normalize(Vec3(tx, ty, tz));
+				data.vertices.push_back({ {x, y, z}, {nx, ny, nz}, {s, t}, tangent });
 			}
 		}
 
@@ -150,6 +172,7 @@ namespace Agina
         for (auto& vertex : data.vertices)
         {
             vertex.normal = Vec3(0.0f);
+			vertex.tangent = Vec3(0.0f); 
         }
 
         for (size_t i = 0; i < data.indices.size(); i += 3)
@@ -158,25 +181,97 @@ namespace Agina
             uint32_t idx1 = data.indices[i + 1];
             uint32_t idx2 = data.indices[i + 2];
 
-            Vec3 v0 = data.vertices[idx0].pos;
-            Vec3 v1 = data.vertices[idx1].pos;
-			Vec3 v2 = data.vertices[idx2].pos;
+            Vertex& v0 = data.vertices[idx0];
+            Vertex& v1 = data.vertices[idx1];
+            Vertex& v2 = data.vertices[idx2];
 
-			Vec3 edge1 = v1 - v0;
-			Vec3 edge2 = v2 - v0;
-			Vec3 faceNormal = Math::Cross(edge1, edge2);
+            Vec3 edge1 = v1.pos - v0.pos;
+            Vec3 edge2 = v2.pos - v0.pos;
 
-            data.vertices[idx0].normal += faceNormal;
-            data.vertices[idx1].normal += faceNormal;
-            data.vertices[idx2].normal += faceNormal;
+            Vec3 faceNormal = Math::Cross(edge1, edge2);
+            v0.normal += faceNormal;
+            v1.normal += faceNormal;
+            v2.normal += faceNormal;
+
+            Vec2 deltaUV1 = v1.texCoords - v0.texCoords;
+            Vec2 deltaUV2 = v2.texCoords - v0.texCoords;
+
+			float denominator = (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+			float f = (std::abs(denominator) > 0.00001f) ? 1.0f / denominator : 1.0f;
+
+            Vec3 faceTangent;
+            faceTangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            faceTangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            faceTangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+            v0.tangent += faceTangent;
+            v1.tangent += faceTangent;
+            v2.tangent += faceTangent;
         }
 
         for (auto& vertex : data.vertices)
         {
             vertex.normal = Math::Normalize(vertex.normal);
+			vertex.tangent = Math::Normalize(vertex.tangent); 
         }
 
         return data;
+	}
+
+	MeshData GeometryGenerator::CreateCube()
+	{
+		MeshData data;
+
+		data.vertices =
+		{
+			// Front Face (Normal: 0, 0, 1)
+			{ { -0.5f, -0.5f,  0.5f }, { 0.0f,  0.0f,  1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f, -0.5f,  0.5f }, { 0.0f,  0.0f,  1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f,  0.5f,  0.5f }, { 0.0f,  0.0f,  1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ { -0.5f,  0.5f,  0.5f }, { 0.0f,  0.0f,  1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+
+			// Back Face (Normal: 0, 0, -1)
+			{ {  0.5f, -0.5f, -0.5f }, { 0.0f,  0.0f, -1.0f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } },
+			{ { -0.5f, -0.5f, -0.5f }, { 0.0f,  0.0f, -1.0f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } },
+			{ { -0.5f,  0.5f, -0.5f }, { 0.0f,  0.0f, -1.0f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f } },
+			{ {  0.5f,  0.5f, -0.5f }, { 0.0f,  0.0f, -1.0f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f } },
+
+			// Top Face (Normal: 0, 1, 0)
+			{ { -0.5f,  0.5f,  0.5f }, { 0.0f,  1.0f,  0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f,  0.5f,  0.5f }, { 0.0f,  1.0f,  0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f,  0.5f, -0.5f }, { 0.0f,  1.0f,  0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ { -0.5f,  0.5f, -0.5f }, { 0.0f,  1.0f,  0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+
+			// Bottom Face (Normal: 0, -1, 0)
+			{ { -0.5f, -0.5f, -0.5f }, { 0.0f, -1.0f,  0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f, -0.5f, -0.5f }, { 0.0f, -1.0f,  0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ {  0.5f, -0.5f,  0.5f }, { 0.0f, -1.0f,  0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+			{ { -0.5f, -0.5f,  0.5f }, { 0.0f, -1.0f,  0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f } },
+
+			// Left Face (Normal: -1, 0, 0)
+			{ { -0.5f, -0.5f, -0.5f }, { -1.0f,  0.0f,  0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { -0.5f, -0.5f,  0.5f }, { -1.0f,  0.0f,  0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { -0.5f,  0.5f,  0.5f }, { -1.0f,  0.0f,  0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { -0.5f,  0.5f, -0.5f }, { -1.0f,  0.0f,  0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+
+			// Right Face (Normal: 1, 0, 0)
+			{ {  0.5f, -0.5f,  0.5f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ {  0.5f, -0.5f, -0.5f }, {  1.0f,  0.0f,  0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ {  0.5f,  0.5f, -0.5f }, {  1.0f,  0.0f,  0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ {  0.5f,  0.5f,  0.5f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } }
+		};
+
+		data.indices =
+		{
+			0,  1,  2,  0,  2,  3,  // Front
+			4,  5,  6,  4,  6,  7,  // Back
+			8,  9,  10, 8,  10, 11, // Top
+			12, 13, 14, 12, 14, 15, // Bottom
+			16, 17, 18, 16, 18, 19, // Left
+			20, 21, 22, 20, 22, 23  // Right
+		};
+
+		return data;
 	}
 
 }

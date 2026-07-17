@@ -6,6 +6,7 @@
 namespace Agina {
 
 	class Mesh;
+	class Model;
 	class Material;
 	class Camera;
 	class Event;
@@ -27,6 +28,7 @@ namespace Agina {
 		static void EndScene();
 
 		static void Draw(const Mesh& mesh, Material& mat, const Transform& t = Transform());
+		static void Draw(const Model& model, Material& mat, const Transform& t = Transform());
 		static void DrawSkybox(const std::shared_ptr<Skybox>);
 	};
 }

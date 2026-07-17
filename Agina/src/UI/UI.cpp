@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 namespace Agina {
+
 	bool UI::WantsCaptureMouse()
 	{
 		return ImGui::GetCurrentContext() != nullptr && ImGui::GetIO().WantCaptureMouse;
@@ -55,9 +56,9 @@ namespace Agina {
 		ImGui::Text(label.c_str());
 	}
 
-	void UI::DragVec3(const std::string& label, glm::vec3& vec3)
+	void UI::DragVec3(const std::string& label, Vec3& vec3)
 	{
-		ImGui::DragFloat3(label.c_str(), &vec3[0], 0.1f);
+		ImGui::DragFloat3(label.c_str(), &vec3.x, 0.1f);
 	}
 
 	void UI::EndToolbar()
@@ -108,6 +109,9 @@ namespace Agina {
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 460");
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
 	}
 
 	void UI::BeginFrame()

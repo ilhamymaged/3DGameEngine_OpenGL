@@ -1,9 +1,10 @@
 #version 460 core
 layout (location = 0) in vec3 aPos;
 
-layout (std140, binding = 1) uniform ShadowBuffer {
+layout (std140, binding = 1) uniform ShadowBuffer 
+{
     mat4 u_LightSpaceMatrix;
-    vec3 u_LightPos;
+    vec4 u_LightPos;
 };
 
 uniform mat4 u_Model;

@@ -2,9 +2,9 @@
 
 #include <glad/glad.h>
 #include <string>
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
 #include <unordered_map>
-#include <cstdint> // Added for uint32_t safety
+#include <cstdint> 
 
 namespace Agina
 {

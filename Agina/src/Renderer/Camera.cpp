@@ -1,9 +1,9 @@
 #include "Camera.hpp"
-#include <Core/Inputs/Inputs.hpp>
-#include <Core/Inputs/KeyMappings.hpp>
-#include <Core/Inputs/Events.hpp>
+#include <Core/Inputs.hpp>
+#include <Core/KeyMappings.hpp>
+#include <Core/Events.hpp>
 #include <UI/UI.hpp>
-#include <Core/Math/Math.hpp>
+#include <Core/Math.hpp>
 
 namespace Agina {
 

@@ -2,7 +2,7 @@
 
 #include <iostream> 
 #include <GLFW/glfw3.h>
-#include <Core/Inputs/Events.hpp>
+#include <Core/Events.hpp>
 #include <vector>
 #include <unordered_map>
 #include <memory>

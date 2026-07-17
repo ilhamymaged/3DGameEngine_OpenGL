@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/LayerStack/Layer.hpp>
+#include <Core/Layer.hpp>
 #include <ECS/Scene.hpp>
 
 class GameLayer : public Agina::Layer

@@ -4,8 +4,8 @@
 namespace Agina
 {
 	static std::string GAME_TITLE = "SandBoxGame"; 
-	static uint16_t GAME_WIDTH = 1280;
-	static uint16_t GAME_HEIGHT = 720;
+	static uint16_t GAME_WIDTH = 1600;
+	static uint16_t GAME_HEIGHT = 900;
 
 	class SandBoxGame : public Application
 	{

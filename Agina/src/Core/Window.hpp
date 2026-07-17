@@ -20,6 +20,8 @@ namespace Agina {
         GLFWwindow* GetGLFWwindow() const;
         void OnEvent(Event& e);
 
+        void SetWindowTitle(const std::string& title);
+
         void Close() const;
 
     private:

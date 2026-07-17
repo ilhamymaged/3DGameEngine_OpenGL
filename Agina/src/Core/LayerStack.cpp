@@ -1,4 +1,4 @@
-#include <Core/LayerStack/LayerStack.hpp>
+#include <Core/LayerStack.hpp>
 #include <algorithm>
 
 namespace Agina

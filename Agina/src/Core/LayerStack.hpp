@@ -1,6 +1,6 @@
 #pragma once
-#include <Core/LayerStack/Layer.hpp>
-#include <Core/Inputs/Events.hpp>
+#include <Core/Layer.hpp>
+#include <Core/Events.hpp>
 #include <vector>
 
 namespace Agina

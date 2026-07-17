@@ -1,4 +1,4 @@
-#include <Core/Time/Time.hpp>    
+#include <Core/Time.hpp>    
 #include <GLFW/glfw3.h>
 
 namespace Agina

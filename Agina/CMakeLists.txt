@@ -32,6 +32,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     vendor/imgui/backends
     vendor/spdlog
     vendor/miniaudio
+    vendor
 )
 
 add_subdirectory(vendor/glfw)

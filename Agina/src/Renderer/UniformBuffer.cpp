@@ -1,6 +1,5 @@
-#include "UniformBuffer.hpp"
-
 #include <glad/glad.h>
+#include "UniformBuffer.hpp"
 
 namespace Agina {
 

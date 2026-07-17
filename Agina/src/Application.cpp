@@ -1,12 +1,12 @@
 #include <Application.hpp>
-#include <Core/Time/Time.hpp>
-#include <Core/Inputs/Inputs.hpp>
-#include <Core/Logger/Logger.hpp>
-#include <Core/AssetManager/AssetManager.hpp>
+#include <Core/Time.hpp>
+#include <Core/Inputs.hpp>
+#include <Core/Logger.hpp>
+#include <Core/AssetManager.hpp>
 #include <UI/UI.hpp>
 #include <Sound/AudioSystem.hpp>
 #include <Renderer/Renderer.hpp>
-#include <Core/FileSystem/FileSystem.hpp>
+#include <Core/FileSystem.hpp>
 
 namespace Agina
 {
@@ -37,10 +37,26 @@ namespace Agina
     void Application::Run()
     {
         m_LayerStack.OnAttach();
+
+        float fpsTimer = 0.0f;
+        int frameCount = 0;
+
         while (!m_Window.ShouldClose())
         {
             Time::Update();
             float dt = Time::GetDeltaTime();
+            fpsTimer += dt;
+            frameCount++;
+
+            if (fpsTimer >= 1.0f)
+            {
+                int fps = frameCount; 
+                std::string title = "FPS: " + std::to_string(fps);
+                m_Window.SetWindowTitle(title);
+
+                fpsTimer = 0.0f;
+                frameCount = 0;
+            }
 
             m_Window.PollEvents();
 

@@ -4,7 +4,7 @@
 #include <memory>
 #include <Renderer/Transform.hpp>
 #include "GeometryGenerator.hpp"
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
 
 namespace Agina {
 
@@ -13,19 +13,17 @@ namespace Agina {
 		TRIANGLE,
 		SPHERE,
 		TERRAIN,
-		QUAD
-	};
-
-	struct AABB
-	{
-		Vec3 Min;
-		Vec3 Max;
+		QUAD,
+		GRID,
+		CUBE,
+		NON_BUILTIN
 	};
 
 	class Mesh
 	{
 	public:
 		Mesh(const MeshData& data);
+		Mesh(const MeshData& data, MeshType type);
 		Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 		~Mesh();
 
@@ -33,18 +31,15 @@ namespace Agina {
 		void Unbind() const;
 		void Draw() const;
 
+		MeshType GetMeshType() const { return m_Type; }
+
 		static std::shared_ptr<Mesh> Create(MeshType type);
-		const AABB& GetAABB() const { return m_AABB; }
-
-	private:
-		AABB ComputeAABB(const std::vector<Vertex>& vertices);
-
 	private:
 		uint32_t m_VAO;
 		uint32_t m_VBO;
 		uint32_t m_EBO;
 		size_t m_IndexCount;
-		AABB m_AABB;
+		MeshType m_Type = MeshType::NON_BUILTIN;
 	};
 
 }

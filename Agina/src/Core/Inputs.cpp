@@ -1,4 +1,4 @@
-#include <Core/Inputs/Inputs.hpp>
+#include <Core/Inputs.hpp>
 #include <iostream>
 
 namespace Agina

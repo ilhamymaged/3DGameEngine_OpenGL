@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Inputs/Events.hpp>
+#include <Core/Events.hpp>
 #include <iostream>
 #include <memory>
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
-
-#include <glm/glm.hpp>
 struct GLFWwindow;
+
+#include <Core/MathTypes.hpp>
 
 namespace Agina {
 
@@ -25,7 +25,7 @@ namespace Agina {
 		static void Text(const std::string& label);
 		static void SelectableItem(const std::string& label);
 
-		static void DragVec3(const std::string&, glm::vec3&);
+		static void DragVec3(const std::string&, Vec3&);
 
 		static void CenterNextItemX(float width);
 		static void CenterNextItemY(float height);

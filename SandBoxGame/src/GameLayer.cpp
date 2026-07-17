@@ -5,48 +5,74 @@
 #include <ECS/Components.hpp>
 
 #include <Application.hpp>
-#include <Core/Inputs/KeyMappings.hpp>
+#include <Core/KeyMappings.hpp>
 
-#include <Core/AssetManager/AssetManager.hpp>
+#include <Core/AssetManager.hpp>
 #include <Renderer/Material.hpp>
 
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
+
+#include <UI/UI.hpp>
+
+#include <Core/Logger.hpp>
+
+#include <Core/FileSystem.hpp>
 
 using namespace Agina;
-
 void GameLayer::OnAttach()
 {	
-	//Camera
-	Entity camera = m_Scene.CreateEntity();
-	camera.AddComponent<CameraComponent>();
+	const std::string assetPath = (FileSystem::AppAssets()).string();
 
-	//Sphere
-	Entity sphere = m_Scene.CreateEntity();
-	sphere.AddComponent<Transform>(Vec3(0.0f, 5.0f, 0.0f));
+	auto camera = m_Scene.CreateEntity();
+	camera.AddComponent<CameraComponent>();
+	camera.AddComponent<TagComponent>("Camera");
+
+	auto sphere = m_Scene.CreateEntity();
+	sphere.AddComponent<TagComponent>("Sphere");
+	sphere.AddComponent<Transform>(Vec3(5.0, 4.0f, 0.0));
 	auto& sMat = sphere.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE), 
 		Material::Create(MaterialType::LIT));
 	sMat.MaterialAsset->Set("u_HasColor", true);
-	sMat.MaterialAsset->Set("u_Color", Vec3(1.0f, 1.0f, 0.0f));
+	sMat.MaterialAsset->Set("u_Color", Vec3(0.118f, 0.69f, 0.655f));
+	sMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
+	sMat.MaterialAsset->Set("u_HasNormalTexture", false);
+	sMat.MaterialAsset->Set("u_HasSpecularTexture", false);
 
-	//Floor 
-	Entity ground = m_Scene.CreateEntity();
-	ground.AddComponent<Transform>(Vec3(0.0f));
-	auto& gMat = ground.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::TERRAIN),
+	auto cube = m_Scene.CreateEntity();
+	cube.AddComponent<TagComponent>("Cube");
+	cube.AddComponent<Transform>(Vec3(2.0, 4.0f, 0.0));
+	auto& cMat = cube.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::CUBE), 
 		Material::Create(MaterialType::LIT));
-	gMat.MaterialAsset->Set("u_HasColor", true);
-	gMat.MaterialAsset->Set("u_Color", Vec3(0.0f, 1.0f, 0.0f));
+	cMat.MaterialAsset->Set("u_HasColor", true);
+	cMat.MaterialAsset->Set("u_Color", Vec3(0.212f, 0.271f, 0.741f));
+	cMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
+	cMat.MaterialAsset->Set("u_HasNormalTexture", false);
+	cMat.MaterialAsset->Set("u_HasSpecularTexture", false);
+	
+	/*auto grid = m_Scene.CreateEntity();
+	grid.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::GRID), Material::Create(MaterialType::GRID));
+	grid.AddComponent<TagComponent>("Grid");*/
 
-	//SkyBox
-	Entity skyBox = m_Scene.CreateEntity();
-	skyBox.AddComponent<SkyboxComponent>(std::make_shared<Skybox>(), Material::Create(MaterialType::SKYBOX));
+	auto terrain = m_Scene.CreateEntity();
+	auto& tMat = terrain.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::TERRAIN),
+		Material::Create(MaterialType::LIT));
+	tMat.MaterialAsset->Set("u_HasColor", true);
+	tMat.MaterialAsset->Set("u_Color", Vec3(0.071f, 0.722f, 0.255f));
+	tMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
+	tMat.MaterialAsset->Set("u_HasNormalTexture", false);
+	tMat.MaterialAsset->Set("u_HasSpecularTexture", false);
+
+	auto skyBox = m_Scene.CreateEntity();
+	skyBox.AddComponent<SkyboxComponent>(std::make_shared<Skybox>(), 
+		Material::Create(MaterialType::SKYBOX));
 }
 
-void GameLayer::OnEvent(Agina::Event& e)
+void GameLayer::OnEvent(Event& e)
 {
-	Agina::EventDispatcher eventDispatcher(e);
-	eventDispatcher.Dispatch<Agina::KeyPressed>([&](Agina::KeyPressed& key) 
+	::EventDispatcher eventDispatcher(e);
+	eventDispatcher.Dispatch<KeyPressed>([&](KeyPressed& key) 
 	{
-		if (key.getKey() == static_cast<int>(Agina::Key::Escape)) Agina::Application::Get().ShutDown();
+		if (key.getKey() == static_cast<int>(Key::Escape)) Application::Get().ShutDown();
 	});
 
 	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
@@ -68,4 +94,7 @@ void GameLayer::OnDetach()
 {
 }
 
-void GameLayer::OnUIRender() {}
+void GameLayer::OnUIRender() 
+{
+}
+

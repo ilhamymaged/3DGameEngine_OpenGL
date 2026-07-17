@@ -16,6 +16,7 @@ namespace Agina
 		void Bind(uint32_t slot = 0) override;
 
 		inline const std::string& GetPath() { return m_Path; }
+		inline const uint32_t GetID() { return m_ID; }
 
 	private:
 		uint32_t m_ID;

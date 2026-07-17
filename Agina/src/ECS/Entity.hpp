@@ -2,12 +2,23 @@
 
 #include <entt/entt.hpp>
 
+#include <Core/UUID.hpp>
+#include "Components.hpp"
+
 namespace Agina {
 
     class Entity
 	{
     public:
         Entity(entt::entity h, entt::registry* reg);
+
+        inline entt::entity GetHandle() { return m_Handle; }
+
+        bool operator==(const Entity& other) const
+        {
+            return m_Handle == other.m_Handle &&
+                m_Registry == other.m_Registry;
+        }
 
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args)
@@ -18,6 +29,22 @@ namespace Agina {
         T& GetComponent()
         {
             return m_Registry->get<T>(m_Handle);
+        }
+
+        UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+
+        operator bool() const { return m_Handle != entt::null; }
+
+        template<typename T>
+        bool HasComponent() const
+        {
+            return m_Registry->all_of<T>(m_Handle);
+        }
+
+        template<typename T>
+        void RemoveComponent()
+        {
+            if (HasComponent()) m_Registry->remove<T>(m_Handle);
         }
 
 		inline bool IsValid() const { return m_Registry && 

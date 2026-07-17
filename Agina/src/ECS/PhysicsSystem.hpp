@@ -1,11 +1,10 @@
 #pragma once
-#include <entt/entt.hpp>
-#include <Renderer/Mesh.hpp>
+#include <Ecs/Scene.hpp>
 
 namespace Agina {
     class PhysicsSystem
     {
     public:
-        static void Update(entt::registry& registry, float dt);
+        static void Update(Scene& scene, float dt);
     };
 }

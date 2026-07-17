@@ -6,7 +6,7 @@
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Model.hpp>  
 #include <Renderer/Texture.hpp>
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
 
 namespace Agina {
 
@@ -39,6 +39,16 @@ namespace Agina {
 			}
 			});
 
+		scene.Each<Transform, ModelComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& modelComp = entity.GetComponent<ModelComponent>();
+
+			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			{
+				Renderer::Draw(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
+			}
+			});
+
 		Renderer::EndShadowPass();
 
 		Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -56,6 +66,16 @@ namespace Agina {
 			if (meshComp.MeshAsset && meshComp.MaterialAsset)
 			{
 				Renderer::Draw(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
+			}
+			});
+
+		scene.Each<Transform, ModelComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& modelComp = entity.GetComponent<ModelComponent>();
+
+			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			{
+				Renderer::Draw(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
 			}
 			});
 

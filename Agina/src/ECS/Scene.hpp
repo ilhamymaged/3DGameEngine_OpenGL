@@ -6,13 +6,15 @@
 
 namespace Agina {
 
+    class UUID;
 	class Scene
 	{
     private:
         entt::registry m_Registry;
 
     public:
-        Entity CreateEntity();
+        Entity CreateEntity(const std::string& name = "");
+        Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "");
 
         template<typename... Components>
         std::optional<Entity> FindEntityWithComponent()
@@ -27,6 +29,16 @@ namespace Agina {
         void Each(Func&& func)
         {
             auto view = m_Registry.template view<Components...>();
+            for (auto entity : view)
+            {
+                func(Entity{ entity, &m_Registry });
+            }
+        }
+
+        template<typename Func>
+        void EachEntity(Func&& func)
+        {
+            auto& view = m_Registry.storage<entt::entity>();
             for (auto entity : view)
             {
                 func(Entity{ entity, &m_Registry });

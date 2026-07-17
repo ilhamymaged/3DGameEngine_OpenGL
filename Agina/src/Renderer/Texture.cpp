@@ -1,5 +1,5 @@
 #include "Texture.hpp"
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 #include <stb_image/stb_image.h>
 
 namespace Agina
@@ -19,15 +19,12 @@ namespace Agina
         unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
-            GLenum format;
-            if (nrChannels == 1)
-                format = GL_RED;
-            else if (nrChannels == 3)
-                format = GL_RGB;
-            else if (nrChannels == 4)
-                format = GL_RGBA;
+            GLenum internalFormat = 0, dataFormat = 0;
+            if (nrChannels == 1) { internalFormat = GL_R8;    dataFormat = GL_RED; }
+            if (nrChannels == 3) { internalFormat = GL_RGB8;  dataFormat = GL_RGB; }
+            if (nrChannels == 4) { internalFormat = GL_RGBA8; dataFormat = GL_RGBA; }
 
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else

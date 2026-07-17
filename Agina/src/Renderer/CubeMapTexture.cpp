@@ -1,8 +1,8 @@
-#include "CubeMapTexture.hpp"
 #include <glad/glad.h>
+#include "CubeMapTexture.hpp"
 
 #include <stb_image/stb_image.h>
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 
 namespace Agina {
 

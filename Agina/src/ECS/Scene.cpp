@@ -1,11 +1,23 @@
 #include "Scene.hpp"
 #include <vector>
+#include <ECS/Components.hpp>
+#include <Core/UUID.hpp>
 
 namespace Agina {
 
-    Entity Scene::CreateEntity()
+    Entity Scene::CreateEntity(const std::string& name)
     {
-        return Entity{ m_Registry.create(), &m_Registry };
+        return CreateEntityWithUUID(UUID(), name);
+    }
+
+    Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string & name)
+    {
+        Entity entity = { m_Registry.create(), &m_Registry };
+        entity.AddComponent<Transform>();
+        entity.AddComponent<IDComponent>(uuid);
+        auto& tag = entity.AddComponent<TagComponent>().tag;
+        tag = name.empty() ? "Entity" : name;
+        return entity;
     }
 
 }

@@ -5,17 +5,21 @@
 #include <variant>
 #include <unordered_map>
 #include <cstdint> 
-#include <Core/Math/MathTypes.hpp>
+#include <Core/MathTypes.hpp>
 
 namespace Agina {
 
-	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4>;
+	class Texture2D;
+	class CubemapTexture;
+
+	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4, std::shared_ptr<Texture2D>, std::shared_ptr<CubemapTexture>>;
 
 	enum MaterialType
 	{
 		LIT, 
 		UNLIT,
-		SKYBOX
+		SKYBOX,
+		GRID
 	};
 
 	class Material
@@ -39,5 +43,6 @@ namespace Agina {
 		static std::shared_ptr<Material> Lit();
 		static std::shared_ptr<Material> UnLit();
 		static std::shared_ptr<Material> SkyBox();
+		static std::shared_ptr<Material> Grid();
 	};
 }

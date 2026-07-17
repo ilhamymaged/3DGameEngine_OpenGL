@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Core/Platform/Window.hpp>
-#include <Core/LayerStack/LayerStack.hpp>
+#include <Core/Window.hpp>
+#include <Core/LayerStack.hpp>
 
 namespace Agina  {   
     class Application

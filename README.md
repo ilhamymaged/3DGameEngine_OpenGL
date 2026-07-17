@@ -5,8 +5,12 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-success)
 ![Status](https://img.shields.io/badge/Status-Active%20Development-orange)
 
-<p align="center">
-  <img src="screenshot.png" alt="Engine Screenshot" width="900">
+<p align="left">
+  <img src="screenshot0.png" alt="Engine Screenshot0" width="900">
+</p>
+
+<p align="right">
+  <img src="screenshot1.png" alt="Engine Screenshot1" width="900">
 </p>
 
 A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on providing a modern, modular architecture for real-time rendering and game development.
@@ -40,15 +44,6 @@ A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on pr
 - Modular engine design
 
 ---
-
-## Current Screenshot
-
-<p align="center">
-  <img src="screenshot.png" width="900">
-</p>
-
----
-
 ## Project Structure
 
 ```
@@ -107,6 +102,7 @@ The engine is organized into independent modules:
 | W A S D | Move Camera |
 | Mouse | Look Around |
 | Esc | Exit |
+| Left Control | Unlock/lock Mouse | 
 
 ---
 

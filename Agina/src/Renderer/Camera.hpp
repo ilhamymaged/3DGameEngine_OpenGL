@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Core/Math/MathTypes.hpp>
-#include <Core/Math/Math.hpp>
-#include <Core/Inputs/Events.hpp>
+#include <Core/MathTypes.hpp>
+#include <Core/Math.hpp>
+#include <Core/Events.hpp>
 
 namespace Agina {
 
@@ -29,8 +29,8 @@ namespace Agina {
 		void SetFocusTarget(const Vec3* target) { m_FocusTarget = target; }
 		void SetFollowOffset(const Vec3& offset) { m_FollowOffset = offset; }
 
-		inline const Vec3& GetPos() { return m_Pos; }
-		inline const float& GetFOV() { return m_FOV; }
+		inline Vec3 GetPos() const { return m_Pos; }
+		inline float GetFOV() const { return m_FOV; }
 
 	private:
 		void updateVectors();

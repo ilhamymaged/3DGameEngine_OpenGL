@@ -5,6 +5,7 @@ layout (std140, binding = 0) uniform CameraBuffer
 {
     mat4 u_Projection;
     mat4 u_View;
+    vec4 u_CameraPos;
 };
 
 out vec3 v_TexCoords;

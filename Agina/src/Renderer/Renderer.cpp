@@ -1,17 +1,18 @@
-#include "Renderer.hpp"
 #include <glad/glad.h>
+#include "Renderer.hpp"
 #include <GLFW/glfw3.h>
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 #include <Renderer/Material.hpp>
 #include <Renderer/Mesh.hpp>
-#include <Core/Inputs/Events.hpp>
+#include <Core/Events.hpp>
 #include "Camera.hpp"
 #include "Shader.hpp"
-#include <Core/FileSystem/FileSystem.hpp>
+#include <Core/FileSystem.hpp>
 #include "UniformBuffer.hpp"
 #include "ShadowMapFB.hpp"
 #include "SkyBox.hpp"
-#include <Core/Math/MathTypes.hpp>
+#include <Renderer/Model.hpp>
+#include <Core/MathTypes.hpp>
 
 #define DEBUG_SHADOW_MAP 0
 
@@ -21,12 +22,15 @@ namespace Agina {
 	{
 		Mat4 Projection;
 		Mat4 View;
+		Vec3 cameraPos;
+		float padding;
 	};
 
 	struct ShadowBufferData 
 	{
 		Mat4 LightSpaceMatrix;
 		Vec3 LightPos;
+		float padding;
 	};
 
 	struct RendererData 
@@ -64,6 +68,9 @@ namespace Agina {
 		AG_CORE_INFO("OpenGL Context Initialized");
 
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		s_Data->CameraBufferUBO = std::make_unique<UniformBuffer>(sizeof(CameraBufferData), 0);
 		s_Data->ShadowBufferUBO = std::make_unique<UniformBuffer>(sizeof(ShadowBufferData), 1);
@@ -104,7 +111,7 @@ namespace Agina {
 		Mat4 lightProjection = Math::Ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
 		Mat4 lightView = Math::LookAt(lightPos, lightTarget, Vec3(0.0f, 1.0f, 0.0f));
 
-		ShadowBufferData shadowData{ lightProjection * lightView, lightPos };
+		ShadowBufferData shadowData{ lightProjection * lightView, lightPos, 0.0f };
 		s_Data->ShadowBufferUBO->SetData(&shadowData, sizeof(ShadowBufferData));
 
 		glViewport(0, 0, s_Data->ShadowDepthMap->GetResolution(), s_Data->ShadowDepthMap->GetResolution());
@@ -136,7 +143,9 @@ namespace Agina {
 		CameraBufferData cameraData
 		{
 			cam.GetProjectionMatrix(s_Data->WindowWidth, s_Data->WindowHeight),
-			cam.GetViewMatrix()
+			cam.GetViewMatrix(),
+			cam.GetPos(),
+			0.0f
 		};
 
 		s_Data->CameraBufferUBO->SetData(&cameraData, sizeof(CameraBufferData));
@@ -161,12 +170,29 @@ namespace Agina {
 		else
 		{
 			mat.Bind();
-			mat.Set("u_Model", t.GetMatrix());
-			if (mat.GetMaterialType() == MaterialType::LIT) 
+			if (mat.GetMaterialType() != MaterialType::GRID) mat.Set("u_Model", t.GetMatrix());
+			if (mat.GetMaterialType() == MaterialType::LIT)  
 				mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
 			mesh.Draw();
 		}
+	}
 
+	void Renderer::Draw(const Model& model, Material& mat, const Transform& t)
+	{
+		if (s_Data->IsShadowPassActive)
+		{
+			s_Data->ShadowDepthShader->setMat4("u_Model", t.GetMatrix());
+			model.Draw();
+		}
+
+		else
+		{
+			mat.Bind();
+			mat.Set("u_Model", t.GetMatrix());
+			if (mat.GetMaterialType() == MaterialType::LIT)
+				mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
+			model.Draw();
+		}
 	}
 
 	void Renderer::DrawSkybox(const std::shared_ptr<Skybox> skybox) 

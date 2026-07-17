@@ -1,5 +1,5 @@
 #include "AssetManager.hpp"
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 #include <filesystem>
 
 namespace Agina

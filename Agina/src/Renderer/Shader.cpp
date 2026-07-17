@@ -1,6 +1,6 @@
 #include <Renderer/Shader.hpp>    
 #include <filesystem>
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 #include <fstream>
 #include <sstream> 
 

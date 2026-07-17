@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/LayerStack/Layer.hpp>
+#include <ECS/Scene.hpp>
 
 class EditorLayer : public Agina::Layer
 {
@@ -9,4 +10,7 @@ class EditorLayer : public Agina::Layer
 	void OnUpdate(float dt) override;
 	void OnRender() override;
 	void OnUIRender() override;
+
+private:
+	Agina::Scene m_Scene;
 };

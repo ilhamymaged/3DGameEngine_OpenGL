@@ -7,14 +7,12 @@ layout (std140, binding = 0) uniform CameraData
 {
     mat4 u_Projection;
     mat4 u_View;
+    vec4 u_CameraPos;
 };
 
 uniform mat4 u_Model;
 
-out vec2 TexCoords;
-
 void main()
 {
-    TexCoords = aTexCoords;
 	gl_Position = u_Projection * u_View * u_Model * vec4(aPos, 1.0);
 }

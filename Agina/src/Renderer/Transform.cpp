@@ -1,5 +1,5 @@
 #include "Transform.hpp"
-#include <Core/Math/Math.hpp>
+#include <Core/Math.hpp>
 
 namespace Agina {
 	

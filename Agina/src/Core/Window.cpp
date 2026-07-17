@@ -1,9 +1,9 @@
-#include <Core/Platform/Window.hpp>
-#include <Core/Inputs/Events.hpp>
+#include <Core/Window.hpp>
+#include <Core/Events.hpp>
 #include <stb_image/stb_image.h>
-#include <Core/Logger/Logger.hpp>
-#include <Core/Inputs/KeyMappings.hpp>
-#include <Core/Inputs/Inputs.hpp>
+#include <Core/Logger.hpp>
+#include <Core/KeyMappings.hpp>
+#include <Core/Inputs.hpp>
 
 namespace Agina
 {
@@ -36,6 +36,7 @@ namespace Agina
 
         glfwMakeContextCurrent(m_Window);
         glfwSwapInterval(0);
+        glfwSetWindowPos(m_Window, 100, 70);
         glfwGetWindowPos(m_Window, &m_PosX, &m_PosY);
     }
 
@@ -64,6 +65,11 @@ namespace Agina
     void Window::PollEvents() const
     {
         glfwPollEvents();
+    }
+
+    void Window::SetWindowTitle(const std::string& title)
+    {
+        glfwSetWindowTitle(m_Window, title.c_str());
     }
 
     GLFWwindow* Window::GetGLFWwindow() const

@@ -1,5 +1,5 @@
 #include "AudioSystem.hpp"
-#include <Core/Logger/Logger.hpp>
+#include <Core/Logger.hpp>
 
 namespace Agina {
 
