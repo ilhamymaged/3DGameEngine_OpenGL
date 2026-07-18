@@ -10,7 +10,21 @@
 
 namespace Agina {
 
-	void RenderSystem::Render(Scene& scene)
+	void RenderSystem::RenderToTarget(Scene& scene, const std::shared_ptr<Framebuffer>& target)
+	{
+		if (!target) return;
+
+		target->Bind();
+
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		Render(scene, target);
+
+		target->Unbind();
+	}
+
+	void RenderSystem::Render(Scene& scene, const std::shared_ptr<Framebuffer>& target)
 	{
 		auto cameraEntity = scene.FindEntityWithComponent<CameraComponent>();
 		if (!cameraEntity.has_value()) return;
@@ -51,13 +65,13 @@ namespace Agina {
 
 		Renderer::EndShadowPass();
 
+		if (target)
+		{
+			target->Bind();
+		}
+
 		Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Renderer::BeginScene(camera);
-
-#if DEBUG_SHADOW_MAP
-		Renderer::EndScene();
-		return;
-#endif
 
 		scene.Each<Transform, MeshComponent>([](Entity entity) {
 			auto& transform = entity.GetComponent<Transform>();

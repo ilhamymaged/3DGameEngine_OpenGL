@@ -1,9 +1,14 @@
 #pragma once
-#include <Core/LayerStack/Layer.hpp>
+#include <Core/Layer.hpp>
 #include <ECS/Scene.hpp>
+#include "SceneHierarchyPanel.hpp"
+#include <Renderer/Framebuffer.hpp>
 
 class EditorLayer : public Agina::Layer
 {
+public:
+	EditorLayer(int width, int height);
+
 	void OnAttach() override;
 	void OnDetach() override;
 	void OnEvent(Agina::Event& e) override;
@@ -13,4 +18,9 @@ class EditorLayer : public Agina::Layer
 
 private:
 	Agina::Scene m_Scene;
+	SceneHierarchyPanel m_Panel;
+
+	int m_Width;
+	int m_Height;
+	std::shared_ptr<Framebuffer> m_Framebuffer;
 };

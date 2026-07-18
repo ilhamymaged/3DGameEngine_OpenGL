@@ -14,9 +14,15 @@
 #include <Renderer/Model.hpp>
 #include <Core/MathTypes.hpp>
 
-#define DEBUG_SHADOW_MAP 0
-
 namespace Agina {
+
+	struct RenderCommand
+	{
+		const Mesh* MeshPtr = nullptr;
+		const Model* ModelPtr = nullptr;
+		Material* MaterialPtr = nullptr;
+		Mat4 Transform;
+	};
 
 	struct CameraBufferData 
 	{
@@ -39,16 +45,15 @@ namespace Agina {
 		std::unique_ptr<UniformBuffer> ShadowBufferUBO = nullptr;
 		std::unique_ptr<ShadowMapFB> ShadowDepthMap = nullptr;
 		std::unique_ptr<Shader> ShadowDepthShader = nullptr;
-#if DEBUG_SHADOW_MAP
-		std::unique_ptr<Shader> DebugShadowMapShader = nullptr;
-		std::shared_ptr<Mesh> QuadMesh;
-#endif
 
 		int WindowWidth;
 		int WindowHeight;
 		bool IsShadowPassActive = false;
 
 		static constexpr uint32_t ShadowTextureSlot = 7;
+
+		std::vector<RenderCommand> SceneQueue;
+		std::vector<RenderCommand> ShadowQueue;
 	};	
 
 	static RendererData* s_Data = nullptr;
@@ -79,14 +84,6 @@ namespace Agina {
 		s_Data->ShadowDepthShader = std::make_unique<Shader>("shadow", 
 			(FileSystem::EngineAssets() / "shaders/shadow.vert").string(),
 			(FileSystem::EngineAssets() / "shaders/shadow.frag").string());
-
-#if DEBUG_SHADOW_MAP
-		s_Data->DebugShadowMapShader = std::make_unique<Shader>("debugShadowMap",
-			(FileSystem::EngineAssets() / "shaders/debugShadowMap.vert").string(),
-			(FileSystem::EngineAssets() / "shaders/debugShadowMap.frag").string());
-
-		s_Data->QuadMesh = Mesh::Create(MeshType::QUAD);
-#endif
 	}
 
 	void Renderer::Shutdown() 
@@ -105,7 +102,6 @@ namespace Agina {
 	{
 		s_Data->IsShadowPassActive = true;
 
-		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 
 		Mat4 lightProjection = Math::Ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
@@ -117,27 +113,26 @@ namespace Agina {
 		glViewport(0, 0, s_Data->ShadowDepthMap->GetResolution(), s_Data->ShadowDepthMap->GetResolution());
 		s_Data->ShadowDepthMap->BindFramebuffer();
 		glClear(GL_DEPTH_BUFFER_BIT);
-
-		s_Data->ShadowDepthShader->Use();
 	}
 
 	void Renderer::EndShadowPass()
 	{
+		s_Data->ShadowDepthShader->Use();
+		for (const auto& cmd : s_Data->ShadowQueue)
+		{
+			s_Data->ShadowDepthShader->setMat4("u_Model", cmd.Transform);
+			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
+			if (cmd.ModelPtr) cmd.ModelPtr->Draw();
+		}
+
+		s_Data->ShadowQueue.clear();	
 		s_Data->IsShadowPassActive = false;
 		s_Data->ShadowDepthMap->UnbindFramebuffer();
-		glDisable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 	}
 
 	void Renderer::BeginScene(const Camera& cam)
 	{
-#if DEBUG_SHADOW_MAP 
-		glViewport(0, 0, s_Data->WindowWidth, s_Data->WindowHeight);
-
-		s_Data->DebugShadowMapShader->Use();
-		s_Data->DebugShadowMapShader->setInt("u_ShadowMap", RendererData::ShadowTextureSlot);
-		s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
-		s_Data->QuadMesh->Draw();
-#else
 		glViewport(0, 0, s_Data->WindowWidth, s_Data->WindowHeight);
 
 		CameraBufferData cameraData
@@ -150,49 +145,51 @@ namespace Agina {
 
 		s_Data->CameraBufferUBO->SetData(&cameraData, sizeof(CameraBufferData));
 		s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
-#endif
 	}
 
 	void Renderer::EndScene()
 	{
-		//DO LATER
+		//Sorting By Material To Minimize State Changes
+		std::sort(s_Data->SceneQueue.begin(), s_Data->SceneQueue.end(),
+			[](const RenderCommand& a, const RenderCommand& b) {
+				return a.MaterialPtr < b.MaterialPtr;
+			});
+
+		Material* activeMaterial = nullptr;
+
+		for (const auto& cmd : s_Data->SceneQueue)
+		{
+			if (cmd.MaterialPtr != activeMaterial)
+			{
+				activeMaterial = cmd.MaterialPtr;
+				activeMaterial->Bind();
+
+				if (activeMaterial->GetMaterialType() == MaterialType::LIT)
+					activeMaterial->Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
+			}
+
+			if (activeMaterial->GetMaterialType() != MaterialType::GRID)
+				activeMaterial->Set("u_Model", cmd.Transform);
+
+			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
+			if (cmd.ModelPtr) cmd.ModelPtr->Draw();
+		}
+
+		s_Data->SceneQueue.clear();
 	}
 
 	void Renderer::Draw(const Mesh& mesh, Material& mat, const Transform& t) 
 	{
-
-		if (s_Data->IsShadowPassActive)
-		{
-			s_Data->ShadowDepthShader->setMat4("u_Model", t.GetMatrix());
-			mesh.Draw();
-		}
-
-		else
-		{
-			mat.Bind();
-			if (mat.GetMaterialType() != MaterialType::GRID) mat.Set("u_Model", t.GetMatrix());
-			if (mat.GetMaterialType() == MaterialType::LIT)  
-				mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
-			mesh.Draw();
-		}
+		RenderCommand cmd{ &mesh, nullptr, &mat, t.GetMatrix() };
+		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
+		else s_Data->SceneQueue.push_back(cmd);
 	}
 
 	void Renderer::Draw(const Model& model, Material& mat, const Transform& t)
 	{
-		if (s_Data->IsShadowPassActive)
-		{
-			s_Data->ShadowDepthShader->setMat4("u_Model", t.GetMatrix());
-			model.Draw();
-		}
-
-		else
-		{
-			mat.Bind();
-			mat.Set("u_Model", t.GetMatrix());
-			if (mat.GetMaterialType() == MaterialType::LIT)
-				mat.Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
-			model.Draw();
-		}
+		RenderCommand cmd{ nullptr, &model, &mat, t.GetMatrix() };
+		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
+		else s_Data->SceneQueue.push_back(cmd);
 	}
 
 	void Renderer::DrawSkybox(const std::shared_ptr<Skybox> skybox) 

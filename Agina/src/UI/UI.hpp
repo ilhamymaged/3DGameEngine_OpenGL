@@ -4,6 +4,7 @@
 struct GLFWwindow;
 
 #include <Core/MathTypes.hpp>
+#include <Renderer/Framebuffer.hpp>
 
 namespace Agina {
 
@@ -12,6 +13,23 @@ namespace Agina {
 	public:
 
 		static bool WantsCaptureMouse();
+
+		static void Viewport(const std::shared_ptr<Framebuffer>& framebuffer, const std::string& name = "Viewport");
+
+		static void BeginDockspace();
+		static void EndDockspace();
+
+		static bool InputText(const std::string& label, std::string& text);
+		
+		static bool BeginEntityNode(const std::string& label, uint32_t entityID, bool selected);
+		static void EndEntityNode();
+
+		static bool BeginComponentHeader(const std::string& name, size_t typeHashCode, bool& outRemoveComponent);
+		static void EndComponentHeader();
+
+		static bool IsWindowHovered();
+		static bool IsMouseDown(int button);
+		static bool IsItemClicked();
 
 		static void BeginWindow(const std::string& name, bool fullScreen = false);
 		static void EndWindow();

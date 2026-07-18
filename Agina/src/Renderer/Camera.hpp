@@ -32,6 +32,8 @@ namespace Agina {
 		inline Vec3 GetPos() const { return m_Pos; }
 		inline float GetFOV() const { return m_FOV; }
 
+		inline Vec3& GetRefPos() { return m_Pos; }
+
 	private:
 		void updateVectors();
 

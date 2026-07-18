@@ -101,6 +101,11 @@ namespace Agina
                     }
                 }
 
+                if (kp.getKey() == static_cast<int>(Key::F11))
+                {
+                    ToggleFullScreen();
+                }
+
             });
     }
 
@@ -124,8 +129,6 @@ namespace Agina
                     glfwSetWindowSize(m_Window, mode->width, mode->height);
                 }
             }
-
-            m_FullScreen = false;
         }
         else
         {

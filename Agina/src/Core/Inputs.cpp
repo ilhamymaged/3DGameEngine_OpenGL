@@ -72,13 +72,13 @@ namespace Agina
     void Input::LockMouse()
     {
         m_CursorEnabled = false;
-        glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     void Input::UnLockMouse()
     {
         m_CursorEnabled = true;
-        glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     bool Input::IsKeyPressed(int key)

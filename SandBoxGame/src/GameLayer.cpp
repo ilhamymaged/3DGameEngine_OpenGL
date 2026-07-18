@@ -87,7 +87,7 @@ void GameLayer::OnUpdate(float dt)
 
 void GameLayer::OnRender()
 {
-	RenderSystem::Render(m_Scene);
+	RenderSystem::Render(m_Scene);	
 }
 
 void GameLayer::OnDetach() 

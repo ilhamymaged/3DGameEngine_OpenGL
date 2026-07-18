@@ -9,10 +9,7 @@
 
 namespace Agina {
 
-	class Texture2D;
-	class CubemapTexture;
-
-	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4, std::shared_ptr<Texture2D>, std::shared_ptr<CubemapTexture>>;
+	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4>;
 
 	enum MaterialType
 	{

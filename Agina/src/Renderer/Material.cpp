@@ -4,8 +4,6 @@
 #include <Core/FileSystem.hpp>
 #include <Core/AssetManager.hpp>
 #include <type_traits> 
-#include <Renderer/Texture.hpp>
-#include <Renderer/CubeMapTexture.hpp>
 
 namespace Agina {
 
@@ -81,31 +79,6 @@ namespace Agina {
                         m_Shader->setVec4(name, v);
                     else if constexpr (std::is_same_v<T, Mat4>)
                         m_Shader->setMat4(name, v);
-                    else if constexpr (std::is_same_v<T, std::shared_ptr<Texture2D>>)
-                    {
-                        if (v)
-                        {
-                            int slot = 0;
-                            if (name == "u_AlbedoTexture")       slot = 0;
-                            else if (name == "u_NormalTexture")   slot = 1;
-                            else if (name == "u_SpecularTexture") slot = 2;
-                            else {
-                                static int dynamicSlot = 3; 
-                                slot = dynamicSlot++;
-                            }
-
-                            v->Bind(slot);
-                            m_Shader->setInt(name, slot);
-                        }
-                    }
-                    else if constexpr (std::is_same_v<T, std::shared_ptr<CubemapTexture>>)
-                    {
-                        if (v)
-                        {
-                            v->Bind(0);
-                            m_Shader->setInt(name, 0);
-                        }
-                    }
                 }, value);
         }
     }

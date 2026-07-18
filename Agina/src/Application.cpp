@@ -60,7 +60,11 @@ namespace Agina
 
             m_Window.PollEvents();
 
-            for (auto &e : Input::Get().GetEventQueue())
+            std::vector<std::unique_ptr<Event>> processingQueue;
+            processingQueue.swap(Input::Get().GetEventQueue());
+
+            Input::Get().ClearEvents();
+            for (auto& e : processingQueue)
             {
                 m_Window.OnEvent(*e);
                 Renderer::OnEvent(*e);
@@ -77,7 +81,6 @@ namespace Agina
             UI::EndFrame();
 
             m_Window.SwapBuffers();
-            Input::Get().ClearEvents();
         }
 
         AssetManager::Clear();

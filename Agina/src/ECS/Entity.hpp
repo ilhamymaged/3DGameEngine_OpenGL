@@ -10,6 +10,7 @@ namespace Agina {
     class Entity
 	{
     public:
+        Entity() = default;
         Entity(entt::entity h, entt::registry* reg);
 
         inline entt::entity GetHandle() { return m_Handle; }
@@ -44,7 +45,7 @@ namespace Agina {
         template<typename T>
         void RemoveComponent()
         {
-            if (HasComponent()) m_Registry->remove<T>(m_Handle);
+            if (HasComponent<T>()) m_Registry->remove<T>(m_Handle);
         }
 
 		inline bool IsValid() const { return m_Registry && 
