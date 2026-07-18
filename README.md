@@ -33,6 +33,7 @@ A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on pr
 - Skybox rendering
 - Basic lighting
 - OpenGL rendering pipeline
+- UI Rendering
 
 ### Engine Systems
 - Entity Component System (ECS)
@@ -61,7 +62,7 @@ Engine/
 ├── Events/
 ├── Input/
 ├── Logger/
-├── Resources/
+├── Assets/
 └── ...
 ```
 
@@ -149,7 +150,7 @@ cmake --build .
 - [ ] Model importing improvements
 - [ ] Physics engine
 - [ ] Animation system
-- [ ] UI system
+- [ ] Full UI system
 - [ ] Scripting
 - [ ] Post-processing
 - [ ] Serialization
