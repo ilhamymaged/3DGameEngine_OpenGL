@@ -13,6 +13,11 @@
   <img src="screenshot1.png" alt="Engine Screenshot1" width="900">
 </p>
 
+<p align="center">
+  <img src="screenshot2.png" alt="Engine Screenshot2" width="900">
+</p>
+
+
 A cross-platform 3D game engine built with **C++** and **OpenGL**, focused on providing a modern, modular architecture for real-time rendering and game development.
 
 > 🚧 This project is currently under active development.
