@@ -6,15 +6,11 @@
 ![Status](https://img.shields.io/badge/Status-Active%20Development-orange)
 
 <p align="left">
-  <img src="screenshot0.png" alt="Engine Screenshot0" width="900">
+  <img src="shadow.png" alt="Engine Screenshot0" width="900">
 </p>
 
 <p align="right">
-  <img src="screenshot1.png" alt="Engine Screenshot1" width="900">
-</p>
-
-<p align="center">
-  <img src="screenshot2.png" alt="Engine Screenshot2" width="900">
+  <img src="wireFrame.png" alt="Engine Screenshot1" width="900">
 </p>
 
 

@@ -33,7 +33,14 @@ namespace Agina {
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			if (mesh) m_Meshes.push_back(ProcessMesh(mesh, scene));
+			if (mesh)
+			{
+				SubMesh subMesh;
+				subMesh.Mesh = ProcessMesh(mesh, scene);
+				subMesh.MaterialIndex = mesh->mMaterialIndex;
+
+				m_SubMeshes.push_back(subMesh);
+			}
 		}
 
 		for (unsigned int i = 0; i < node->mNumChildren; i++) ProcessNode(node->mChildren[i], scene);
@@ -95,9 +102,9 @@ namespace Agina {
 
 	void Model::Draw() const
 	{
-		for (auto& mesh : m_Meshes)
+		for (auto& subMesh : m_SubMeshes)
 		{
-			mesh->Draw();
+			subMesh.Mesh->Draw();
 		}
 	}
 }

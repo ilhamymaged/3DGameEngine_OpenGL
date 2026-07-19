@@ -2,6 +2,7 @@
 
 #include <Renderer/Transform.hpp>
 #include <Agina.h>
+#include <vector>
 
 namespace Agina {
 
@@ -29,7 +30,8 @@ namespace Agina {
 		static void EndScene();
 
 		static void Submit(const Mesh& mesh, Material& mat, const Transform& t = Transform());
-		static void Submit(const Model& model, Material& mat, const Transform& t = Transform());
+		static void Submit(const Model& model, const std::vector<std::Ref<Material>>& materials, 
+			const Transform& t);
 		static void SubmitSkyBox(const std::Ref<Skybox>, Material& mat);
 
 		static void SetWireFrameMode(bool enabled);

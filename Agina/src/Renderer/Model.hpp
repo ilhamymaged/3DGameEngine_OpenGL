@@ -2,13 +2,19 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <memory>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <Renderer/Mesh.hpp>
+#include <Agina.h>
 
 namespace Agina {
+
+	struct SubMesh
+	{
+		std::Ref<Mesh> Mesh;
+		uint32_t MaterialIndex = 0;
+	};
 
 	class Model
 	{
@@ -17,13 +23,14 @@ namespace Agina {
 		~Model() = default;
 
 		void Draw() const;
+		inline const std::vector<SubMesh>& GetSubMeshes() const { return m_SubMeshes; }
 
 	private:
 		void LoadModel(const std::string& path);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	private:
-		std::vector<std::shared_ptr<Mesh>> m_Meshes;
+		std::vector<SubMesh> m_SubMeshes;
 		std::string m_Directory;
 	};
 }

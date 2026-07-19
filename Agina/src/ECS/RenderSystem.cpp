@@ -27,9 +27,9 @@ namespace Agina {
 			auto& transform = entity.GetComponent<Transform>();
 			auto& modelComp = entity.GetComponent<ModelComponent>();
 
-			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			if (modelComp.ModelAsset)
 			{
-				Renderer::Submit(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
+				Renderer::Submit(*modelComp.ModelAsset, modelComp.Materials, transform);
 			}
 			});
 
@@ -56,9 +56,9 @@ namespace Agina {
 			auto& transform = entity.GetComponent<Transform>();
 			auto& modelComp = entity.GetComponent<ModelComponent>();
 
-			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			if (modelComp.ModelAsset)
 			{
-				Renderer::Submit(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
+				Renderer::Submit(*modelComp.ModelAsset,modelComp.Materials,transform);
 			}
 			});
 

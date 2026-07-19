@@ -26,7 +26,6 @@ namespace Agina {
 	struct RenderCommand
 	{
 		const Mesh* MeshPtr = nullptr;
-		const Model* ModelPtr = nullptr;
 		Material* MaterialPtr = nullptr;
 		Mat4 Transform;
 	};
@@ -137,7 +136,6 @@ namespace Agina {
 		{
 			s_Data->ShadowDepthShader->setMat4("u_Model", cmd.Transform);
 			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
-			if (cmd.ModelPtr) cmd.ModelPtr->Draw();
 		}
 
 		s_Data->ShadowQueue.clear();	
@@ -159,12 +157,14 @@ namespace Agina {
 		};
 
 		s_Data->CameraBufferUBO->SetData(&cameraData, sizeof(CameraBufferData));
-		s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
+		if (s_Data->ShadowEnabled)
+		{
+			s_Data->ShadowDepthMap->BindTexture(RendererData::ShadowTextureSlot);
+		}
 	}
 
 	void Renderer::EndScene()
 	{
-		//Sorting By Material To Minimize State Changes
 		std::sort(s_Data->SceneQueue.begin(), s_Data->SceneQueue.end(),
 			[](const RenderCommand& a, const RenderCommand& b) {
 				return a.MaterialPtr < b.MaterialPtr;
@@ -178,7 +178,10 @@ namespace Agina {
 			{
 				activeMaterial = cmd.MaterialPtr;
 				activeMaterial->Bind();
+			}
 
+			if (activeMaterial != NULL)
+			{
 				if (activeMaterial->GetMaterialType() == MaterialType::LIT)
 				{
 					activeMaterial->Set("u_EnableShadows", s_Data->ShadowEnabled);
@@ -189,16 +192,13 @@ namespace Agina {
 							static_cast<int>(RendererData::ShadowTextureSlot));
 					}
 				}
-			}
 
-			if (activeMaterial != NULL)
-			{
 				if (activeMaterial->GetMaterialType() != MaterialType::GRID)
 					activeMaterial->Set("u_Model", cmd.Transform);
+
 			}
 
 			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
-			if (cmd.ModelPtr) cmd.ModelPtr->Draw();
 		}
 
 		if (s_Data->ActiveSkybox.HasRequest && s_Data->ActiveSkybox.SkyboxPtr)
@@ -238,16 +238,26 @@ namespace Agina {
 
 	void Renderer::Submit(const Mesh& mesh, Material& mat, const Transform& t)
 	{
-		RenderCommand cmd{ &mesh, nullptr, &mat, t.GetMatrix() };
+		RenderCommand cmd{ &mesh, &mat, t.GetMatrix() };
 		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
 		else s_Data->SceneQueue.push_back(cmd);
 	}
 
-	void Renderer::Submit(const Model& model, Material& mat, const Transform& t)
+	void Renderer::Submit(const Model& model, const std::vector<std::Ref<Material>>& materials, const Transform& t)
 	{
-		RenderCommand cmd{ nullptr, &model, &mat, t.GetMatrix() };
-		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
-		else s_Data->SceneQueue.push_back(cmd);
+		for (const auto& subMesh : model.GetSubMeshes())
+		{
+			RenderCommand cmd;
+
+			cmd.MeshPtr = subMesh.Mesh.get();
+			cmd.MaterialPtr = materials[subMesh.MaterialIndex].get();
+			cmd.Transform = t.GetMatrix();
+
+			if (s_Data->IsShadowPassActive)
+				s_Data->ShadowQueue.push_back(cmd);
+			else
+				s_Data->SceneQueue.push_back(cmd);
+		}
 	}
 
 	void Renderer::SubmitSkyBox(const std::Ref<Skybox> skybox, Material& mat)

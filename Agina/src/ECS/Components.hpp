@@ -60,7 +60,7 @@ namespace Agina {
     struct ModelComponent 
     {
         std::Ref<Model> ModelAsset;
-        std::Ref<Material> MaterialAsset;
+        std::vector<std::Ref<Material>> Materials;
     };
 
     struct CameraComponent 
