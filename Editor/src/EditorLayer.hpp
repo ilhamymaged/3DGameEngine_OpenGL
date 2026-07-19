@@ -3,7 +3,6 @@
 #include <ECS/Scene.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include <Renderer/Framebuffer.hpp>
-#include <Renderer/Texture.hpp>
 #include <Agina.h>
 
 class EditorLayer : public Agina::Layer

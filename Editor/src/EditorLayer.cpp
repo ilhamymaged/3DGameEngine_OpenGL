@@ -65,11 +65,19 @@ void EditorLayer::OnAttach()
 	tMat.MaterialAsset->Set("u_HasNormalTexture", false);
 	tMat.MaterialAsset->Set("u_HasSpecularTexture", false);
 
+	auto textDir = FileSystem::EngineAssets() / "textures/skybox";
+	std::vector<std::string> faces = 
+	{
+		(textDir / "right.jpg").string(),  (textDir / "left.jpg").string(),
+		(textDir / "top.jpg").string(),    (textDir / "bottom.jpg").string(),
+		(textDir / "front.jpg").string(),  (textDir / "back.jpg").string()
+	};
+	auto skyboxMap = AssetManager::LoadCubemap("DefaultSky", faces);
+
 	auto skyBox = m_Scene.CreateEntity();
-	skyBox.AddComponent<SkyboxComponent>(std::make_shared<Skybox>(),
+	skyBox.AddComponent<SkyboxComponent>(std::make_Ref<Skybox>(skyboxMap),
 		Material::Create(MaterialType::SKYBOX));
 	skyBox.AddComponent<TagComponent>("SkyBox");
-
 }
 
 void EditorLayer::OnUIRender()

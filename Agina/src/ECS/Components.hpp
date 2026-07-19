@@ -1,11 +1,11 @@
 #pragma once
-#include <memory>
 #include <Renderer/Transform.hpp> 
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Camera.hpp>
 #include <string>
 #include <Core/MathTypes.hpp>
 #include <Core/UUID.hpp>
+#include <Agina.h>
 
 namespace Agina {
 
@@ -53,14 +53,14 @@ namespace Agina {
 
     struct MeshComponent 
     {
-        std::shared_ptr<Mesh> MeshAsset;
-        std::shared_ptr<Material> MaterialAsset;
+        std::Ref<Mesh> MeshAsset;
+        std::Ref<Material> MaterialAsset;
     };
 
     struct ModelComponent 
     {
-        std::shared_ptr<Model> ModelAsset;
-        std::shared_ptr<Material> MaterialAsset; 
+        std::Ref<Model> ModelAsset;
+        std::Ref<Material> MaterialAsset;
     };
 
     struct CameraComponent 
@@ -71,8 +71,8 @@ namespace Agina {
 
     struct SkyboxComponent 
     {
-        std::shared_ptr<Skybox> skyBoxAsset;
-        std::shared_ptr<Material> skyBoxMaterialAsset;
+        std::Ref<Skybox> skyBoxAsset;
+        std::Ref<Material> skyBoxMaterialAsset;
     };
 
     struct DirectionalLightComponent 

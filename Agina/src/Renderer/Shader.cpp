@@ -107,6 +107,12 @@ namespace Agina
         if (loc != -1) glUniform1f(loc, value);
     }
 
+    void Shader::SetBool(const std::string& name, bool value)
+    {
+        int loc = GetUniformLocation(name);
+        if (loc != -1) glUniform1i(loc, value);
+    }
+
     int Shader::GetUniformLocation(const std::string& name)
     {
         if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())

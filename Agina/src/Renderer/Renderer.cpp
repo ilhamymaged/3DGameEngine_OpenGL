@@ -16,6 +16,13 @@
 
 namespace Agina {
 
+	struct SkyboxCommand
+	{
+		std::Ref<Skybox> SkyboxPtr = nullptr;
+		Material* SkyBoxMaterialPtr = nullptr;
+		bool HasRequest = false;
+	};
+
 	struct RenderCommand
 	{
 		const Mesh* MeshPtr = nullptr;
@@ -51,9 +58,14 @@ namespace Agina {
 		bool IsShadowPassActive = false;
 
 		static constexpr uint32_t ShadowTextureSlot = 7;
+		static constexpr uint32_t SkyBoxTextureSlot = 0;
 
 		std::vector<RenderCommand> SceneQueue;
 		std::vector<RenderCommand> ShadowQueue;
+		SkyboxCommand ActiveSkybox;
+
+		bool WireFrameMode = false;
+		bool ShadowEnabled = false;
 	};	
 
 	static RendererData* s_Data = nullptr;
@@ -98,17 +110,20 @@ namespace Agina {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::BeginShadowPass(const Vec3& lightPos, const Vec3& lightTarget) 
+	void Renderer::UpdateLightData(const Vec3& lightPos, const Vec3& lightTarget)
 	{
-		s_Data->IsShadowPassActive = true;
-
-		glCullFace(GL_FRONT);
-
 		Mat4 lightProjection = Math::Ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
 		Mat4 lightView = Math::LookAt(lightPos, lightTarget, Vec3(0.0f, 1.0f, 0.0f));
 
 		ShadowBufferData shadowData{ lightProjection * lightView, lightPos, 0.0f };
 		s_Data->ShadowBufferUBO->SetData(&shadowData, sizeof(ShadowBufferData));
+	}
+
+	void Renderer::BeginShadowPass() 
+	{
+		s_Data->IsShadowPassActive = true;
+
+		glCullFace(GL_FRONT);
 
 		glViewport(0, 0, s_Data->ShadowDepthMap->GetResolution(), s_Data->ShadowDepthMap->GetResolution());
 		s_Data->ShadowDepthMap->BindFramebuffer();
@@ -165,7 +180,15 @@ namespace Agina {
 				activeMaterial->Bind();
 
 				if (activeMaterial->GetMaterialType() == MaterialType::LIT)
-					activeMaterial->Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
+				{
+					activeMaterial->Set("u_EnableShadows", s_Data->ShadowEnabled);
+
+					if (s_Data->ShadowEnabled)
+					{
+						activeMaterial->Set("u_ShadowMap",
+							static_cast<int>(RendererData::ShadowTextureSlot));
+					}
+				}
 			}
 
 			if (activeMaterial != NULL)
@@ -178,35 +201,98 @@ namespace Agina {
 			if (cmd.ModelPtr) cmd.ModelPtr->Draw();
 		}
 
+		if (s_Data->ActiveSkybox.HasRequest && s_Data->ActiveSkybox.SkyboxPtr)
+		{
+			glDepthFunc(GL_LEQUAL); 
+
+			s_Data->ActiveSkybox.SkyboxPtr->Bind(RendererData::SkyBoxTextureSlot);
+
+			s_Data->ActiveSkybox.SkyBoxMaterialPtr->Bind();
+			s_Data->ActiveSkybox.SkyBoxMaterialPtr->Set("u_Skybox",
+				static_cast<int>(RendererData::SkyBoxTextureSlot));
+
+			s_Data->ActiveSkybox.SkyboxPtr->Bind();
+			bool restoreWireframe = s_Data->WireFrameMode;
+
+			if (restoreWireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glEnable(GL_CULL_FACE);
+			}
+			s_Data->ActiveSkybox.SkyboxPtr->Draw();
+
+			if (restoreWireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDisable(GL_CULL_FACE);
+			}
+
+			glDepthFunc(GL_LESS); 
+
+			s_Data->ActiveSkybox = { nullptr, nullptr, false };
+		}
+
+
 		s_Data->SceneQueue.clear();
 	}
 
-	void Renderer::Draw(const Mesh& mesh, Material& mat, const Transform& t) 
+	void Renderer::Submit(const Mesh& mesh, Material& mat, const Transform& t)
 	{
 		RenderCommand cmd{ &mesh, nullptr, &mat, t.GetMatrix() };
 		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
 		else s_Data->SceneQueue.push_back(cmd);
 	}
 
-	void Renderer::Draw(const Model& model, Material& mat, const Transform& t)
+	void Renderer::Submit(const Model& model, Material& mat, const Transform& t)
 	{
 		RenderCommand cmd{ nullptr, &model, &mat, t.GetMatrix() };
 		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
 		else s_Data->SceneQueue.push_back(cmd);
 	}
 
-	void Renderer::DrawSkybox(const std::shared_ptr<Skybox> skybox) 
+	void Renderer::SubmitSkyBox(const std::Ref<Skybox> skybox, Material& mat)
 	{
-		glDepthFunc(GL_LEQUAL);
-		skybox->Draw();
-		glDepthFunc(GL_LESS);
+		s_Data->ActiveSkybox = { skybox, &mat, true };
+	}
+
+	void Renderer::SetWireFrameMode(bool enabled)
+	{
+		if (s_Data->WireFrameMode == enabled)
+			return;
+
+		s_Data->WireFrameMode = enabled;
+		if (enabled)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDisable(GL_CULL_FACE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glEnable(GL_CULL_FACE);
+		}
+	}
+
+	bool Renderer::GetWireFrameMode()
+	{
+		return s_Data->WireFrameMode;
+	}
+
+	void Renderer::SetShadowsEnabled(bool enabled)
+	{
+		s_Data->ShadowEnabled = enabled;
+	}
+
+	bool Renderer::GetShadowsEnabled()
+	{
+		return s_Data->ShadowEnabled;
 	}
 
 	void Renderer::OnEvent(Event& e)
 	{
 		EventDispatcher eventDispatcher(e);
 		eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr)
-		{
+		{	
 			if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
 			s_Data->WindowWidth = wr.GetNewWidth();
 			s_Data->WindowHeight = wr.GetNewHeight();

@@ -33,6 +33,7 @@ uniform bool u_HasSpecularTexture;
 layout(binding = 2) uniform sampler2D u_SpecularTexture; 
 
 layout(binding = 7) uniform sampler2D u_ShadowMap; 
+uniform bool u_EnableShadows;
 
 float CalculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
@@ -101,7 +102,11 @@ void main()
     vec3 specularColor = u_HasSpecularTexture ? texture(u_SpecularTexture, v_TexCoords).rgb : vec3(0.3);
     vec3 specular = specularColor * specFactor; 
 
-    float shadow = CalculateShadow(v_FragPosLightSpace, norm, lightDir);       
+    float shadow = 0.0f;
+    if (u_EnableShadows) 
+    {
+        shadow = CalculateShadow(v_FragPosLightSpace, norm, lightDir);       
+    }
     vec3 finalLighting = ambient + (1.0 - shadow) * (diffuse + specular);
     
     FragColor = vec4(finalLighting, 1.0);

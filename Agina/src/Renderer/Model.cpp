@@ -1,5 +1,4 @@
 #include "Model.hpp"
-#include <Renderer/Texture.hpp>
 #include <Core/Logger.hpp>
 #include <filesystem>
 #include <algorithm>

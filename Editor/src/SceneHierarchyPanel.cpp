@@ -1,6 +1,7 @@
 #include "SceneHierarchyPanel.hpp"
 #include <ECS/Components.hpp>
 #include <UI/UI.hpp>
+#include <Renderer/Renderer.hpp>
 
 SceneHierarchyPanel::SceneHierarchyPanel(Scene* sceneContext)
 {
@@ -24,7 +25,7 @@ void SceneHierarchyPanel::OnUIRender()
 				DrawEntityNode(entity);
 			});
 
-		if (UI::IsMouseDown(0) && UI::IsWindowHovered()) // Right Click means 0
+		if (UI::IsMouseDown(0) && UI::IsWindowHovered()) 
 		{
 			m_SelectionContext = Entity{};
 		}
@@ -39,6 +40,26 @@ void SceneHierarchyPanel::OnUIRender()
 		DrawComponents(m_SelectionContext);
 	}
 
+	UI::EndWindow();
+		
+	UI::BeginWindow("Settings");
+
+	bool wireframe = Renderer::GetWireFrameMode();
+
+	if (UI::Checkbox("Enable Wireframe", &wireframe))
+	{
+		Renderer::SetWireFrameMode(wireframe);
+	}
+
+	bool shadowsEnabled = Renderer::GetShadowsEnabled();
+	if (UI::Checkbox("Enable Shadows", &shadowsEnabled))
+	{
+		Renderer::SetShadowsEnabled(shadowsEnabled);
+	}
+
+	UI::EndWindow();
+
+	UI::BeginWindow("Content Browser");
 	UI::EndWindow();
 }
 
@@ -136,7 +157,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				UI::DragFloat("Near Clip", camera.GetRefOrthoNear(), 0.1f, -100.0f, 100.0f);
 				UI::DragFloat("Far Clip", camera.GetRefOrthoFar(), 1.0f, 10.0f, 5000.0f);
 			}
-
 		});
 }
 

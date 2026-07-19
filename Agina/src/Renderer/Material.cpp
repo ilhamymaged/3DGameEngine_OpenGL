@@ -69,7 +69,9 @@ namespace Agina {
                 {
                     using T = std::decay_t<decltype(v)>;
 
-                    if constexpr (std::is_same_v<T, int>)
+					if constexpr (std::is_same_v<T, bool>)
+						m_Shader->setInt(name, v);
+                    else if constexpr (std::is_same_v<T, int>)
                         m_Shader->setInt(name, v);
                     else if constexpr (std::is_same_v<T, float>)
                         m_Shader->setFloat(name, v);

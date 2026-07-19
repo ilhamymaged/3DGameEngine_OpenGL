@@ -11,70 +11,46 @@ namespace Agina {
 	}
 
 	Mesh::Mesh(const MeshData& data)
-		: m_IndexCount(data.indices.size())
+		: Mesh(data, MeshType::NON_BUILTIN) 
 	{
-		glGenVertexArrays(1, &m_VAO);
-		glGenBuffers(1, &m_VBO);
-		glGenBuffers(1, &m_EBO);
-
-		glBindVertexArray(m_VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(Vertex), data.vertices.data(), GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(uint32_t), data.indices.data(), GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-
-		glBindVertexArray(0);
 	}
 
 	Mesh::Mesh(const MeshData& data, MeshType type)
 		:m_Type(type), m_IndexCount(data.indices.size())
 	{
-		glGenVertexArrays(1, &m_VAO);
-		glGenBuffers(1, &m_VBO);
-		glGenBuffers(1, &m_EBO);
+		glCreateVertexArrays(1, &m_VAO);
+		glCreateBuffers(1, &m_VBO);
+		glCreateBuffers(1, &m_EBO);
+	
+		glNamedBufferStorage(m_VBO, data.vertices.size() * sizeof(Vertex), data.vertices.data(), 0);
+		glNamedBufferStorage(m_EBO, data.indices.size() * sizeof(uint32_t), data.indices.data(), 0);
 
-		glBindVertexArray(m_VAO);
+		glVertexArrayVertexBuffer(m_VAO, 0, m_VBO, 0, sizeof(Vertex));
+		glVertexArrayElementBuffer(m_VAO, m_EBO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(Vertex), data.vertices.data(), GL_STATIC_DRAW);
+		glEnableVertexArrayAttrib(m_VAO, 0);
+		glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+		glVertexArrayAttribBinding(m_VAO, 0, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(uint32_t), data.indices.data(), GL_STATIC_DRAW);
+		glEnableVertexArrayAttrib(m_VAO, 1);
+		glVertexArrayAttribFormat(m_VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+		glVertexArrayAttribBinding(m_VAO, 1, 0);
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+		glEnableVertexArrayAttrib(m_VAO, 2);
+		glVertexArrayAttribFormat(m_VAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, texCoords));
+		glVertexArrayAttribBinding(m_VAO, 2, 0);
 
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+		glEnableVertexArrayAttrib(m_VAO, 3);
+		glVertexArrayAttribFormat(m_VAO, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, tangent));
+		glVertexArrayAttribBinding(m_VAO, 3, 0);
 
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-
-		glBindVertexArray(0);
 	}
 
 	Mesh::~Mesh()
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
+		if (m_VAO) glDeleteVertexArrays(1, &m_VAO);
+		if (m_VBO) glDeleteBuffers(1, &m_VBO);
+		if (m_EBO) glDeleteBuffers(1, &m_EBO);
 	}
 
 	void Mesh::Bind() const { glBindVertexArray(m_VAO); }

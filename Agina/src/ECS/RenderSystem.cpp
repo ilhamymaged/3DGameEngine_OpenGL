@@ -5,10 +5,72 @@
 #include <Renderer/Material.hpp>
 #include <Renderer/Skybox.hpp> 
 #include <Renderer/Model.hpp>  
-#include <Renderer/Texture.hpp>
 #include <Core/MathTypes.hpp>
 
 namespace Agina {
+
+	static void RenderShadowPass(Scene& scene)
+	{
+		Renderer::BeginShadowPass();
+
+		scene.Each<Transform, MeshComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& meshComp = entity.GetComponent<MeshComponent>();
+
+			if (meshComp.MeshAsset && meshComp.MaterialAsset)
+			{
+				Renderer::Submit(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
+			}
+			});
+
+		scene.Each<Transform, ModelComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& modelComp = entity.GetComponent<ModelComponent>();
+
+			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			{
+				Renderer::Submit(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
+			}
+			});
+
+		Renderer::EndShadowPass();
+
+	}
+
+	static void RenderMainPass(Scene& scene, const Camera& camera)
+	{
+		Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		Renderer::BeginScene(camera);
+
+		scene.Each<Transform, MeshComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& meshComp = entity.GetComponent<MeshComponent>();
+
+			if (meshComp.MeshAsset && meshComp.MaterialAsset)
+			{
+				Renderer::Submit(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
+			}
+			});
+
+		scene.Each<Transform, ModelComponent>([](Entity entity) {
+			auto& transform = entity.GetComponent<Transform>();
+			auto& modelComp = entity.GetComponent<ModelComponent>();
+
+			if (modelComp.ModelAsset && modelComp.MaterialAsset)
+			{
+				Renderer::Submit(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
+			}
+			});
+
+		auto skyBoxEntity = scene.FindEntityWithComponent<SkyboxComponent>();
+		if (skyBoxEntity.has_value())
+		{
+			auto& skyBoxComp = skyBoxEntity->GetComponent<SkyboxComponent>();
+			Renderer::SubmitSkyBox(skyBoxComp.skyBoxAsset, *skyBoxComp.skyBoxMaterialAsset);
+		}
+
+		Renderer::EndScene();
+	}
 
 	void RenderSystem::RenderToTarget(Scene& scene, const std::shared_ptr<Framebuffer>& target)
 	{
@@ -43,65 +105,11 @@ namespace Agina {
 			lightTarget = light.Target;
 		}
 
-		Renderer::BeginShadowPass(lightPos, lightTarget);
-
-		scene.Each<Transform, MeshComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& meshComp = entity.GetComponent<MeshComponent>();
-
-			if (meshComp.MeshAsset && meshComp.MaterialAsset)
-			{
-				Renderer::Draw(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
-			}
-			});
-
-		scene.Each<Transform, ModelComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& modelComp = entity.GetComponent<ModelComponent>();
-
-			if (modelComp.ModelAsset && modelComp.MaterialAsset)
-			{
-				Renderer::Draw(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
-			}
-			});
-
-		Renderer::EndShadowPass();
-
-		if (target)
-		{
-			target->Bind();
-		}
-
-		Renderer::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		Renderer::BeginScene(camera);
-
-		scene.Each<Transform, MeshComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& meshComp = entity.GetComponent<MeshComponent>();
-
-			if (meshComp.MeshAsset && meshComp.MaterialAsset)
-			{
-				Renderer::Draw(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
-			}
-			});
-
-		scene.Each<Transform, ModelComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& modelComp = entity.GetComponent<ModelComponent>();
-
-			if (modelComp.ModelAsset && modelComp.MaterialAsset)
-			{
-				Renderer::Draw(*modelComp.ModelAsset, *modelComp.MaterialAsset, transform);
-			}
-			});
-
-		auto skyBoxEntity = scene.FindEntityWithComponent<SkyboxComponent>();
-		if (!skyBoxEntity.has_value()) return;
-		auto& skyBoxComp = skyBoxEntity->GetComponent<SkyboxComponent>();
-		skyBoxComp.skyBoxMaterialAsset->Bind();
-		Renderer::DrawSkybox(skyBoxComp.skyBoxAsset);
-
-		Renderer::EndScene();
+		Renderer::UpdateLightData(lightPos, lightTarget);
+		if (Renderer::GetShadowsEnabled()) RenderShadowPass(scene);
+		if (target) target->Bind();
+		RenderMainPass(scene, camera);
 	}
+
 }
 

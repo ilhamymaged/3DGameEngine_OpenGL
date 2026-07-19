@@ -9,7 +9,7 @@
 
 namespace Agina {
 
-	using MaterialValue = std::variant<int, float, Vec3, Vec4, Mat4>;
+	using MaterialValue = std::variant<bool, int, float, Vec3, Vec4, Mat4>;
 
 	enum MaterialType
 	{

@@ -20,6 +20,7 @@ namespace Agina
         void setVec3(const std::string& name, const Vec3& vec);
         void setInt(const std::string& name, int value);
         void setFloat(const std::string& name, float value);
+        void SetBool(const std::string& name, bool value);
 
     private:
         int GetUniformLocation(const std::string& name);

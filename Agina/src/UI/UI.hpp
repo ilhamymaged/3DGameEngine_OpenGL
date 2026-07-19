@@ -12,6 +12,11 @@ namespace Agina {
 	{
 	public:
 
+		static bool MenuItem(const std::string& label);
+		static bool BeginPopup(const std::string& label);
+		static void OpenPopup(const std::string& label);
+		static void EndPopup();
+
 		static bool BeginPropertyGrid(const std::string& id);
 		static void EndPropertyGrid();
 
@@ -43,6 +48,8 @@ namespace Agina {
 		static bool IsItemClicked();
 
 		static void BeginWindow(const std::string& name, bool fullScreen = false);
+		static void BeginWindow(const std::string& name, const Vec2& Pos,
+			const Vec2& size);
 		static void EndWindow();
 
 		static void BeginToolbar(float height = 50.0f);

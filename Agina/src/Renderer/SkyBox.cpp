@@ -7,7 +7,8 @@
 
 namespace Agina {
 
-	Skybox::Skybox()
+	Skybox::Skybox(const std::Ref<CubemapTexture>& cubemap)
+		: m_Texture(cubemap)
 	{
 		float skyboxVertices[] = 
 		{
@@ -25,23 +26,16 @@ namespace Agina {
 			 1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
 		};
 
-		glGenVertexArrays(1, &m_VAO);
-		glGenBuffers(1, &m_VBO);
-		glBindVertexArray(m_VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glBindVertexArray(0);
-	
-		auto textDir = FileSystem::EngineAssets() / "textures/skybox";
-		std::vector<std::string> skyboxFaces = {
-			(textDir / "right.jpg").string(),  (textDir / "left.jpg").string(),
-			(textDir / "top.jpg").string(),    (textDir / "bottom.jpg").string(),
-			(textDir / "front.jpg").string(),  (textDir / "back.jpg").string()
-		};
+		glCreateVertexArrays(1, &m_VAO);
+		glCreateBuffers(1, &m_VBO);
 
-		m_Texture = std::make_shared<CubemapTexture>(skyboxFaces);
+		glNamedBufferStorage(m_VBO, sizeof(skyboxVertices), skyboxVertices, 0);
+
+		glEnableVertexArrayAttrib(m_VAO, 0);
+		glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
+	
+		glVertexArrayVertexBuffer(m_VAO, 0, m_VBO, 0, 3 * sizeof(float));
+		glVertexArrayAttribBinding(m_VAO, 0, 0);
 	}
 
 	void Skybox::Draw() const
@@ -52,15 +46,14 @@ namespace Agina {
 
 	Skybox::~Skybox()
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
+		if (m_VAO) glDeleteVertexArrays(1, &m_VAO);
+		if (m_VBO) glDeleteBuffers(1, &m_VBO);
 	}
 
 	void Skybox::Bind(uint32_t slot) const
 	{
-		m_Texture->Bind(slot);
+		if (m_Texture) m_Texture->Bind(slot);
 	}
-
 
 }
 

@@ -5,7 +5,7 @@
 #include <imgui_impl_opengl3.h>
 #include <unordered_map>
 #include <GLFW/glfw3.h>
-
+#include <imgui_internal.h>
 #include <Core/Logger.hpp>
 
 namespace Agina {
@@ -95,34 +95,79 @@ namespace Agina {
 	bool UI::Selectable(const char* label, bool selected) { return ImGui::Selectable(label, selected); }
 	void UI::SetItemDefaultFocus() { ImGui::SetItemDefaultFocus(); }
 
+	bool UI::MenuItem(const std::string& label)
+	{
+		return ImGui::MenuItem(label.c_str());
+	}
+
+	bool UI::BeginPopup(const std::string& label)
+	{
+		return ImGui::BeginPopup(label.c_str());
+	}
+
+	void UI::OpenPopup(const std::string& label) { ImGui::OpenPopup(label.c_str()); }
+	void UI::EndPopup() { ImGui::EndPopup(); }
+	
 	void UI::BeginDockspace()
 	{
 		static bool dockspaceOpen = true;
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking;
 
-		// Grab the main viewport size and position to span the entire screen surface
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->WorkPos);
-		ImGui::SetNextWindowSize(viewport->WorkSize);
+
+		float toolbarHeight = 0.0f; // Hard-codded
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + toolbarHeight));
+		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, viewport->WorkSize.y - toolbarHeight));
 		ImGui::SetNextWindowViewport(viewport->ID);
 
-		// Strip all window decorations and borders for a seamless background canvas
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
 			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+			ImGuiWindowFlags_NoBackground;
 
-		// Remove inner padding so docked views touch the screen edges completely
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("AginaEditorWorkspace", &dockspaceOpen, windowFlags);
-		ImGui::PopStyleVar(3); // Pop rounding, border size, and window padding
+		ImGui::PopStyleVar(3); 
 
-		// Submit the central dock identifier node
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspaceId = ImGui::GetID("AginaCentralDockSpace");
+
+			if (ImGui::DockBuilderGetNode(dockspaceId) == nullptr)
+			{
+				ImGui::DockBuilderRemoveNode(dockspaceId);
+				ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
+				ImGui::DockBuilderSetNodeSize(dockspaceId, ImVec2(viewport->WorkSize.x, 
+					viewport->WorkSize.y - toolbarHeight));
+
+				ImGuiID dockMainId = dockspaceId; // This acts as the center workspace (Viewport)
+				ImGuiID dockLeftId, dockLeftBottomId, dockRightId, dockBottomId;
+
+				// 1. Slice Left Sidebar out from Main (20% of total width) -> Holds Scene Hierarchy
+				dockLeftId = ImGui::DockBuilderSplitNode(dockMainId, ImGuiDir_Left, 0.20f, nullptr, &dockMainId);
+
+				// 2. Slice Bottom Left out from the Left Sidebar (50% of left height) -> Holds Properties
+				dockLeftBottomId = ImGui::DockBuilderSplitNode(dockLeftId, ImGuiDir_Down, 0.50f, nullptr, &dockLeftId);
+
+				// 3. Slice Bottom out from the central area (25% of center height) -> Holds Content Browser
+				dockBottomId = ImGui::DockBuilderSplitNode(dockMainId, ImGuiDir_Down, 0.25f, nullptr, &dockMainId);
+
+				// 4. Slice Right Sidebar out from the remaining center space (25% width) -> Holds Settings
+				dockRightId = ImGui::DockBuilderSplitNode(dockMainId, ImGuiDir_Right, 0.25f, nullptr, &dockMainId);
+
+				// 5. Match your ImGui::Begin window titles exactly to their locked slots
+				ImGui::DockBuilderDockWindow("Scene Hierarchy", dockLeftId);
+				ImGui::DockBuilderDockWindow("Properties", dockLeftBottomId);
+				ImGui::DockBuilderDockWindow("Content Browser", dockBottomId);
+				ImGui::DockBuilderDockWindow("Settings", dockRightId);
+				ImGui::DockBuilderDockWindow("Viewport", dockMainId); // Gets whatever is left in the center
+
+				ImGui::DockBuilderFinish(dockspaceId);
+			}
+
 			ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 		}
 	}
@@ -229,6 +274,17 @@ namespace Agina {
 				ImGuiWindowFlags_NoResize);
 		}
 		else ImGui::Begin(name.c_str());
+	}
+
+	void UI::BeginWindow(const std::string& name, const Vec2& Pos,
+		const Vec2& size)
+	{
+		ImGui::SetNextWindowPos(ImVec2(Pos.x, Pos.y));
+		ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+
+		ImGui::Begin(name.c_str(), nullptr,
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoResize);
 	}
 
 	void UI::EndWindow()
