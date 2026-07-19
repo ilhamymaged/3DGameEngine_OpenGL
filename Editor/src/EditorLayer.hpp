@@ -3,6 +3,8 @@
 #include <ECS/Scene.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include <Renderer/Framebuffer.hpp>
+#include <Renderer/Texture.hpp>
+#include <Agina.h>
 
 class EditorLayer : public Agina::Layer
 {
@@ -20,7 +22,7 @@ private:
 	Agina::Scene m_Scene;
 	SceneHierarchyPanel m_Panel;
 
-	int m_Width;
-	int m_Height;
-	std::shared_ptr<Framebuffer> m_Framebuffer;
-};
+	int m_ViewPortWidth;
+	int m_ViewPortHeight;
+	std::Ref<Framebuffer> m_Framebuffer;
+};	

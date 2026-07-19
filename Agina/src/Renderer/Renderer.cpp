@@ -168,8 +168,11 @@ namespace Agina {
 					activeMaterial->Set("u_ShadowMap", static_cast<int>(RendererData::ShadowTextureSlot));
 			}
 
-			if (activeMaterial->GetMaterialType() != MaterialType::GRID)
-				activeMaterial->Set("u_Model", cmd.Transform);
+			if (activeMaterial != NULL)
+			{
+				if (activeMaterial->GetMaterialType() != MaterialType::GRID)
+					activeMaterial->Set("u_Model", cmd.Transform);
+			}
 
 			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
 			if (cmd.ModelPtr) cmd.ModelPtr->Draw();

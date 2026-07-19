@@ -7,14 +7,25 @@ struct GLFWwindow;
 #include <Renderer/Framebuffer.hpp>
 
 namespace Agina {
-
+	
 	class UI
 	{
 	public:
 
-		static bool WantsCaptureMouse();
+		static bool BeginPropertyGrid(const std::string& id);
+		static void EndPropertyGrid();
 
-		static void Viewport(const std::shared_ptr<Framebuffer>& framebuffer, const std::string& name = "Viewport");
+		static void SetDarkEngineTheme();
+
+		static bool WantsCaptureMouse();
+		static bool WantsCaptureKeyboard();
+
+		static bool BeginCombo(const char* label, const char* previewValue);
+		static void EndCombo();
+		static bool Selectable(const char* label, bool selected);
+		static void SetItemDefaultFocus();
+
+		static Vec2 Viewport(const std::shared_ptr<Framebuffer>& framebuffer, const std::string& name = "Viewport");
 
 		static void BeginDockspace();
 		static void EndDockspace();
@@ -43,7 +54,9 @@ namespace Agina {
 		static void Text(const std::string& label);
 		static void SelectableItem(const std::string& label);
 
-		static void DragVec3(const std::string&, Vec3&);
+		static void DragVec3(const std::string&, Vec3&, 
+			float speed = 0.1f, float min = -999.0f, float max = 999.0f, float resetValue = 0.0f);
+		static void DragFloat(const std::string& label, float& value, float speed, float min, float max);
 
 		static void CenterNextItemX(float width);
 		static void CenterNextItemY(float height);
@@ -54,6 +67,11 @@ namespace Agina {
 		static void BeginFrame();
 		static void EndFrame();
 		static void ShutDown();
+
+		static void LoadFont(uint8_t index, const std::string& filepath, float size, bool setAsDefault = false);
+		static void PushFont(uint8_t index);
+		static void PopFont();
+
 	};
 
 }

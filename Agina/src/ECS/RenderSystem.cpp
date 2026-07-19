@@ -28,6 +28,8 @@ namespace Agina {
 	{
 		auto cameraEntity = scene.FindEntityWithComponent<CameraComponent>();
 		if (!cameraEntity.has_value()) return;
+		auto IsPrimary = cameraEntity->GetComponent<CameraComponent>().IsPrimary;
+		if (!IsPrimary) return;
 		auto& camera = cameraEntity->GetComponent<CameraComponent>().Cam;
 
 		Vec3 lightPos(-10.0f, 20.0f, -5.0f);

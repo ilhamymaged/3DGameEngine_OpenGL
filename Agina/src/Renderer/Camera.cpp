@@ -29,11 +29,26 @@ namespace Agina {
 
 	Mat4 Camera::GetProjectionMatrix(int width, int height) const
 	{
-		return Math::Perspective(m_FOV, (float)width / (float)height, 0.1f, 1000.0f);
+		float aspectRatio = (float)width / (float)height;
+
+		if (m_ProjType == CameraProjectionType::PERSPECTIVE)
+		{
+			return Math::Perspective(m_FOV, aspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+		}
+		else
+		{
+			float orthoLeft = -m_OrthoSize * aspectRatio * 0.5f;
+			float orthoRight = m_OrthoSize * aspectRatio * 0.5f;
+			float orthoBottom = -m_OrthoSize * 0.5f;
+			float orthoTop = m_OrthoSize * 0.5f;
+
+			return Math::Ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_OrthoNear, m_OrthoFar);
+		}
 	}
 
 	void Camera::Update(float deltaTime)
 	{
+		if (UI::WantsCaptureKeyboard()) return;
 		if (m_Mode == CameraMode::Follow)
 		{
 			if (m_FocusTarget)
@@ -45,7 +60,6 @@ namespace Agina {
 			return;
 		}
 
-		// Free camera movement via our native engine operators
 		auto& input = Input::Get();
 		Vec3 right = Math::Normalize(Math::Cross(m_Front, m_WorldUp));
 

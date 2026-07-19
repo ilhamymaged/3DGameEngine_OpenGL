@@ -24,7 +24,7 @@ void SceneHierarchyPanel::OnUIRender()
 				DrawEntityNode(entity);
 			});
 
-		if (UI::IsMouseDown(0) && UI::IsWindowHovered())
+		if (UI::IsMouseDown(0) && UI::IsWindowHovered()) // Right Click means 0
 		{
 			m_SelectionContext = Entity{};
 		}
@@ -51,15 +51,8 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 	bool opened = UI::BeginEntityNode(tag, entityID, selected);
 
-	if (UI::IsItemClicked())
-	{
-		m_SelectionContext = entity;
-	}
-
-	if (opened)
-	{
-		UI::EndEntityNode();
-	}
+	if (UI::IsItemClicked()) m_SelectionContext = entity;
+	if (opened) UI::EndEntityNode();
 }
 
 template<typename T, typename UIFunction>
@@ -86,35 +79,65 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
 	if (entity.HasComponent<TagComponent>())
 	{
+		UI::PushFont(1);
 		auto& tag = entity.GetComponent<TagComponent>().tag;
+		UI::PopFont();
 		UI::InputText("##Tag", tag);
 	}
 
 	DrawComponent<Transform>("Transform", entity, [](auto& component)
 		{
-			UI::DragVec3("Position", component.Position);
-			UI::DragVec3("Rotation", component.Rotation); 
-			UI::DragVec3("Scale", component.Scale);
+			if (UI::BeginPropertyGrid("TransformProperties"))
+			{
+				UI::DragVec3("Position", component.Position);
+				UI::DragVec3("Rotation", component.Rotation);
+				UI::DragVec3("Scale", component.Scale, 0.1f, -999.0f, 999.0f, 1.0f);
+				UI::EndPropertyGrid();
+			}
 		});
 
 	DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
 		{
 			UI::Checkbox("Primary Camera", &component.IsPrimary);
+
+			const char* projectionTypeLabels[] = { "Perspective", "Orthographic" };
+			auto& camera = component.Cam;
+			Agina::CameraProjectionType currentProjType = camera.GetProjectionType();
+
+			const char* currentLabel = projectionTypeLabels[static_cast<int>(currentProjType)];
+
+			if (UI::BeginCombo("Projection", currentLabel))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = (currentLabel == projectionTypeLabels[i]);
+
+					if (UI::Selectable(projectionTypeLabels[i], isSelected))
+					{
+						currentLabel = projectionTypeLabels[i];
+						camera.SetProjectionType(static_cast<Agina::CameraProjectionType>(i));
+					}
+
+					if (isSelected)
+						UI::SetItemDefaultFocus();
+				}
+				UI::EndCombo();
+			}
+
+			if (currentProjType == Agina::CameraProjectionType::PERSPECTIVE)
+			{
+				UI::DragFloat("Field of View", camera.GetRefFOV(), 0.5f, 1.0f, 120.0f);
+				UI::DragFloat("Near Clip", camera.GetRefPerspectiveNear(), 0.05f, 0.001f, 10.0f);
+				UI::DragFloat("Far Clip", camera.GetRefPerspectiveFar(), 1.0f, 10.0f, 5000.0f);
+			}
+			else
+			{
+				UI::DragFloat("Ortho Size", camera.GetRefOrthoSize(), 0.1f, 0.1f, 100.0f);
+				UI::DragFloat("Near Clip", camera.GetRefOrthoNear(), 0.1f, -100.0f, 100.0f);
+				UI::DragFloat("Far Clip", camera.GetRefOrthoFar(), 1.0f, 10.0f, 5000.0f);
+			}
+
 		});
-
-	//DrawComponent<Rigidbody>("Rigidbody", entity, [](auto& component)
-	//	{
-	//		UI::Checkbox("Is Static", &component.isStatic);
-	//		UI::DragVec3("Velocity", component.velocity);
-	//		UI::DragVec3("Acceleration", component.acceleration);
-	//	});
-
-	// Box Collider
-	//DrawComponent<BoxCollider>("Box Collider", entity, [](auto& component)
-	//	{
-	//		UI::DragVec3("Local Min", component.localMin);
-	//		UI::DragVec3("Local Max", component.localMax);
-	//	});
 }
 
 

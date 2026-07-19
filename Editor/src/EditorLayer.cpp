@@ -15,11 +15,18 @@
 
 #include <Core/Logger.hpp>
 
+#include <Core/FileSystem.hpp>
+
 using namespace Agina;
 
 void EditorLayer::OnAttach()
 {
+	std::string assetPath = (FileSystem::AppAssets()).string();
 	m_Panel.SetContext(&m_Scene);
+
+	UI::LoadFont(0, assetPath + "/fonts/Open_Sans/static/OpenSans-SemiBold.ttf", 16.0f, true);
+	UI::LoadFont(1, assetPath + "/fonts/Open_Sans/static/OpenSans-Bold.ttf", 20.0f);
+	UI::SetDarkEngineTheme();
 
 	auto camera = m_Scene.CreateEntity();
 	auto& camereComp = camera.AddComponent<CameraComponent>();
@@ -69,12 +76,21 @@ void EditorLayer::OnUIRender()
 {
 	UI::BeginDockspace();
 	m_Panel.OnUIRender();
-	UI::Viewport(m_Framebuffer);
+	Vec2 viewPortSize = UI::Viewport(m_Framebuffer);
+	m_ViewPortWidth = viewPortSize.x;
+	m_ViewPortHeight = viewPortSize.y;
 	UI::EndDockspace();
 }
 
 void EditorLayer::OnRender()
 {
+	const auto& spec = m_Framebuffer->GetSpecification();
+	if (m_ViewPortWidth > 0 && m_ViewPortHeight > 0 &&
+		(spec.Width != m_ViewPortWidth || spec.Height != m_ViewPortHeight))
+	{
+		m_Framebuffer->Resize(m_ViewPortWidth, m_ViewPortHeight);
+	}
+
 	RenderSystem::RenderToTarget(m_Scene, m_Framebuffer);
 }
 
@@ -84,11 +100,6 @@ void EditorLayer::OnEvent(Agina::Event& e)
 	eventDispatcher.Dispatch<Agina::KeyPressed>([&](Agina::KeyPressed& key)
 		{
 			if (key.getKey() == static_cast<int>(Agina::Key::Escape)) Agina::Application::Get().ShutDown();
-		});
-
-	eventDispatcher.Dispatch<Agina::WindowResized>([&](Agina::WindowResized& wr)
-		{
-			wr.GetNewWidth(), wr.GetNewHeight();
 		});
 
 	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
@@ -102,10 +113,10 @@ void EditorLayer::OnUpdate(float dt)
 }
 
 EditorLayer::EditorLayer(int width, int height)
-	:m_Width(width), m_Height(height)
+	:m_ViewPortWidth(width), m_ViewPortHeight(height)
 {
-	FramebufferSpecification spec{ m_Width, m_Height };
-	m_Framebuffer = std::make_shared<Framebuffer>(spec);
+	FramebufferSpecification spec{ m_ViewPortWidth, m_ViewPortHeight };
+	m_Framebuffer = std::make_Ref<Framebuffer>(spec);
 }
 
 void EditorLayer::OnDetach() {}

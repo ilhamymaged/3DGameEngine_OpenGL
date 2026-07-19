@@ -17,6 +17,6 @@ std::filesystem::path Agina::FileSystem::EngineAssets()
 
 std::filesystem::path Agina::FileSystem::AppAssets()
 {
-    return s_AssetRoot / "SandBoxGame" / "assets";
+    return s_AssetRoot / "Editor" / "assets";
 }
 

@@ -12,6 +12,12 @@ namespace Agina {
 		Follow
 	};
 
+	enum class CameraProjectionType
+	{
+		PERSPECTIVE,
+		ORTHO
+	};
+
 	class Camera
 	{
 	public:
@@ -31,8 +37,18 @@ namespace Agina {
 
 		inline Vec3 GetPos() const { return m_Pos; }
 		inline float GetFOV() const { return m_FOV; }
+		inline float& GetRefFOV() { return m_FOV; }
+		inline CameraProjectionType GetProjectionType() { return m_ProjType; }
 
+		inline void SetProjectionType(CameraProjectionType type) { m_ProjType = type; }
 		inline Vec3& GetRefPos() { return m_Pos; }
+
+		inline float& GetRefPerspectiveNear() { return m_PerspectiveNear; }
+		inline float& GetRefPerspectiveFar() { return m_PerspectiveFar; }
+
+		inline float& GetRefOrthoSize() { return m_OrthoSize; }
+		inline float& GetRefOrthoNear() { return m_OrthoNear; }
+		inline float& GetRefOrthoFar() { return m_OrthoFar; }
 
 	private:
 		void updateVectors();
@@ -40,6 +56,13 @@ namespace Agina {
 	private:
 		Vec3 m_Pos;
 		float m_FOV;
+
+		CameraProjectionType m_ProjType = CameraProjectionType::PERSPECTIVE;
+		float m_PerspectiveNear = 0.1f;
+		float m_PerspectiveFar = 1000.0f;
+		float m_OrthoSize = 10.0f;	
+		float m_OrthoNear = -1.0f; 
+		float m_OrthoFar = 1000.0f;
 
 		float m_Yaw = -90.0f;
 		float m_Pitch = 0.0f;
