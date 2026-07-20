@@ -60,7 +60,6 @@ namespace Agina {
     struct ModelComponent 
     {
         std::Ref<Model> ModelAsset;
-        std::vector<std::Ref<Material>> Materials;
     };
 
     struct CameraComponent 
@@ -77,7 +76,6 @@ namespace Agina {
 
     struct DirectionalLightComponent 
     {
-        Vec3 Position;
         Vec3 Target;
     };
 }

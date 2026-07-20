@@ -7,6 +7,7 @@
 #include <assimp/postprocess.h>
 #include <Renderer/Mesh.hpp>
 #include <Agina.h>
+#include "Material.hpp"
 
 namespace Agina {
 
@@ -24,13 +25,16 @@ namespace Agina {
 
 		void Draw() const;
 		inline const std::vector<SubMesh>& GetSubMeshes() const { return m_SubMeshes; }
-
+		inline const std::vector<std::Ref<Material>>& GetMaterials() const {return m_Materials;}
 	private:
 		void LoadModel(const std::string& path);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
+		void LoadMaterials(const aiScene* scene);
+		std::Ref<Material> ProcessMaterial(aiMaterial* material);
 	private:
 		std::vector<SubMesh> m_SubMeshes;
+		std::vector<std::Ref<Material>> m_Materials;
 		std::string m_Directory;
 	};
 }

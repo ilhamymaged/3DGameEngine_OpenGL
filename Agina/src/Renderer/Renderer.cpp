@@ -65,6 +65,8 @@ namespace Agina {
 
 		bool WireFrameMode = false;
 		bool ShadowEnabled = false;
+
+		uint32_t DrawCalls = 0;
 	};	
 
 	static RendererData* s_Data = nullptr;
@@ -135,7 +137,11 @@ namespace Agina {
 		for (const auto& cmd : s_Data->ShadowQueue)
 		{
 			s_Data->ShadowDepthShader->setMat4("u_Model", cmd.Transform);
-			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
+			if (cmd.MeshPtr)
+			{
+				cmd.MeshPtr->Draw();
+				s_Data->DrawCalls++;
+			}
 		}
 
 		s_Data->ShadowQueue.clear();	
@@ -194,11 +200,15 @@ namespace Agina {
 				}
 
 				if (activeMaterial->GetMaterialType() != MaterialType::GRID)
-					activeMaterial->Set("u_Model", cmd.Transform);
+					activeMaterial->GetShader().setMat4("u_Model", cmd.Transform);
 
 			}
 
-			if (cmd.MeshPtr) cmd.MeshPtr->Draw();
+			if (cmd.MeshPtr) 
+			{
+				s_Data->DrawCalls++;
+				cmd.MeshPtr->Draw();
+			}
 		}
 
 		if (s_Data->ActiveSkybox.HasRequest && s_Data->ActiveSkybox.SkyboxPtr)
@@ -228,12 +238,17 @@ namespace Agina {
 			}
 
 			glDepthFunc(GL_LESS); 
-
+			 
 			s_Data->ActiveSkybox = { nullptr, nullptr, false };
 		}
 
-
+		AG_CORE_INFO("Draw calls {}", s_Data->SceneQueue.size());
 		s_Data->SceneQueue.clear();
+	}
+
+	uint32_t Renderer::GetDrawCalls()
+	{
+		return s_Data->DrawCalls;
 	}
 
 	void Renderer::Submit(const Mesh& mesh, Material& mat, const Transform& t)
@@ -243,14 +258,14 @@ namespace Agina {
 		else s_Data->SceneQueue.push_back(cmd);
 	}
 
-	void Renderer::Submit(const Model& model, const std::vector<std::Ref<Material>>& materials, const Transform& t)
+	void Renderer::Submit(const Model& model, const Transform& t)
 	{
 		for (const auto& subMesh : model.GetSubMeshes())
 		{
 			RenderCommand cmd;
 
 			cmd.MeshPtr = subMesh.Mesh.get();
-			cmd.MaterialPtr = materials[subMesh.MaterialIndex].get();
+			cmd.MaterialPtr = model.GetMaterials()[subMesh.MaterialIndex].get();
 			cmd.Transform = t.GetMatrix();
 
 			if (s_Data->IsShadowPassActive)

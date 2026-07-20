@@ -28,6 +28,14 @@ void EditorLayer::OnAttach()
 	UI::LoadFont(1, assetPath + "/fonts/Open_Sans/static/OpenSans-Bold.ttf", 20.0f);
 	UI::SetDarkEngineTheme();
 
+	auto light = m_Scene.CreateEntity();
+	auto& dl = light.AddComponent<DirectionalLightComponent>(Vec3(0.0f));
+	light.AddComponent<TagComponent>("Light");
+	auto& lMat = light.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE),
+		Material::Create(MaterialType::UNLIT));
+	light.AddComponent<Transform>(Vec3(-10.0f, 20.0f, -5.0f), Vec3(0.0f), Vec3(0.2f, 0.2f, 0.2f));
+	lMat.MaterialAsset->Set("u_Color", Vec3(1.0f, 1.0f, 1.0f));
+
 	auto camera = m_Scene.CreateEntity();
 	auto& camereComp = camera.AddComponent<CameraComponent>();
 	camera.AddComponent<TagComponent>("Camera");
@@ -64,6 +72,12 @@ void EditorLayer::OnAttach()
 	tMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
 	tMat.MaterialAsset->Set("u_HasNormalTexture", false);
 	tMat.MaterialAsset->Set("u_HasSpecularTexture", false);
+
+	//auto backpack = m_Scene.CreateEntity();
+	//backpack.AddComponent<TagComponent>("Backpack");
+	//backpack.AddComponent<ModelComponent>(AssetManager::LoadModel("backpack", 
+	//	assetPath + "/models/backpack/backpack.obj"));
+	//backpack.AddComponent<Transform>(Vec3(3.0f, 5.0f, 2.0f));
 
 	auto textDir = FileSystem::EngineAssets() / "textures/skybox";
 	std::vector<std::string> faces = 

@@ -13,4 +13,9 @@ Release/
 *.opensdf
 *.sdf
 .cache/
-Agina/assets/textures
+Agina/assets
+Editor/assets
+SandBoxGame/assets
+CMakeSettings.json
+.gitignore
+.git

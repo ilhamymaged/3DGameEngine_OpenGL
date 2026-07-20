@@ -1,15 +1,26 @@
 #pragma once
 
 #include "Shader.hpp"
-#include <memory>
 #include <variant>
 #include <unordered_map>
 #include <cstdint> 
 #include <Core/MathTypes.hpp>
+#include "Texture2D.hpp"
+#include "CubemapTexture.hpp"
+#include <Agina.h>
 
 namespace Agina {
 
-	using MaterialValue = std::variant<bool, int, float, Vec3, Vec4, Mat4>;
+	using MaterialValue = std::variant<
+		bool,
+		int,
+		float,
+		Vec3,
+		Vec4,
+		Mat4,
+		std::Ref<Texture2D>,
+		std::Ref<CubemapTexture>
+	>;
 
 	enum MaterialType
 	{
@@ -30,6 +41,8 @@ namespace Agina {
 		inline const MaterialType& GetMaterialType() const { return m_MaterialType; }
 
 		static std::shared_ptr<Material> Create(MaterialType type);
+
+		inline Shader& GetShader() {return *m_Shader;}
 
 	private:
 		std::shared_ptr<Shader> m_Shader;

@@ -2,6 +2,7 @@
 #include <Core/Logger.hpp>
 #include <filesystem>
 #include <algorithm>
+#include <Core/AssetManager.hpp>
 
 namespace Agina {
 
@@ -23,7 +24,78 @@ namespace Agina {
 		}
 
 		m_Directory = std::filesystem::path(path).parent_path().string();
+		LoadMaterials(scene);
 		ProcessNode(scene->mRootNode, scene);
+	}
+
+	void Model::LoadMaterials(const aiScene* scene)
+	{
+		m_Materials.reserve(scene->mNumMaterials);
+
+		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
+		{
+			auto material =
+				ProcessMaterial(
+					scene->mMaterials[i]
+				);
+
+			m_Materials.push_back(material);
+		}
+	}
+
+	std::Ref<Material> Model::ProcessMaterial(aiMaterial* material)
+	{
+		auto mat = Material::Create(MaterialType::LIT);
+		
+		aiColor3D color;
+
+		if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+		{
+			mat->Set("u_Color", Vec3(color.r, color.g, color.b));
+			mat->Set("u_HasColor", true);
+		}
+		aiString texturePath;
+
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
+		{
+			std::filesystem::path fullPath = std::filesystem::path(m_Directory) /texturePath.C_Str();
+			auto texture =AssetManager::Load2DTexture(fullPath.filename().string(), fullPath.string());
+
+			mat->Set("u_AlbedoTexture", texture);
+			mat->Set("u_HasAlbedoTexture", true);
+		}
+		else
+		{
+			mat->Set("u_HasAlbedoTexture", false);
+		}
+
+		if (material->GetTexture(aiTextureType_NORMALS, 0, &texturePath) == AI_SUCCESS)
+		{
+			std::filesystem::path fullPath = std::filesystem::path(m_Directory) / texturePath.C_Str();
+			auto texture = AssetManager::Load2DTexture(fullPath.filename().string(), fullPath.string());
+
+			mat->Set("u_NormalTexture", texture);
+			mat->Set("u_HasNormalTexture", true);
+		}
+		else
+		{
+			mat->Set("u_HasNormalTexture", false);
+		}
+
+		if (material->GetTexture(aiTextureType_SPECULAR, 0, &texturePath) == AI_SUCCESS)
+		{
+			std::filesystem::path fullPath = std::filesystem::path(m_Directory) / texturePath.C_Str();
+			auto texture = AssetManager::Load2DTexture(fullPath.filename().string(), fullPath.string());
+
+			mat->Set("u_SpecularTexture", texture);
+			mat->Set("u_HasSpecularTexture", true);
+		}
+		else
+		{
+			mat->Set("u_HasSpecularTexture", false);
+		}
+
+		return mat;
 	}
 
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)

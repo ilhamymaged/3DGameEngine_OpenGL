@@ -21,6 +21,29 @@ namespace Agina {
 		m_Width = static_cast<uint32_t>(width);
 		m_Height = static_cast<uint32_t>(height);
 
+		GLenum internalFormat;
+		GLenum dataFormat;
+
+		switch (channels)
+		{
+		case 1:
+			internalFormat = GL_R8;
+			dataFormat = GL_RED;
+			break;
+		case 3:
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+			break;
+		case 4:
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+			break;
+		default:
+			AG_CORE_ERROR("Unsupported channel count {}", channels);
+			stbi_image_free(data);
+			return;
+		}
+
 		// Calculate levels for mipmapping
 		GLsizei levels = spec.GenerateMipmaps
 			? static_cast<GLsizei>(std::floor(std::log2(std::max(m_Width, m_Height)))) + 1
@@ -28,7 +51,7 @@ namespace Agina {
 
 		// OpenGL 4.5 DSA Creation & Allocation
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, levels, spec.InternalFormat, m_Width, m_Height);
+		glTextureStorage2D(m_RendererID, levels, internalFormat, m_Width, m_Height);
 
 		// Parameters
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, spec.MinFilter);
@@ -37,7 +60,7 @@ namespace Agina {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, spec.WrapT);
 
 		// Upload
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, spec.DataFormat, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		if (spec.GenerateMipmaps) 
 		{

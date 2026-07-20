@@ -63,6 +63,8 @@ namespace Agina {
     {
         m_Shader->Use();
 
+		uint32_t textureSlot = 0;
+
         for (auto& [name, value] : m_Parameters)
         {
             std::visit([&](auto&& v)
@@ -81,7 +83,23 @@ namespace Agina {
                         m_Shader->setVec4(name, v);
                     else if constexpr (std::is_same_v<T, Mat4>)
                         m_Shader->setMat4(name, v);
+
+                    else if constexpr (std::is_same_v<T, std::Ref<Texture2D>>)
+                    {
+                        v->Bind(textureSlot);
+                        m_Shader->setInt(name, textureSlot);
+                        textureSlot++;
+                    }
+
+                    else if constexpr (std::is_same_v<T, std::Ref<CubemapTexture>>)
+                    {
+                        v->Bind(textureSlot);
+                        m_Shader->setInt(name, textureSlot);
+                        textureSlot++;
+                    }
+
                 }, value);
         }
+
     }
 }

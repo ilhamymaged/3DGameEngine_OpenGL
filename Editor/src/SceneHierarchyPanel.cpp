@@ -117,6 +117,15 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			}
 		});
 
+	DrawComponent<DirectionalLightComponent>("Light", entity, [](auto& component)
+		{
+			if (UI::BeginPropertyGrid("LightProperties"))
+			{
+				UI::DragVec3("Target", component.Target);
+				UI::EndPropertyGrid();
+			}
+		});
+
 	DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
 		{
 			UI::Checkbox("Primary Camera", &component.IsPrimary);

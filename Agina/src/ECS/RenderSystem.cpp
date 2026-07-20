@@ -14,6 +14,8 @@ namespace Agina {
 		Renderer::BeginShadowPass();
 
 		scene.Each<Transform, MeshComponent>([](Entity entity) {
+			if (entity.HasComponent<DirectionalLightComponent>()) return;
+
 			auto& transform = entity.GetComponent<Transform>();
 			auto& meshComp = entity.GetComponent<MeshComponent>();
 
@@ -29,7 +31,7 @@ namespace Agina {
 
 			if (modelComp.ModelAsset)
 			{
-				Renderer::Submit(*modelComp.ModelAsset, modelComp.Materials, transform);
+				Renderer::Submit(*modelComp.ModelAsset, transform);
 			}
 			});
 
@@ -58,7 +60,7 @@ namespace Agina {
 
 			if (modelComp.ModelAsset)
 			{
-				Renderer::Submit(*modelComp.ModelAsset,modelComp.Materials,transform);
+				Renderer::Submit(*modelComp.ModelAsset, transform);
 			}
 			});
 
@@ -77,12 +79,7 @@ namespace Agina {
 		if (!target) return;
 
 		target->Bind();
-
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		Render(scene, target);
-
 		target->Unbind();
 	}
 
@@ -101,15 +98,22 @@ namespace Agina {
 		if (lightEntity.has_value())
 		{
 			const auto& light = lightEntity->GetComponent<DirectionalLightComponent>();
-			lightPos = light.Position;
+			if (lightEntity->HasComponent<Transform>())
+			{
+				auto& t = lightEntity->GetComponent<Transform>();
+				lightPos = t.Position;
+			}
 			lightTarget = light.Target;
 		}
 
 		Renderer::UpdateLightData(lightPos, lightTarget);
-		if (Renderer::GetShadowsEnabled()) RenderShadowPass(scene);
+		if (Renderer::GetShadowsEnabled())
+		{
+			target->Unbind();
+			RenderShadowPass(scene);
+		}
 		if (target) target->Bind();
 		RenderMainPass(scene, camera);
 	}
-
 }
 

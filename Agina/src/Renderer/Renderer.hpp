@@ -30,9 +30,10 @@ namespace Agina {
 		static void EndScene();
 
 		static void Submit(const Mesh& mesh, Material& mat, const Transform& t = Transform());
-		static void Submit(const Model& model, const std::vector<std::Ref<Material>>& materials, 
-			const Transform& t);
+		static void Submit(const Model& model, const Transform& t);
 		static void SubmitSkyBox(const std::Ref<Skybox>, Material& mat);
+
+		static uint32_t GetDrawCalls(); 
 
 		static void SetWireFrameMode(bool enabled);
 		static bool GetWireFrameMode();
