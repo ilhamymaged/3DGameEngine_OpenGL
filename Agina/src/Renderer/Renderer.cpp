@@ -184,10 +184,7 @@ namespace Agina {
 			{
 				activeMaterial = cmd.MaterialPtr;
 				activeMaterial->Bind();
-			}
 
-			if (activeMaterial != NULL)
-			{
 				if (activeMaterial->GetMaterialType() == MaterialType::LIT)
 				{
 					activeMaterial->Set("u_EnableShadows", s_Data->ShadowEnabled);
@@ -198,11 +195,9 @@ namespace Agina {
 							static_cast<int>(RendererData::ShadowTextureSlot));
 					}
 				}
-
+			}
 				if (activeMaterial->GetMaterialType() != MaterialType::GRID)
 					activeMaterial->GetShader().setMat4("u_Model", cmd.Transform);
-
-			}
 
 			if (cmd.MeshPtr) 
 			{
@@ -242,7 +237,6 @@ namespace Agina {
 			s_Data->ActiveSkybox = { nullptr, nullptr, false };
 		}
 
-		AG_CORE_INFO("Draw calls {}", s_Data->SceneQueue.size());
 		s_Data->SceneQueue.clear();
 	}
 

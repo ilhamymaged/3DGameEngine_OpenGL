@@ -20,23 +20,18 @@ namespace Agina {
 			auto& meshComp = entity.GetComponent<MeshComponent>();
 
 			if (meshComp.MeshAsset && meshComp.MaterialAsset)
-			{
 				Renderer::Submit(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
-			}
 			});
 
 		scene.Each<Transform, ModelComponent>([](Entity entity) {
 			auto& transform = entity.GetComponent<Transform>();
 			auto& modelComp = entity.GetComponent<ModelComponent>();
 
-			if (modelComp.ModelAsset)
-			{
+			if (modelComp.ModelAsset) 
 				Renderer::Submit(*modelComp.ModelAsset, transform);
-			}
 			});
 
 		Renderer::EndShadowPass();
-
 	}
 
 	static void RenderMainPass(Scene& scene, const Camera& camera)
@@ -59,9 +54,7 @@ namespace Agina {
 			auto& modelComp = entity.GetComponent<ModelComponent>();
 
 			if (modelComp.ModelAsset)
-			{
 				Renderer::Submit(*modelComp.ModelAsset, transform);
-			}
 			});
 
 		auto skyBoxEntity = scene.FindEntityWithComponent<SkyboxComponent>();
@@ -98,11 +91,6 @@ namespace Agina {
 		if (lightEntity.has_value())
 		{
 			const auto& light = lightEntity->GetComponent<DirectionalLightComponent>();
-			if (lightEntity->HasComponent<Transform>())
-			{
-				auto& t = lightEntity->GetComponent<Transform>();
-				lightPos = t.Position;
-			}
 			lightTarget = light.Target;
 		}
 

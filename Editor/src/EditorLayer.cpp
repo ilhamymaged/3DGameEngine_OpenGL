@@ -18,7 +18,6 @@
 #include <Core/FileSystem.hpp>
 
 using namespace Agina;
-
 void EditorLayer::OnAttach()
 {
 	std::string assetPath = (FileSystem::AppAssets()).string();
@@ -31,67 +30,16 @@ void EditorLayer::OnAttach()
 	auto light = m_Scene.CreateEntity();
 	auto& dl = light.AddComponent<DirectionalLightComponent>(Vec3(0.0f));
 	light.AddComponent<TagComponent>("Light");
-	auto& lMat = light.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE),
-		Material::Create(MaterialType::UNLIT));
-	light.AddComponent<Transform>(Vec3(-10.0f, 20.0f, -5.0f), Vec3(0.0f), Vec3(0.2f, 0.2f, 0.2f));
-	lMat.MaterialAsset->Set("u_Color", Vec3(1.0f, 1.0f, 1.0f));
 
 	auto camera = m_Scene.CreateEntity();
 	auto& camereComp = camera.AddComponent<CameraComponent>();
 	camera.AddComponent<TagComponent>("Camera");
 	camera.AddComponent<Transform>(camereComp.Cam.GetRefPos());
 
-	auto sphere = m_Scene.CreateEntity();
-	sphere.AddComponent<TagComponent>("Sphere");
-	sphere.AddComponent<Transform>(Vec3(5.0, 4.0f, 0.0));
-	auto& sMat = sphere.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::SPHERE),
-		Material::Create(MaterialType::LIT));
-	sMat.MaterialAsset->Set("u_HasColor", true);
-	sMat.MaterialAsset->Set("u_Color", Vec3(0.118f, 0.69f, 0.655f));
-	sMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
-	sMat.MaterialAsset->Set("u_HasNormalTexture", false);
-	sMat.MaterialAsset->Set("u_HasSpecularTexture", false);
-
-	auto cube = m_Scene.CreateEntity();
-	cube.AddComponent<TagComponent>("Cube");
-	cube.AddComponent<Transform>(Vec3(2.0, 4.0f, 0.0));
-	auto& cMat = cube.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::CUBE),
-		Material::Create(MaterialType::LIT));
-	cMat.MaterialAsset->Set("u_HasColor", true);
-	cMat.MaterialAsset->Set("u_Color", Vec3(0.212f, 0.271f, 0.741f));
-	cMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
-	cMat.MaterialAsset->Set("u_HasNormalTexture", false);
-	cMat.MaterialAsset->Set("u_HasSpecularTexture", false);
-
-	auto terrain = m_Scene.CreateEntity();
-	terrain.AddComponent<TagComponent>("Terrain");
-	auto& tMat = terrain.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::TERRAIN),
-		Material::Create(MaterialType::LIT));
-	tMat.MaterialAsset->Set("u_HasColor", true);
-	tMat.MaterialAsset->Set("u_Color", Vec3(0.071f, 0.722f, 0.255f));
-	tMat.MaterialAsset->Set("u_HasAlbedoTexture", false);
-	tMat.MaterialAsset->Set("u_HasNormalTexture", false);
-	tMat.MaterialAsset->Set("u_HasSpecularTexture", false);
-
-	//auto backpack = m_Scene.CreateEntity();
-	//backpack.AddComponent<TagComponent>("Backpack");
-	//backpack.AddComponent<ModelComponent>(AssetManager::LoadModel("backpack", 
-	//	assetPath + "/models/backpack/backpack.obj"));
-	//backpack.AddComponent<Transform>(Vec3(3.0f, 5.0f, 2.0f));
-
-	auto textDir = FileSystem::EngineAssets() / "textures/skybox";
-	std::vector<std::string> faces = 
-	{
-		(textDir / "right.jpg").string(),  (textDir / "left.jpg").string(),
-		(textDir / "top.jpg").string(),    (textDir / "bottom.jpg").string(),
-		(textDir / "front.jpg").string(),  (textDir / "back.jpg").string()
-	};
-	auto skyboxMap = AssetManager::LoadCubemap("DefaultSky", faces);
-
-	auto skyBox = m_Scene.CreateEntity();
-	skyBox.AddComponent<SkyboxComponent>(std::make_Ref<Skybox>(skyboxMap),
-		Material::Create(MaterialType::SKYBOX));
-	skyBox.AddComponent<TagComponent>("SkyBox");
+	auto sponza = m_Scene.CreateEntity();
+	sponza.AddComponent<TagComponent>("Sponza");
+	sponza.AddComponent<ModelComponent>(AssetManager::LoadModel("sponza",
+		assetPath + "/models/sponza/sponza.obj"));
 }
 
 void EditorLayer::OnUIRender()
