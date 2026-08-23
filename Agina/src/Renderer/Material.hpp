@@ -37,7 +37,7 @@ namespace Agina {
 		void Bind() const;
 
 		void Set(const std::string& name, const MaterialValue& value);
-		const MaterialValue& Get(const std::string& name) const;
+		MaterialValue& Get(const std::string& name);
 		inline const MaterialType& GetMaterialType() const { return m_MaterialType; }
 
 		static std::shared_ptr<Material> Create(MaterialType type);

@@ -10,13 +10,27 @@
 
 namespace Agina {
 
+	static bool s_InPropertyGrid = false;
+	
+	bool UI::BeginMenu(const char* label)
+	{
+		return ImGui::BeginMenu(label);
+	}
+
+	void UI::EndMenu()
+	{
+		ImGui::EndMenu();
+	}
+	
 	bool UI::BeginPropertyGrid(const std::string& id)
 	{
-		ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings;
+		ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable 
+			| ImGuiTableFlags_NoSavedSettings;
 		if (ImGui::BeginTable(id.c_str(), 2, tableFlags))
 		{
-			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 50.0f);
 			ImGui::TableSetupColumn("Control", ImGuiTableColumnFlags_WidthStretch);
+			s_InPropertyGrid = true;
 			return true;
 		}
 		return false;
@@ -25,6 +39,7 @@ namespace Agina {
 	void UI::EndPropertyGrid()
 	{
 		ImGui::EndTable();
+		s_InPropertyGrid = false;
 	}
 
 	void UI::SetDarkEngineTheme()
@@ -239,6 +254,17 @@ namespace Agina {
 
 	void UI::DragFloat(const std::string& label, float& value, float speed, float min, float max)
 	{
+		if (s_InPropertyGrid)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(label.c_str());
+
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-1.0f); // Stretch across the full column width
+			ImGui::DragFloat(("##" + label).c_str(), &value, speed, min, max);
+		}
+
 		ImGui::DragFloat(label.c_str(), &value, speed, min, max);
 	}
 
@@ -250,6 +276,8 @@ namespace Agina {
 	bool UI::IsWindowHovered() { return ImGui::IsWindowHovered(); }
 	bool UI::IsMouseDown(int button) { return ImGui::IsMouseDown(button); }
 	bool UI::IsItemClicked() { return ImGui::IsItemClicked(); }
+	bool UI::IsItemClicked(int i) { return ImGui::IsItemClicked(i); }
+	bool UI::IsAnyItemHovered() { return ImGui::IsAnyItemHovered(); }
 
 	bool UI::WantsCaptureMouse()
 	{
@@ -393,6 +421,15 @@ namespace Agina {
 
 	bool UI::Checkbox(const std::string& label, bool* value)
 	{
+		if (s_InPropertyGrid)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(label.c_str());
+
+			ImGui::TableSetColumnIndex(1);
+			return ImGui::Checkbox(("##" + label).c_str(), value);
+		}
 		return ImGui::Checkbox(label.c_str(), value);
 	}
 

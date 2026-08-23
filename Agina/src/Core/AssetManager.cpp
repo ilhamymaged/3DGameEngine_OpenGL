@@ -6,9 +6,10 @@ namespace Agina
 {
     std::unordered_map<std::string, std::Ref<Texture2D>> AssetManager::s_2DTextures;
     std::unordered_map<std::string, std::Ref<CubemapTexture>> AssetManager::s_Cubemaps;
-	std::unordered_map<std::string, std::Ref<Shader>> AssetManager::s_Shaders;
+    std::unordered_map<std::string, std::Ref<Shader>> AssetManager::s_Shaders;
     std::unordered_map<MeshType, std::Ref<Mesh>> AssetManager::s_Meshes;
     std::unordered_map<std::string, std::Ref<Model>> AssetManager::s_Models;
+    std::unordered_map<std::string, std::Ref<Material>> AssetManager::s_Materials;
 
     void AssetManager::Clear()
     {
@@ -17,6 +18,7 @@ namespace Agina
         s_Shaders.clear();
         s_Meshes.clear();
         s_Models.clear();
+        s_Materials.clear();
     }
 
     std::Ref<CubemapTexture> AssetManager::LoadCubemap(const std::string& name, const std::vector<std::string>& facePaths)
@@ -74,7 +76,7 @@ namespace Agina
 
         auto shader = std::make_Ref<Shader>(name, vertexPath, fragPath);
         s_Shaders[name] = shader;
-        
+
         return shader;
     }
 
@@ -111,7 +113,7 @@ namespace Agina
             throw std::runtime_error("Didn't Find A Model With Name: " + name);
         }
     }
-    
+
     std::Ref<Mesh> AssetManager::LoadMesh(MeshType type)
     {
         auto it = s_Meshes.find(type);
@@ -130,8 +132,44 @@ namespace Agina
         else
         {
             AG_CORE_ERROR("Didn't Find A Mesh With Type");
-            throw std::runtime_error("Didn't Find This Mesh"); 
+            throw std::runtime_error("Didn't Find This Mesh");
         }
     }
- 
+
+    std::Ref<Material> AssetManager::LoadMaterial(const std::string& name, MaterialType type)
+    {
+        auto it = s_Materials.find(name);
+        if (it != s_Materials.end())
+            return it->second;
+
+        auto material = Material::Create(type);
+        s_Materials[name] = material;
+        return material;
+    }
+
+    std::Ref<Material> AssetManager::GetMaterial(const std::string& name)
+    {
+        auto it = s_Materials.find(name);
+        if (it != s_Materials.end())
+            return it->second;
+        else
+        {
+            AG_CORE_ERROR("Didn't Find Material With Name {0}", name);
+            throw std::runtime_error("Didn't Find Material With Name: " + name);
+        }
+    }
+
+    void AssetManager::HotReloadShaders()
+    {
+        AG_CORE_INFO("Hot reloading all registered shaders...");
+
+        for (auto& [name, shader] : s_Shaders)
+        {
+            if (shader)
+            {
+                shader->Reload();
+            }
+        }
+    }
+
 }

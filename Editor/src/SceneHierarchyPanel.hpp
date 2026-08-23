@@ -13,8 +13,7 @@ public:
 
 	void SetContext(Scene* sceneContext);
 	void OnUIRender();
-
-	Entity GetSelectedEntity() const { return m_SelectionContext; }
+	
 	void SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
 private:

@@ -38,9 +38,15 @@ namespace Agina {
 		inline Vec3 GetPos() const { return m_Pos; }
 		inline float GetFOV() const { return m_FOV; }
 		inline float& GetRefFOV() { return m_FOV; }
+		inline float& GetRefSpeed() { return m_MovementSpeed; }
 		inline CameraProjectionType GetProjectionType() { return m_ProjType; }
 
-		inline void SetProjectionType(CameraProjectionType type) { m_ProjType = type; }
+		inline const Camera& SetProjectionType(CameraProjectionType type)
+		{
+			m_ProjType = type;
+			return *this;
+		}
+
 		inline Vec3& GetRefPos() { return m_Pos; }
 
 		inline float& GetRefPerspectiveNear() { return m_PerspectiveNear; }

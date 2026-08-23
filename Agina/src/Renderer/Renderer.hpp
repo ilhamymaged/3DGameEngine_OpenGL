@@ -13,7 +13,7 @@ namespace Agina {
 	class Event;
 	class Skybox;
 
-	class Renderer 
+	class Renderer
 	{
 	public:
 		static void Init(int width, int height);
@@ -30,17 +30,19 @@ namespace Agina {
 		static void EndScene();
 
 		static void Submit(const Mesh& mesh, Material& mat, const Transform& t = Transform());
-		static void Submit(const Model& model, const Transform& t);
 		static void SubmitSkyBox(const std::Ref<Skybox>, Material& mat);
+		static void SubmitDebugBox(const Vec3& min, const Vec3& max, 
+			const Vec4& color = Vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-		static uint32_t GetDrawCalls(); 
+		static uint32_t GetDrawCalls();
 
 		static void SetWireFrameMode(bool enabled);
 		static bool GetWireFrameMode();
 
 		static void SetShadowsEnabled(bool enabled);
 		static bool GetShadowsEnabled();
+
+		static void SetShadowMapRendered(bool enabled);
+		static bool GetShadowMapRendered();
 	};
 }
-
-

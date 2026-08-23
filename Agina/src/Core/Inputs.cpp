@@ -51,7 +51,7 @@ namespace Agina
                 input->m_EventQueue.push_back(std::make_unique<WindowResized>(width, height));
             });
 
-        LockMouse();
+        //LockMouse();
     }
 
     std::vector<std::unique_ptr<Event>>& Input::GetEventQueue()

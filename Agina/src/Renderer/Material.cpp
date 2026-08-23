@@ -10,9 +10,9 @@ namespace Agina {
 	Material::Material(std::shared_ptr<Shader> shader, MaterialType type)
 		: m_Shader(shader), m_MaterialType(type)  {}
 
-	const MaterialValue& Material::Get(const std::string& name) const
+	MaterialValue& Material::Get(const std::string& name) 
 	{
-		return m_Parameters.at(name);
+		return m_Parameters[name];
 	}
 
 	void Material::Set(const std::string& name, const MaterialValue& value)

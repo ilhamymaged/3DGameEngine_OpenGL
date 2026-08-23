@@ -14,6 +14,7 @@ namespace Agina {
         Entity(entt::entity h, entt::registry* reg);
 
         inline entt::entity GetHandle() { return m_Handle; }
+        inline entt::entity GetHandle() const { return m_Handle; }  
 
         bool operator==(const Entity& other) const
         {

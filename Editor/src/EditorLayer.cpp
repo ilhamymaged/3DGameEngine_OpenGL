@@ -30,16 +30,37 @@ void EditorLayer::OnAttach()
 	auto light = m_Scene.CreateEntity();
 	auto& dl = light.AddComponent<DirectionalLightComponent>(Vec3(0.0f));
 	light.AddComponent<TagComponent>("Light");
+	Vec3 lightPos(-10.0f, 20.0f, -5.0f);
+	light.AddComponent<Transform>(Vec3(lightPos));
 
 	auto camera = m_Scene.CreateEntity();
 	auto& camereComp = camera.AddComponent<CameraComponent>();
 	camera.AddComponent<TagComponent>("Camera");
 	camera.AddComponent<Transform>(camereComp.Cam.GetRefPos());
 
-	auto sponza = m_Scene.CreateEntity();
-	sponza.AddComponent<TagComponent>("Sponza");
-	sponza.AddComponent<ModelComponent>(AssetManager::LoadModel("sponza",
-		assetPath + "/models/sponza/sponza.obj"));
+	auto mesh = m_Scene.CreateEntity();
+	mesh.AddComponent<MeshComponent>(AssetManager::LoadMesh(
+		MeshType::CUBE),
+		Material::Create(MaterialType::LIT)
+	);
+
+	Entity newGrid = m_Scene.CreateEntity("Grid");
+	newGrid.AddComponent<MeshComponent>(AssetManager::LoadMesh(MeshType::GRID),
+		Material::Create(MaterialType::GRID));
+	{
+		auto SkyBox = m_Scene.CreateEntity("SkyBox");
+		std::vector<std::string> facePaths = {
+			assetPath + "/skyboxes/sky1/" + "right.jpg",
+			assetPath + "/skyboxes/sky1/" + "left.jpg",
+			assetPath + "/skyboxes/sky1/" + "top.jpg",
+			assetPath + "/skyboxes/sky1/" + "bottom.jpg",
+			assetPath + "/skyboxes/sky1/" + "front.jpg",
+			assetPath + "/skyboxes/sky1/" + "back.jpg",
+		};
+		std::Ref<CubemapTexture> c = std::make_Ref<CubemapTexture>(facePaths);
+		SkyBox.AddComponent<SkyboxComponent>(std::make_Ref<Skybox>(c), 
+			Material::Create(MaterialType::SKYBOX));
+	}
 }
 
 void EditorLayer::OnUIRender()
@@ -61,6 +82,10 @@ void EditorLayer::OnRender()
 		m_Framebuffer->Resize(m_ViewPortWidth, m_ViewPortHeight);
 	}
 
+	m_Framebuffer->Bind();
+	m_Framebuffer->ClearAttachment(1, -1);
+	m_Framebuffer->Unbind();
+
 	RenderSystem::RenderToTarget(m_Scene, m_Framebuffer);
 }
 
@@ -70,6 +95,7 @@ void EditorLayer::OnEvent(Agina::Event& e)
 	eventDispatcher.Dispatch<Agina::KeyPressed>([&](Agina::KeyPressed& key)
 		{
 			if (key.getKey() == static_cast<int>(Agina::Key::Escape)) Agina::Application::Get().ShutDown();
+			if (key.getKey() == static_cast<int>(Agina::Key::R)) AssetManager::HotReloadShaders();
 		});
 
 	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
@@ -80,12 +106,22 @@ void EditorLayer::OnUpdate(float dt)
 {
 	auto cameraEntity = m_Scene.FindEntityWithComponent<CameraComponent>();
 	if (cameraEntity.has_value()) cameraEntity->GetComponent<CameraComponent>().Cam.Update(dt);
+	PhysicsSystem::Update(m_Scene, dt);
 }
 
 EditorLayer::EditorLayer(int width, int height)
 	:m_ViewPortWidth(width), m_ViewPortHeight(height)
 {
-	FramebufferSpecification spec{ m_ViewPortWidth, m_ViewPortHeight };
+	Agina::FramebufferSpecification spec;
+	spec.Width = m_ViewPortWidth;
+	spec.Height = m_ViewPortHeight;
+
+	spec.Attachments = {
+		 Agina::FramebufferTextureFormat::RGBA8,        // GL_COLOR_ATTACHMENT0
+		Agina::FramebufferTextureFormat::RED_INTEGER,   // GL_COLOR_ATTACHMENT1 (Entity IDs)
+		Agina::FramebufferTextureFormat::DEPTH24STENCIL8
+	};
+
 	m_Framebuffer = std::make_Ref<Framebuffer>(spec);
 }
 

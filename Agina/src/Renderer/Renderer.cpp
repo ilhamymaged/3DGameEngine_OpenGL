@@ -13,8 +13,16 @@
 #include "SkyBox.hpp"
 #include <Renderer/Model.hpp>
 #include <Core/MathTypes.hpp>
+#include <map>
 
 namespace Agina {
+
+	struct DebugBoxCommand
+	{
+		Vec3 Min;
+		Vec3 Max;
+		Vec4 Color;
+	};
 
 	struct SkyboxCommand
 	{
@@ -30,7 +38,7 @@ namespace Agina {
 		Mat4 Transform;
 	};
 
-	struct CameraBufferData 
+	struct CameraBufferData
 	{
 		Mat4 Projection;
 		Mat4 View;
@@ -38,14 +46,14 @@ namespace Agina {
 		float padding;
 	};
 
-	struct ShadowBufferData 
+	struct ShadowBufferData
 	{
 		Mat4 LightSpaceMatrix;
-		Vec3 LightPos;
+		Vec3 LightDir;
 		float padding;
 	};
 
-	struct RendererData 
+	struct RendererData
 	{
 		std::unique_ptr<UniformBuffer> CameraBufferUBO = nullptr;
 		std::unique_ptr<UniformBuffer> ShadowBufferUBO = nullptr;
@@ -59,18 +67,20 @@ namespace Agina {
 		static constexpr uint32_t ShadowTextureSlot = 7;
 		static constexpr uint32_t SkyBoxTextureSlot = 0;
 
+		std::unique_ptr<Shader> DebugLineShader = nullptr; 
+		std::vector<DebugBoxCommand> DebugQueue;
 		std::vector<RenderCommand> SceneQueue;
 		std::vector<RenderCommand> ShadowQueue;
 		SkyboxCommand ActiveSkybox;
 
 		bool WireFrameMode = false;
 		bool ShadowEnabled = false;
+		bool ShadowMapRendered = false;
 
 		uint32_t DrawCalls = 0;
-	};	
+	};
 
 	static RendererData* s_Data = nullptr;
-
 	void Renderer::Init(int width, int height)
 	{
 		s_Data = new RendererData();
@@ -83,10 +93,8 @@ namespace Agina {
 			throw std::runtime_error("Failed To Load GLAD");
 		}
 
-		AG_CORE_INFO("OpenGL Context Initialized");
-
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -94,12 +102,21 @@ namespace Agina {
 		s_Data->ShadowBufferUBO = std::make_unique<UniformBuffer>(sizeof(ShadowBufferData), 1);
 		s_Data->ShadowDepthMap = std::make_unique<ShadowMapFB>(2048);
 
-		s_Data->ShadowDepthShader = std::make_unique<Shader>("shadow", 
+		s_Data->ShadowDepthShader = std::make_unique<Shader>("shadow",
 			(FileSystem::EngineAssets() / "shaders/shadow.vert").string(),
 			(FileSystem::EngineAssets() / "shaders/shadow.frag").string());
+
+		s_Data->DebugLineShader = std::make_unique<Shader>("debug_line",
+			(FileSystem::EngineAssets() / "shaders/debug_line.vert").string(),
+			(FileSystem::EngineAssets() / "shaders/debug_line.frag").string());
 	}
 
-	void Renderer::Shutdown() 
+	void Renderer::SubmitDebugBox(const Vec3& min, const Vec3& max, const Vec4& color)
+	{
+		s_Data->DebugQueue.push_back({ min, max, color });
+	}
+
+	void Renderer::Shutdown()
 	{
 		delete s_Data;
 		s_Data = nullptr;
@@ -116,11 +133,13 @@ namespace Agina {
 		Mat4 lightProjection = Math::Ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 60.0f);
 		Mat4 lightView = Math::LookAt(lightPos, lightTarget, Vec3(0.0f, 1.0f, 0.0f));
 
-		ShadowBufferData shadowData{ lightProjection * lightView, lightPos, 0.0f };
+		Vec3 lightDir = Math::Normalize(lightPos - lightTarget);
+
+		ShadowBufferData shadowData{ lightProjection * lightView, lightDir, 0.0f };
 		s_Data->ShadowBufferUBO->SetData(&shadowData, sizeof(ShadowBufferData));
 	}
 
-	void Renderer::BeginShadowPass() 
+	void Renderer::BeginShadowPass()
 	{
 		s_Data->IsShadowPassActive = true;
 
@@ -137,6 +156,7 @@ namespace Agina {
 		for (const auto& cmd : s_Data->ShadowQueue)
 		{
 			s_Data->ShadowDepthShader->setMat4("u_Model", cmd.Transform);
+
 			if (cmd.MeshPtr)
 			{
 				cmd.MeshPtr->Draw();
@@ -144,7 +164,7 @@ namespace Agina {
 			}
 		}
 
-		s_Data->ShadowQueue.clear();	
+		s_Data->ShadowQueue.clear();
 		s_Data->IsShadowPassActive = false;
 		s_Data->ShadowDepthMap->UnbindFramebuffer();
 		glCullFace(GL_BACK);
@@ -171,44 +191,37 @@ namespace Agina {
 
 	void Renderer::EndScene()
 	{
-		std::sort(s_Data->SceneQueue.begin(), s_Data->SceneQueue.end(),
-			[](const RenderCommand& a, const RenderCommand& b) {
-				return a.MaterialPtr < b.MaterialPtr;
-			});
-
-		Material* activeMaterial = nullptr;
-
 		for (const auto& cmd : s_Data->SceneQueue)
 		{
-			if (cmd.MaterialPtr != activeMaterial)
+			if (cmd.MaterialPtr)
 			{
-				activeMaterial = cmd.MaterialPtr;
-				activeMaterial->Bind();
+				cmd.MaterialPtr->Bind();
 
-				if (activeMaterial->GetMaterialType() == MaterialType::LIT)
+				if (cmd.MaterialPtr->GetMaterialType() != MaterialType::GRID)
+					cmd.MaterialPtr->Set("u_Model", cmd.Transform);	
+
+				if (cmd.MaterialPtr->GetMaterialType() == MaterialType::LIT)
 				{
-					activeMaterial->Set("u_EnableShadows", s_Data->ShadowEnabled);
+					cmd.MaterialPtr->Set("u_EnableShadows", s_Data->ShadowEnabled);
 
 					if (s_Data->ShadowEnabled)
 					{
-						activeMaterial->Set("u_ShadowMap",
+						cmd.MaterialPtr->Set("u_ShadowMap",
 							static_cast<int>(RendererData::ShadowTextureSlot));
 					}
 				}
 			}
-				if (activeMaterial->GetMaterialType() != MaterialType::GRID)
-					activeMaterial->GetShader().setMat4("u_Model", cmd.Transform);
 
-			if (cmd.MeshPtr) 
+			if (cmd.MeshPtr)
 			{
-				s_Data->DrawCalls++;
 				cmd.MeshPtr->Draw();
+				s_Data->DrawCalls++;
 			}
 		}
 
 		if (s_Data->ActiveSkybox.HasRequest && s_Data->ActiveSkybox.SkyboxPtr)
 		{
-			glDepthFunc(GL_LEQUAL); 
+			glDepthFunc(GL_LEQUAL);
 
 			s_Data->ActiveSkybox.SkyboxPtr->Bind(RendererData::SkyBoxTextureSlot);
 
@@ -232,11 +245,46 @@ namespace Agina {
 				glDisable(GL_CULL_FACE);
 			}
 
-			glDepthFunc(GL_LESS); 
-			 
+			glDepthFunc(GL_LESS);
+
 			s_Data->ActiveSkybox = { nullptr, nullptr, false };
 		}
 
+		if (!s_Data->DebugQueue.empty())
+		{
+			s_Data->DebugLineShader->Use();
+
+			GLint oldPolygonMode[2];
+			glGetIntegerv(GL_POLYGON_MODE, oldPolygonMode);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+			for (const auto& box : s_Data->DebugQueue)
+			{
+				s_Data->DebugLineShader->setVec4("u_Color", box.Color);
+
+				glBegin(GL_LINES);
+
+				glVertex3f(box.Min.x, box.Min.y, box.Min.z); glVertex3f(box.Max.x, box.Min.y, box.Min.z);
+				glVertex3f(box.Max.x, box.Min.y, box.Min.z); glVertex3f(box.Max.x, box.Min.y, box.Max.z);
+				glVertex3f(box.Max.x, box.Min.y, box.Max.z); glVertex3f(box.Min.x, box.Min.y, box.Max.z);
+				glVertex3f(box.Min.x, box.Min.y, box.Max.z); glVertex3f(box.Min.x, box.Min.y, box.Min.z);
+
+				glVertex3f(box.Min.x, box.Max.y, box.Min.z); glVertex3f(box.Max.x, box.Max.y, box.Min.z);
+				glVertex3f(box.Max.x, box.Max.y, box.Min.z); glVertex3f(box.Max.x, box.Max.y, box.Max.z);
+				glVertex3f(box.Max.x, box.Max.y, box.Max.z); glVertex3f(box.Min.x, box.Max.y, box.Max.z);
+				glVertex3f(box.Min.x, box.Max.y, box.Max.z); glVertex3f(box.Min.x, box.Max.y, box.Min.z);
+
+				glVertex3f(box.Min.x, box.Min.y, box.Min.z); glVertex3f(box.Min.x, box.Max.y, box.Min.z);
+				glVertex3f(box.Max.x, box.Min.y, box.Min.z); glVertex3f(box.Max.x, box.Max.y, box.Min.z);
+				glVertex3f(box.Max.x, box.Min.y, box.Max.z); glVertex3f(box.Max.x, box.Max.y, box.Max.z);
+				glVertex3f(box.Min.x, box.Min.y, box.Max.z); glVertex3f(box.Min.x, box.Max.y, box.Max.z);
+
+				glEnd();
+			}
+
+			glPolygonMode(GL_FRONT_AND_BACK, oldPolygonMode[0]);
+			s_Data->DebugQueue.clear();
+		}
 		s_Data->SceneQueue.clear();
 	}
 
@@ -247,26 +295,9 @@ namespace Agina {
 
 	void Renderer::Submit(const Mesh& mesh, Material& mat, const Transform& t)
 	{
-		RenderCommand cmd{ &mesh, &mat, t.GetMatrix() };
+		RenderCommand cmd{ &mesh, &mat, t.GetMatrix()};
 		if (s_Data->IsShadowPassActive) s_Data->ShadowQueue.push_back(cmd);
 		else s_Data->SceneQueue.push_back(cmd);
-	}
-
-	void Renderer::Submit(const Model& model, const Transform& t)
-	{
-		for (const auto& subMesh : model.GetSubMeshes())
-		{
-			RenderCommand cmd;
-
-			cmd.MeshPtr = subMesh.Mesh.get();
-			cmd.MaterialPtr = model.GetMaterials()[subMesh.MaterialIndex].get();
-			cmd.Transform = t.GetMatrix();
-
-			if (s_Data->IsShadowPassActive)
-				s_Data->ShadowQueue.push_back(cmd);
-			else
-				s_Data->SceneQueue.push_back(cmd);
-		}
 	}
 
 	void Renderer::SubmitSkyBox(const std::Ref<Skybox> skybox, Material& mat)
@@ -288,7 +319,7 @@ namespace Agina {
 		else
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glEnable(GL_CULL_FACE);
+			//glEnable(GL_CULL_FACE);
 		}
 	}
 
@@ -305,21 +336,28 @@ namespace Agina {
 	bool Renderer::GetShadowsEnabled()
 	{
 		return s_Data->ShadowEnabled;
+	}	
+
+	void Renderer::SetShadowMapRendered(bool enabled)
+	{
+		s_Data->ShadowMapRendered = enabled;
+	}
+
+	bool Renderer::GetShadowMapRendered()
+	{
+		return s_Data->ShadowMapRendered;
 	}
 
 	void Renderer::OnEvent(Event& e)
 	{
 		EventDispatcher eventDispatcher(e);
 		eventDispatcher.Dispatch<WindowResized>([&](WindowResized& wr)
-		{	
-			if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
-			s_Data->WindowWidth = wr.GetNewWidth();
-			s_Data->WindowHeight = wr.GetNewHeight();
-			if (!s_Data->IsShadowPassActive)
-				glViewport(0, 0, wr.GetNewWidth(), wr.GetNewHeight());
-		});
+			{
+				if (wr.GetNewWidth() == 0 || wr.GetNewHeight() == 0) return;
+				s_Data->WindowWidth = wr.GetNewWidth();
+				s_Data->WindowHeight = wr.GetNewHeight();
+				if (!s_Data->IsShadowPassActive)
+					glViewport(0, 0, wr.GetNewWidth(), wr.GetNewHeight());
+			});
 	}
-
 }
-
-

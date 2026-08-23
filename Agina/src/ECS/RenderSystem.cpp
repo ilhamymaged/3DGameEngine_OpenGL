@@ -14,21 +14,11 @@ namespace Agina {
 		Renderer::BeginShadowPass();
 
 		scene.Each<Transform, MeshComponent>([](Entity entity) {
-			if (entity.HasComponent<DirectionalLightComponent>()) return;
-
 			auto& transform = entity.GetComponent<Transform>();
 			auto& meshComp = entity.GetComponent<MeshComponent>();
 
 			if (meshComp.MeshAsset && meshComp.MaterialAsset)
 				Renderer::Submit(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
-			});
-
-		scene.Each<Transform, ModelComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& modelComp = entity.GetComponent<ModelComponent>();
-
-			if (modelComp.ModelAsset) 
-				Renderer::Submit(*modelComp.ModelAsset, transform);
 			});
 
 		Renderer::EndShadowPass();
@@ -48,21 +38,25 @@ namespace Agina {
 				Renderer::Submit(*meshComp.MeshAsset, *meshComp.MaterialAsset, transform);
 			}
 			});
-
-		scene.Each<Transform, ModelComponent>([](Entity entity) {
-			auto& transform = entity.GetComponent<Transform>();
-			auto& modelComp = entity.GetComponent<ModelComponent>();
-
-			if (modelComp.ModelAsset)
-				Renderer::Submit(*modelComp.ModelAsset, transform);
-			});
-
+		
 		auto skyBoxEntity = scene.FindEntityWithComponent<SkyboxComponent>();
 		if (skyBoxEntity.has_value())
 		{
 			auto& skyBoxComp = skyBoxEntity->GetComponent<SkyboxComponent>();
 			Renderer::SubmitSkyBox(skyBoxComp.skyBoxAsset, *skyBoxComp.skyBoxMaterialAsset);
 		}
+
+		scene.Each<BoxCollider>([](Entity entity) 
+			{
+			auto& collider = entity.GetComponent<BoxCollider>();
+
+			Vec4 color = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
+			if (entity.HasComponent<Rigidbody>() && !entity.GetComponent<Rigidbody>().isStatic) 
+			{
+				color = Vec4(1.0f, 0.3f, 0.3f, 1.0f); 
+			}
+			Renderer::SubmitDebugBox(collider.worldMin, collider.worldMax, color);
+			});
 
 		Renderer::EndScene();
 	}
@@ -91,6 +85,12 @@ namespace Agina {
 		if (lightEntity.has_value())
 		{
 			const auto& light = lightEntity->GetComponent<DirectionalLightComponent>();
+			if (lightEntity->HasComponent<Transform>())
+			{
+				const auto& t = lightEntity->GetComponent<Transform>();
+				lightPos = t.Position;
+			}
+
 			lightTarget = light.Target;
 		}
 
@@ -104,4 +104,3 @@ namespace Agina {
 		RenderMainPass(scene, camera);
 	}
 }
-

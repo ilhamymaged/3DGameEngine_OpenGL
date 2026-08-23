@@ -14,6 +14,7 @@ namespace Agina {
 
     public:
         Entity CreateEntity(const std::string& name = "");
+        void DestroyEntity(const Entity& entity);
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "");
 
         template<typename... Components>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <memory>
 #include <Renderer/Transform.hpp>
@@ -29,11 +30,13 @@ namespace Agina {
 
 		void Bind() const;
 		void Unbind() const;
+
 		void Draw() const;
 
 		MeshType GetMeshType() const { return m_Type; }
-
+		static std::string MeshTypeToString(MeshType type);
 		static std::shared_ptr<Mesh> Create(MeshType type);
+
 	private:
 		uint32_t m_VAO;
 		uint32_t m_VBO;

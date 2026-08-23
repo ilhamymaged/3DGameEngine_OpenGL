@@ -22,6 +22,7 @@ namespace Agina {
             if (y != o.y) return y < o.y;
             return z < o.z;
         }
+        Vec3 operator*(const Vec3& o) const { return Vec3{ x * o.x, y * o.y, z * o.z }; }
     };
     struct Vec2
     {

@@ -12,6 +12,7 @@ namespace Agina {
 		Vec3 normal;
 		Vec2 texCoords;
 		Vec3 tangent;
+		Vec3 bitangent;
 	};
 
 	struct MeshData 

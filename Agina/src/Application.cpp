@@ -11,7 +11,6 @@
 namespace Agina
 {
     Application* Application::s_Instance = nullptr;
-
     Application::Application(const std::string &title, int width, int height)
         :   IsLoggerInit((Logger::InitEngineLogger(), true)),
             m_Window(title, width, height),
@@ -25,8 +24,6 @@ namespace Agina
         AudioSystem::Init();
         Renderer::Init(width, height);
         Logger::InitClientLogger(title);
-
-        AG_CORE_INFO("Engine Initialized Perfectly!");
     }
 
     GLFWwindow* Application::GetWindow()
